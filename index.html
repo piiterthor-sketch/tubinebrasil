@@ -1,1171 +1,1768 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plataforma Oficial de Vendas & Compras</title>
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <style>
-    /* ==========================================================================
-       1. VARIÁVEIS GLOBAIS E RESET
-       ========================================================================== */
-    :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121c;
-      --bg-card: #1a1a28;
-      --bg-hover: #232336;
-      
-      --accent-cyan: #00f0ff;
-      --accent-purple: #7000ff;
-      --accent-magenta: #ff007f;
-      --accent-green: #00ff88;
-      --accent-yellow: #ffb700;
-      
-      --text-main: #ffffff;
-      --text-muted: #a0a0b8;
-      --text-dark: #62627a;
-      
-      --border-color: #2a2a3d;
-      --border-glow: rgba(0, 240, 255, 0.3);
-      
-      --radius-sm: 6px;
-      --radius-md: 12px;
-      --radius-lg: 20px;
-      --radius-pill: 50px;
-      
-      --transition-fast: 0.2s ease;
-      --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      
-      --shadow-neon-cyan: 0 0 15px rgba(0, 240, 255, 0.4);
-      --shadow-neon-purple: 0 0 20px rgba(112, 0, 255, 0.4);
-      --shadow-card: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Rajdhani', 'Roboto', sans-serif;
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      min-height: 100vh;
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    ul {
-      list-style: none;
-    }
-
-    /* Scrollbar Personalizada */
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
-    ::-webkit-scrollbar-track {
-      background: var(--bg-primary);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--accent-cyan);
-    }
-
-    /* ==========================================================================
-       2. CABEÇALHO GLOBAL / NAVEGAÇÃO
-       ========================================================================== */
-    header.main-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 999;
-      background: rgba(18, 18, 28, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 15px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: var(--transition-normal);
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .brand-logo i {
-      color: var(--accent-cyan);
-      font-size: 1.8rem;
-      filter: drop-shadow(0 0 8px var(--accent-cyan));
-    }
-
-    .brand-logo span {
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    nav.nav-menu {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 25px;
-    }
-
-    .nav-links a {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      transition: var(--transition-fast);
-      position: relative;
-    }
-
-    .nav-links a:hover, .nav-links a.active {
-      color: var(--accent-cyan);
-    }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent-cyan);
-      transition: var(--transition-fast);
-    }
-
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .btn-login-trigger {
-      background: transparent;
-      border: 2px solid var(--accent-cyan);
-      color: var(--accent-cyan);
-      padding: 10px 24px;
-      font-size: 1rem;
-      font-weight: 700;
-      border-radius: var(--radius-pill);
-      cursor: pointer;
-      transition: var(--transition-normal);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-login-trigger:hover {
-      background: var(--accent-cyan);
-      color: var(--bg-primary);
-      box-shadow: var(--shadow-neon-cyan);
-    }
-
-    /* ==========================================================================
-       3. PÁGINA PRINCIPAL / LANDING PAGE DE VENDAS (#landingView)
-       ========================================================================== */
-    #landingView {
-      display: block;
-      padding-top: 80px;
-    }
-
-    /* Hero Section */
-    .hero-section {
-      position: relative;
-      min-height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 40px;
-      background: radial-gradient(circle at 50% 30%, rgba(112, 0, 255, 0.15) 0%, rgba(10, 10, 15, 0.95) 70%);
-      overflow: hidden;
-    }
-
-    .hero-container {
-      max-width: 1300px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 50px;
-      align-items: center;
-      z-index: 2;
-    }
-
-    .hero-content h1 {
-      font-size: 3.5rem;
-      line-height: 1.1;
-      margin-bottom: 20px;
-    }
-
-    .hero-content h1 .highlight {
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: block;
-    }
-
-    .hero-content p {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      margin-bottom: 35px;
-    }
-
-    .hero-badges {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    .badge-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      padding: 6px 16px;
-      border-radius: var(--radius-pill);
-      font-size: 0.9rem;
-      color: var(--accent-cyan);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hero-cta-group {
-      display: flex;
-      gap: 20px;
-    }
-
-    .btn-cta-primary {
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
-      color: #fff;
-      padding: 16px 36px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      border: none;
-      border-radius: var(--radius-pill);
-      cursor: pointer;
-      box-shadow: var(--shadow-neon-cyan);
-      transition: var(--transition-normal);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-cta-primary:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: var(--shadow-neon-purple);
-    }
-
-    .btn-cta-secondary {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 16px 32px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: var(--radius-pill);
-      cursor: pointer;
-      transition: var(--transition-fast);
-    }
-
-    .btn-cta-secondary:hover {
-      background: var(--bg-card);
-      border-color: var(--accent-cyan);
-    }
-
-    .hero-visual {
-      position: relative;
-      display: flex;
-      justify-content: center;
-    }
-
-    .hero-card-preview {
-      width: 100%;
-      max-width: 480px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 25px;
-      box-shadow: var(--shadow-card);
-      position: relative;
-      transform: perspective(1000px) rotateY(-10deg) rotateX(5deg);
-      transition: var(--transition-normal);
-    }
-
-    .hero-card-preview:hover {
-      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-      border-color: var(--accent-cyan);
-    }
-
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .preview-tag {
-      background: var(--accent-purple);
-      color: #fff;
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    .preview-img {
-      width: 100%;
-      height: 250px;
-      background: var(--bg-secondary);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-      color: var(--accent-cyan);
-      margin-bottom: 20px;
-      border: 1px solid var(--border-color);
-    }
-
-    .preview-info h3 {
-      font-size: 1.4rem;
-      margin-bottom: 10px;
-    }
-
-    .preview-price {
-      font-size: 1.8rem;
-      color: var(--accent-green);
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Section Recurso & Destaques */
-    .features-section {
-      padding: 100px 40px;
-      background: var(--bg-secondary);
-    }
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .section-title h2 {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-      background: linear-gradient(90deg, #fff, var(--text-muted));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .section-title p {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .features-grid {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-    }
-
-    .feature-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 35px;
-      border-radius: var(--radius-md);
-      transition: var(--transition-normal);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-8px);
-      border-color: var(--accent-cyan);
-      box-shadow: 0 10px 20px rgba(0, 240, 255, 0.1);
-    }
-
-    .feature-icon {
-      width: 60px;
-      height: 60px;
-      background: rgba(0, 240, 255, 0.1);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      color: var(--accent-cyan);
-      margin-bottom: 20px;
-    }
-
-    .feature-card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 12px;
-    }
-
-    .feature-card p {
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
-    /* Vitrine Pública de Ofertas */
-    .showcase-section {
-      padding: 100px 40px;
-      max-width: 1300px;
-      margin: 0 auto;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-      margin-top: 40px;
-    }
-
-    .product-card-public {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      transition: var(--transition-normal);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .product-card-public:hover {
-      border-color: var(--accent-purple);
-      transform: translateY(-5px);
-    }
-
-    .product-thumb {
-      height: 200px;
-      background: var(--bg-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.5rem;
-      color: var(--text-dark);
-      position: relative;
-    }
-
-    .product-tag-discount {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: var(--accent-magenta);
-      color: #fff;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-    }
-
-    .product-details {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .product-details h4 {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-    }
-
-    .product-details p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 15px;
-      flex-grow: 1;
-    }
-
-    .price-box {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .price-current {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--accent-cyan);
-    }
-
-    .price-old {
-      font-size: 0.9rem;
-      color: var(--text-dark);
-      text-decoration: line-through;
-    }
-
-    .btn-buy-trigger {
-      width: 100%;
-      background: var(--bg-hover);
-      border: 1px solid var(--accent-cyan);
-      color: var(--accent-cyan);
-      padding: 12px;
-      font-weight: 700;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: var(--transition-fast);
-    }
-
-    .btn-buy-trigger:hover {
-      background: var(--accent-cyan);
-      color: var(--bg-primary);
-    }
-
-    /* FAQ / Duvidas */
-    .faq-section {
-      padding: 100px 40px;
-      background: var(--bg-secondary);
-    }
-
-    .faq-container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .faq-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      margin-bottom: 15px;
-      overflow: hidden;
-    }
-
-    .faq-question {
-      padding: 20px 25px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      user-select: none;
-    }
-
-    .faq-answer {
-      padding: 0 25px 20px 25px;
-      color: var(--text-muted);
-      display: none;
-      font-size: 0.95rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      padding-top: 15px;
-    }
-
-    .faq-item.active .faq-answer {
-      display: block;
-    }
-
-    .faq-item.active .faq-question i {
-      transform: rotate(180deg);
-      color: var(--accent-cyan);
-    }
-
-    /* Banner CTA Final */
-    .cta-banner {
-      padding: 80px 40px;
-      text-align: center;
-      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
-    }
-
-    .cta-banner-box {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: linear-gradient(90deg, rgba(112,0,255,0.2), rgba(0,240,255,0.2));
-      border: 1px solid var(--border-glow);
-      border-radius: var(--radius-lg);
-      padding: 60px 30px;
-    }
-
-    /* ==========================================================================
-       4. MODAL DE LOGIN / AUTENTICAÇÃO (#loginModal)
-       ========================================================================== */
-    .modal-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 10, 15, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 2000;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-backdrop.show {
-      display: flex;
-      opacity: 1;
-    }
-
-    .login-modal-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 440px;
-      padding: 40px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      position: relative;
-      transform: translateY(-20px);
-      transition: transform 0.3s ease;
-    }
-
-    .modal-backdrop.show .login-modal-card {
-      transform: translateY(0);
-    }
-
-    .close-modal-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    .close-modal-btn:hover {
-      color: var(--accent-magenta);
-    }
-
-    .modal-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .modal-header h2 {
-      font-size: 1.8rem;
-      color: var(--text-main);
-      margin-bottom: 8px;
-    }
-
-    .modal-header p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .auth-form .form-group {
-      margin-bottom: 20px;
-    }
-
-    .auth-form label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    .input-wrapper i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-dark);
-    }
-
-    .input-wrapper input {
-      width: 100%;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 12px 15px 12px 45px;
-      color: var(--text-main);
-      font-size: 1rem;
-      transition: var(--transition-fast);
-    }
-
-    .input-wrapper input:focus {
-      outline: none;
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-    }
-
-    .form-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      font-size: 0.85rem;
-    }
-
-    .remember-me {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .forgot-link {
-      color: var(--accent-cyan);
-    }
-
-    .btn-submit-auth {
-      width: 100%;
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
-      color: #fff;
-      border: none;
-      padding: 14px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      box-shadow: var(--shadow-neon-cyan);
-      transition: var(--transition-fast);
-    }
-
-    .btn-submit-auth:hover {
-      opacity: 0.95;
-      transform: translateY(-2px);
-    }
-
-    /* ==========================================================================
-       5. ÁREA INTERNA LOGADA DE COMPRAS / DASHBOARD (#dashboardView)
-       ========================================================================== */
-    #dashboardView {
-      display: none;
-      padding-top: 90px;
-      min-height: 100vh;
-      background: var(--bg-primary);
-    }
-
-    .dashboard-layout {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      min-height: calc(100vh - 90px);
-    }
-
-    /* Sidebar Interna */
-    .dash-sidebar {
-      background: var(--bg-secondary);
-      border-right: 1px solid var(--border-color);
-      padding: 30px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .user-profile-summary {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding-bottom: 25px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 25px;
-    }
-
-    .avatar-box {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      font-weight: 800;
-    }
-
-    .user-info h4 {
-      font-size: 1rem;
-      line-height: 1.2;
-    }
-
-    .user-info span {
-      font-size: 0.8rem;
-      color: var(--accent-green);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .sidebar-menu-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .sidebar-menu-list a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      color: var(--text-muted);
-      font-weight: 600;
-      transition: var(--transition-fast);
-    }
-
-    .sidebar-menu-list a:hover, .sidebar-menu-list a.active {
-      background: var(--bg-card);
-      color: var(--accent-cyan);
-      border-left: 3px solid var(--accent-cyan);
-    }
-
-    .btn-logout {
-      background: rgba(255, 0, 127, 0.1);
-      border: 1px solid var(--accent-magenta);
-      color: var(--accent-magenta);
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: var(--transition-fast);
-    }
-
-    .btn-logout:hover {
-      background: var(--accent-magenta);
-      color: #fff;
-    }
-
-    /* Conteúdo Principal do Dashboard */
-    .dash-main-content {
-      padding: 40px;
-      overflow-y: auto;
-    }
-
-    .dash-header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 35px;
-    }
-
-    .dash-header-bar h2 {
-      font-size: 2rem;
-    }
-
-    .cart-status-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 10px 20px;
-      border-radius: var(--radius-pill);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-    }
-
-    .cart-status-pill i {
-      color: var(--accent-cyan);
-      font-size: 1.2rem;
-    }
-
-    .cart-count {
-      background: var(--accent-magenta);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: var(--radius-pill);
-    }
-
-    /* Grid de Loja Autenticada */
-    .shop-categories {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 30px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
-
-    .cat-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 8px 20px;
-      border-radius: var(--radius-pill);
-      cursor: pointer;
-      white-space: nowrap;
-      font-weight: 600;
-    }
-
-    .cat-btn.active, .cat-btn:hover {
-      background: var(--accent-cyan);
-      color: var(--bg-primary);
-      border-color: var(--accent-cyan);
-    }
-
-    .store-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 25px;
-    }
-
-    .store-item-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      transition: var(--transition-fast);
-    }
-
-    .store-item-card:hover {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    }
-
-    .item-image {
-      height: 160px;
-      background: var(--bg-secondary);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      color: var(--accent-purple);
-      margin-bottom: 15px;
-    }
-
-    .item-title {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-    }
-
-    .item-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 15px;
-      flex-grow: 1;
-    }
-
-    .item-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-    }
-
-    .item-price {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--accent-green);
-    }
-
-    .btn-add-cart {
-      background: var(--accent-cyan);
-      color: var(--bg-primary);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      transition: var(--transition-fast);
-    }
-
-    .btn-add-cart:hover {
-      background: var(--accent-purple);
-      color: #fff;
-    }
-
-    /* ==========================================================================
-       6. RODAPÉ GLOBAL
-       ========================================================================== */
-    footer.main-footer {
-      background: var(--bg-secondary);
-      border-top: 1px solid var(--border-color);
-      padding: 60px 40px 30px 40px;
-      margin-top: auto;
-    }
-
-    .footer-grid {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 2fr repeat(3, 1fr);
-      gap: 40px;
-      margin-bottom: 40px;
-    }
-
-    .footer-col h4 {
-      font-size: 1.1rem;
-      margin-bottom: 20px;
-      color: var(--accent-cyan);
-    }
-
-    .footer-col p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 20px;
-    }
-
-    .footer-col ul li {
-      margin-bottom: 10px;
-    }
-
-    .footer-col ul li a {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      transition: var(--transition-fast);
-    }
-
-    .footer-col ul li a:hover {
-      color: var(--accent-cyan);
-      padding-left: 5px;
-    }
-
-    .footer-bottom {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding-top: 30px;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--text-dark);
-      font-size: 0.9rem;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 992px) {
-      .hero-container { grid-template-columns: 1fr; text-align: center; }
-      .hero-badges { justify-content: center; }
-      .hero-cta-group { justify-content: center; }
-      .hero-card-preview { transform: none; margin: 0 auto; }
-      .dashboard-layout { grid-template-columns: 1fr; }
-      .dash-sidebar { border-right: none; border-bottom: 1px solid var(--border-color); }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 600px) {
-      header.main-header { padding: 15px 20px; }
-      .nav-links { display: none; }
-      .hero-content h1 { font-size: 2.2rem; }
-      .footer-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- ==========================================================================
-       CABEÇALHO PRINCIPAL DA PLATAFORMA
-       ========================================================================== -->
-  <header class="main-header">
-    <div class="brand-logo">
-      <i class="fa-solid fa-bolt"></i>
-      <span>NEXUS</span>STORE
-    </div>
-
-    <nav class="nav-menu" id="publicNav">
-      <div class="nav-links">
-        <a href="#hero" class="active">Início</a>
-        <a href="#recursos">Recursos</a>
-        <a href="#ofertas">Ofertas</a>
-        <a href="#faq">Dúvidas</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Turbine Brasil ® | Crescimento e Engajamento para Redes Sociais
+    </title>
+    <meta name="description" content="Serviços de crescimento para Instagram, TikTok, YouTube e Kwai com entrega rápida e suporte especializado." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Sign-In SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+      :root {
+        --bg-dark: #0a0518;
+        --bg-card: #130c2a;
+        --bg-card-hover: #1c133a;
+        --accent-purple: #8b5cf6;
+        --accent-magenta: #ec4899;
+        --accent-cyan: #06b6d4;
+        --accent-orange: #f97316;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-glow: rgba(139, 92, 246, 0.3);
+        --gradient-primary: linear-gradient(
+          135deg,
+          #ec4899 0%,
+          #8b5cf6 50%,
+          #06b6d4 100%
+        );
+        --gradient-btn: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+        --gradient-orange: linear-gradient(135deg, #f97316 0%, #e11d48 100%);
+        --panel-bg: #0d131f;
+        --panel-card: #151d2a;
+        --panel-blue: #007bff;
+        --panel-blue-hover: #0056b3;
+        --panel-green: #28a745;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        scroll-behavior: smooth;
+      }
+
+      html {
+        scroll-padding-top: 100px;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        overflow-x: hidden;
+        line-height: 1.6;
+      }
+
+      /* Ambient Glow Background Effects */
+      .glow-sphere {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        z-index: -1;
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      .glow-1 {
+        width: 500px;
+        height: 500px;
+        background: #8b5cf6;
+        top: -100px;
+        left: -100px;
+      }
+
+      .glow-2 {
+        width: 600px;
+        height: 600px;
+        background: #ec4899;
+        top: 400px;
+        right: -150px;
+      }
+
+      .glow-3 {
+        width: 450px;
+        height: 450px;
+        background: #06b6d4;
+        bottom: 200px;
+        left: 10%;
+      }
+
+      /* Container & Layout */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header / Navbar */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: rgba(10, 5, 24, 0.85);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 15px 0;
+      }
+
+      .nav-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: -0.5px;
+      }
+
+      .logo-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--gradient-orange);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+        font-size: 1.3rem;
+        color: #fff;
+      }
+
+      .logo-text span {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: #fff;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .btn-header {
+        background: var(--gradient-btn);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn-header:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 35px rgba(236, 72, 153, 0.7);
+      }
+
+      /* Ticker Ticker / Banner Superior */
+      .top-marquee {
+        background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+        color: #fff;
+        padding: 8px 0;
+        font-size: 0.85rem;
+        font-weight: 700;
+        overflow: hidden;
+        white-space: nowrap;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        margin-top: 75px;
+      }
+
+      .marquee-content {
+        display: inline-block;
+        animation: marquee 25s linear infinite;
+      }
+
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+
+      /* SMM PANEL SECTION */
+      .smm-panel-section {
+        padding: 30px 0 60px;
+        background: var(--panel-bg);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .smm-container {
+        display: grid;
+        grid-template-columns: 240px 1fr 340px;
+        gap: 20px;
+      }
+
+      /* Panel Sidebar */
+      .panel-sidebar {
+        background: var(--panel-card);
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .user-profile-box {
+        background: rgba(255,255,255,0.03);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .user-avatar-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--panel-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      .user-info-text h6 {
+        color: #fff;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+      }
+
+      .user-info-text span {
+        color: #28a745;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+      }
+
+      .sidebar-menu li {
+        margin-bottom: 6px;
+      }
+
+      .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        color: #a0aec0;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: 0.2s;
+      }
+
+      .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: rgba(0, 123, 255, 0.15);
+        color: #38bdf8;
+      }
+
+      .sidebar-menu a i {
+        width: 18px;
+        text-align: center;
+      }
+
+      .badge-menu {
+        margin-left: auto;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
+
+      /* Panel Main Feed */
+      .panel-main {
+        background: var(--panel-card);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .balance-banner {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .balance-info h4 {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        font-weight: 600;
+      }
+
+      .balance-info .amount {
+        font-size: 1.6rem;
+        font-weight: 800;
+      }
+
+      .btn-add-funds-head {
+        background: #fff;
+        color: #059669;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.8rem;
+        transition: 0.2s;
+      }
+
+      .btn-add-funds-head:hover {
+        background: #f0fdf4;
+      }
+
+      /* Form Nav Tabs */
+      .panel-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .panel-tab-btn {
+        flex: 1;
+        padding: 12px;
+        background: #1e293b;
+        border: 1px solid rgba(255,255,255,0.05);
+        color: #94a3b8;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .panel-tab-btn.active {
+        background: #0284c7;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+      }
+
+      /* Form Controls */
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .search-box-input {
+        position: relative;
+      }
+
+      .search-box-input i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 12px 12px 38px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.2s;
+      }
+
+      .form-control-simple {
+        width: 100%;
+        padding: 12px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        outline: none;
+      }
+
+      .form-control:focus, .form-control-simple:focus {
+        border-color: #38bdf8;
+      }
+
+      .service-description-box {
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 18px;
+        font-size: 0.82rem;
+        color: #cbd5e1;
+      }
+
+      .service-description-box p {
+        margin-bottom: 6px;
+      }
+
+      .qty-shortcuts {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .btn-qty-shortcut {
+        background: #0284c7;
+        color: #fff;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .btn-qty-shortcut:hover {
+        background: #0369a1;
+      }
+
+      .price-calc-box {
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px dashed #38bdf8;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .price-calc-box span {
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+
+      .price-calc-box strong {
+        font-size: 1.1rem;
+        color: #38bdf8;
+      }
+
+      .btn-submit-order {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        transition: 0.2s;
+      }
+
+      .btn-submit-order:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
+      }
+
+      /* Panel Right Widget */
+      .panel-right {
+        background: var(--panel-card);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .widget-box {
+        margin-bottom: 20px;
+      }
+
+      .widget-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+
+      .widget-content {
+        font-size: 0.82rem;
+        color: #94a3b8;
+      }
+
+      .whatsapp-support-card {
+        background: rgba(37, 211, 102, 0.08);
+        border: 1px solid rgba(37, 211, 102, 0.2);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .whatsapp-support-card i {
+        font-size: 1.5rem;
+        color: #25d366;
+      }
+
+      .whatsapp-support-card .num {
+        color: #fff;
+        font-weight: bold;
+        font-size: 0.8rem;
+      }
+
+      .whatsapp-support-card .desc {
+        color: #94a3b8;
+        font-size: 0.72rem;
+      }
+
+      .notice-alert-box {
+        background: rgba(234, 179, 8, 0.1);
+        border-left: 4px solid #eab308;
+        padding: 10px 12px;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        color: #fef08a;
+        margin-top: 15px;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 90px 0 90px;
+        text-align: center;
+        position: relative;
+      }
+
+      .badge-hero {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(139, 92, 246, 0.15);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #c084fc;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.15;
+        margin-bottom: 25px;
+        letter-spacing: -1px;
+      }
+
+      .hero h1 .highlight {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 750px;
+        margin: 0 auto 40px;
+        font-weight: 400;
+      }
+
+      .hero-ctas {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 60px;
+      }
+
+      .btn-main {
+        background: var(--gradient-btn);
+        color: #fff;
+        padding: 16px 38px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 0 30px rgba(236, 72, 153, 0.5);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn-main:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 0 45px rgba(236, 72, 153, 0.8);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Stats Bar */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        background: rgba(19, 12, 42, 0.7);
+        border: 1px solid var(--border-glow);
+        padding: 30px;
+        border-radius: 24px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 5px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      /* Platform Selector Section */
+      .services-section {
+        padding: 100px 0;
+        position: relative;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+      }
+
+      .section-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Platform Tabs */
+      .platform-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+
+      .tab-btn {
+        background: var(--bg-card);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 14px 28px;
+        border-radius: 16px;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .tab-btn i {
+        font-size: 1.3rem;
+      }
+
+      .tab-btn.active,
+      .tab-btn:hover {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: var(--accent-purple);
+        color: #fff;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+      }
+
+      /* Service Cards Grid */
+      .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+      }
+
+      .plan-card {
+        background: var(--bg-card);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 35px 25px;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .plan-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--accent-magenta);
+        box-shadow: 0 15px 40px rgba(236, 72, 153, 0.2);
+      }
+
+      .plan-card.featured {
+        border: 2px solid var(--accent-magenta);
+        background: linear-gradient(
+          180deg,
+          rgba(236, 72, 153, 0.1) 0%,
+          var(--bg-card) 100%
+        );
+        box-shadow: 0 0 35px rgba(236, 72, 153, 0.25);
+      }
+
+      .featured-badge {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--gradient-btn);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 6px 16px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .plan-header h3 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+
+      .plan-price {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 15px 0;
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+      }
+
+      .plan-price span {
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      .plan-features {
+        list-style: none;
+        margin: 25px 0;
+      }
+
+      .plan-features li {
+        padding: 10px 0;
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .plan-features li i {
+        color: #10b981;
+        font-size: 1.1rem;
+      }
+
+      .btn-plan {
+        width: 100%;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: block;
+      }
+
+      .plan-card.featured .btn-plan,
+      .btn-plan:hover {
+        background: var(--gradient-btn);
+        border-color: transparent;
+        box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+      }
+
+      /* Features / Why Choose Us */
+      .features-section {
+        padding: 90px 0;
+        background: rgba(19, 12, 42, 0.4);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+      }
+
+      .feature-box {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: 0.3s;
+      }
+
+      .feature-box:hover {
+        border-color: var(--accent-cyan);
+        transform: translateY(-5px);
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(6, 182, 212, 0.15);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--accent-cyan);
+        margin-bottom: 20px;
+      }
+
+      .feature-box h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .feature-box p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+
+      /* Testimonials / Social Proof */
+      .testimonials-section {
+        padding: 100px 0;
+      }
+
+      .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .testimonial-card {
+        background: var(--bg-card);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 30px;
+        position: relative;
+      }
+
+      .stars {
+        color: #f59e0b;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+      }
+
+      .testimonial-text {
+        color: #cbd5e1;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #fff;
+      }
+
+      .user-details h5 {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .user-details span {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      /* FAQ Section */
+      .faq-section {
+        padding: 90px 0;
+        background: rgba(19, 12, 42, 0.4);
+      }
+
+      .faq-accordion {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .faq-item {
+        background: var(--bg-card);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        margin-bottom: 15px;
+        overflow: hidden;
+      }
+
+      .faq-question {
+        padding: 22px 25px;
+        width: 100%;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .faq-answer {
+        padding: 0 25px 22px;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        display: none;
+      }
+
+      .faq-item.active .faq-answer {
+        display: block;
+      }
+
+      .faq-item.active .faq-question i {
+        transform: rotate(180deg);
+      }
+
+      .faq-question i {
+        transition: transform 0.3s;
+        color: var(--accent-purple);
+      }
+
+      /* CTA Banner */
+      .cta-banner {
+        padding: 80px 0;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.15) 0%,
+          rgba(139, 92, 246, 0.15) 100%
+        );
+        border-top: 1px solid var(--border-glow);
+        border-bottom: 1px solid var(--border-glow);
+        margin: 50px 0;
+      }
+
+      .cta-banner h2 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+      }
+
+      /* Modal Login Google */
+      .modal-login {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-login.active {
+        display: flex;
+      }
+
+      .modal-login-content {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        border: 1px solid var(--accent-purple);
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      /* Footer */
+      footer {
+        padding: 60px 0 30px;
+        background: #060310;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .footer-col h4 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        color: #fff;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.2s;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent-magenta);
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      /* Floating WhatsApp Button */
+      .whatsapp-float {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: #25d366;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        box-shadow: 0 0 25px rgba(37, 211, 102, 0.6);
+        z-index: 1000;
+        text-decoration: none;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+        }
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 992px) {
+        .smm-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.3rem;
+        }
+        .hero p {
+          font-size: 1rem;
+        }
+        .nav-links {
+          display: none;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .cta-banner h2 {
+          font-size: 2rem;
+        }
+      }
+      .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 70px;      /* ajuste conforme necessário */
+    width: auto;
+    display: block;
+}
+    </style>
+  </head>
+  <body>
+    <!-- Ambient Background Lighting -->
+    <div class="glow-sphere glow-1"></div>
+    <div class="glow-sphere glow-2"></div>
+    <div class="glow-sphere glow-3"></div>
+
+    <!-- Header / Navbar -->
+    <header>
+      <div class="container nav-wrapper">
+       <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img">
+          <div class="logo-text">TURBINE <span>BRASIL</span></div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#painel">Painel de Pedidos</a></li>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#vantagens">Vantagens</a></li>
+          <li><a href="#depoimentos">Feedbacks</a></li>
+          <li><a href="#faq">Dúvidas</a></li>
+        </ul>
+        <div class="header-actions">
+          <button class="btn-header" onclick="openLoginModal()">
+            <i class="fa-brands fa-google"></i> Login Google
+          </button>
+          <a href="#painel" class="btn-header" style="background: var(--gradient-orange);">
+            <i class="fa-solid fa-plus-circle"></i> Novo Pedido
+          </a>
+        </div>
       </div>
-    </nav>
+    </header>
 
-    <div class="header-actions">
-      <button class="btn-login-trigger" id="authNavBtn" onclick="toggleAuthModal(true)">
-        <i class="fa-solid fa-user-lock"></i>
-        <span>Entrar / Cadastrar</span>
-      </button>
+    <!-- Top Marquee Banner do Vídeo -->
+    <div class="top-marquee">
+      <div class="marquee-content">
+        🚀 VIRE REVENDEDOR DE SERVIÇOS E GANHE UMA RENDA EXTRA SEM SAIR DE CASA 🔥 SERVIÇOS ATUALIZADOS TODOS OS DIAS! ⚡ ENTREGA RÁPIDA E GARANTIDA ⚡
+      </div>
     </div>
-  </header>
 
-  <!-- ==========================================================================
-       VISÃO 1: PÁGINA PRINCIPAL / LANDING PAGE DE VENDAS
-       ========================================================================== -->
-  <main id="landingView">
-    
-    <!-- Hero Section -->
-    <section class="hero-section" id="hero">
-      <div class="hero-container">
-        <div class="hero-content">
-          <div class="hero-badges">
-            <span class="badge-item"><i class="fa-solid fa-shield-halved"></i> 100% Seguro</span>
-            <span class="badge-item"><i class="fa-solid fa-truck-fast"></i> Entrega Imediata</span>
+    <!-- SMM Panel Section (Painel do Vídeo) -->
+    <section class="smm-panel-section" id="painel">
+      <div class="container smm-container">
+        
+        <!-- Sidebar Esquerda -->
+        <div class="panel-sidebar">
+          <div class="user-profile-box">
+            <div class="user-avatar-icon" id="user-avatar-display">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="user-info-text">
+              <h6 id="user-name-display">Visitante</h6>
+              <span id="user-status-display">Clique para entrar</span>
+            </div>
           </div>
-          <h1>A Plataforma Definitiva de <span class="highlight">Produtos Digitais</span></h1>
-          <p>Explore nosso ecossistema exclusivo. Acesse recursos avançados, licenças oficiais e serviços premium em uma única plataforma integrada.</p>
-          <div class="hero-cta-group">
-            <button class="btn-cta-primary" onclick="toggleAuthModal(true)">
-              Acessar Loja Completa <i class="fa-solid fa-arrow-right"></i>
+
+          <ul class="sidebar-menu">
+            <li><a href="#painel" class="active"><i class="fa-solid fa-cart-plus"></i> Novo Pedido</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-list-check"></i> Serviços</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-box"></i> Pedidos</a></li>
+            <li><a href="javascript:void(0)" onclick="openPixWhatsApp()"><i class="fa-solid fa-wallet"></i> Adicionar saldo <span class="badge-menu">PIX</span></a></li>
+            <li><a href="#painel"><i class="fa-solid fa-gift"></i> Indique e ganhe 5%</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-code"></i> API</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-headset"></i> Suporte <span class="badge-menu">1</span></a></li>
+            <li><a href="https://chat.whatsapp.com/demo" target="_blank"><i class="fa-solid fa-users"></i> Grupo com suportes</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-bullhorn"></i> Banners para revendedores</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-layer-group"></i> Ordem em massa</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-coins"></i> Saldo grátis</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-rotate"></i> Atualizações</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-mobile-screen"></i> App do site</a></li>
+          </ul>
+        </div>
+
+        <!-- Conteúdo Principal do Painel -->
+        <div class="panel-main">
+          
+          <!-- Banner de Saldo -->
+          <div class="balance-banner">
+            <div class="balance-info">
+              <h4>Seu saldo no site</h4>
+              <div class="amount" id="user-balance">R$ 0,00000</div>
+            </div>
+            <a href="javascript:void(0)" onclick="openPixWhatsApp()" class="btn-add-funds-head">
+              <i class="fa-brands fa-pix"></i> Adicionar Saldo via WhatsApp
+            </a>
+          </div>
+
+          <!-- Tabs de Ação -->
+          <div class="panel-tabs">
+            <button class="panel-tab-btn active" onclick="switchPanelTab('add', this)">Adicionar Saldo</button>
+            <button class="panel-tab-btn" onclick="switchPanelTab('orders', this)">Pedidos</button>
+          </div>
+
+          <!-- Formulário do Pedido -->
+          <div id="panel-add-form">
+            <div class="form-group">
+              <div class="search-box-input">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="form-control" placeholder="Procurar por seguidores, curtidas ou visualizações" onkeyup="filterServices(this.value)">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Categoria</label>
+              <select class="form-control-simple" id="category-select" onchange="updateServicesOptions()">
+                <option value="best">🎯 Os Melhores Serviços para Revenda ou uso Proprio TOP</option>
+                <option value="likes">📸 Curtidas Instagram 🟢</option>
+                <option value="views">📹 Visualizações com Garantia (Reels, IGTV, Story, Mass) 🟢</option>
+                <option value="tiktok">🎵 TikTok Seguidores, Likes, Visualizações e + 🟢</option>
+                <option value="kwai">⚙️ Serviços para Kwai 🟢</option>
+                <option value="br_followers">🇧🇷 Seguidores do Brasil Instagram 🟢</option>
+                <option value="comments">💬 Comentários a likes do Instagram 🟢</option>
+                <option value="top_services">🏆 Categoria com os Serviços + Rápidos e Vendidos no Site TOP</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Serviço</label>
+              <select class="form-control-simple" id="service-select" onchange="updateServiceDetails()">
+                <!-- Preenchido via JavaScript -->
+              </select>
+            </div>
+
+            <!-- Caixa de Descrição do Serviço -->
+            <div class="service-description-box" id="service-description">
+              <p>📌 <strong>Qualidade:</strong> Qualidade boa</p>
+              <p>⏱️ <strong>Hora de inicio:</strong> 0-1 hora</p>
+              <p>🚀 <strong>Velocidade por dia:</strong> 10.000</p>
+              <p>📉 <strong>Pedido mínimo:</strong> 10</p>
+              <p>📈 <strong>Pedido máximo:</strong> 10.000</p>
+              <p style="color: #ef4444; font-weight: bold; margin-top: 8px;">🚫 Não pode ocultar as curtidas e nem os comentários no momento da compra.</p>
+            </div>
+
+            <div class="form-group">
+              <label>Link</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" class="form-control-simple" id="order-link" placeholder="Link do vídeo ou perfil">
+                <button type="button" style="background: #0284c7; color: #fff; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="pasteLink()">Colar</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Quantidade</label>
+              <input type="number" class="form-control-simple" id="order-qty" value="100" min="10" oninput="calculateOrderPrice()">
+              <div class="qty-shortcuts">
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(30)">30</button>
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(50)">50</button>
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(100)">100</button>
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(100000)">100K</button>
+              </div>
+            </div>
+
+            <div class="price-calc-box">
+              <span>Valor a Cobrar:</span>
+              <strong id="total-price-display">R$ 0,08</strong>
+            </div>
+
+            <button type="button" class="btn-submit-order" onclick="submitOrder()">
+              <i class="fa-solid fa-paper-plane"></i> Enviar Pedido
             </button>
-            <button class="btn-cta-secondary" onclick="scrollToSection('ofertas')">
-              Ver Destaques
-            </button>
+          </div>
+
+          <!-- Aba de Pedidos Recentes -->
+          <div id="panel-orders-list" style="display: none;">
+            <p style="color: #94a3b8; text-align: center; padding: 20px 0;">Você ainda não possui pedidos recentes. Faça seu primeiro pedido acima!</p>
+          </div>
+
+        </div>
+
+        <!-- Painel Lateral Direita (Ajuda e Suporte do Vídeo) -->
+        <div class="panel-right">
+          <div class="widget-box">
+            <h5 class="widget-title">Trabalhe revendendo seguidores no site baratosocials.com</h5>
+            <div class="widget-content">
+              <p style="margin-bottom: 10px;">Resolvi fazer esse site para ajudar todos, seja você cliente ou revendedor de seguidores. Da uma força aí e solicite a agradecer!</p>
+              <p style="color: #38bdf8; font-weight: 800; font-size: 1.1rem; margin-bottom: 5px;">1000 Seguidores a partir de R$ 1,36</p>
+              <p style="color: #28a745; font-weight: bold; margin-bottom: 5px;">Seguidores com reposição entre outros!</p>
+              <p style="font-weight: bold; color: #fff;">Mínimo de depósito R$ 1,00</p>
+            </div>
+          </div>
+
+          <div class="widget-box">
+            <h5 class="widget-title">Como funciona:</h5>
+            <div class="widget-content">
+              <p>📺 Assista nosso tutorial de uso no YouTube para aprender a comprar e revender facilmente.</p>
+            </div>
+          </div>
+
+          <div class="widget-box">
+            <h5 class="widget-title">Caso tenha algum problema ou dúvida:</h5>
+            
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99547-0571</div>
+                <div class="desc">Ajuda com pedidos</div>
+              </div>
+            </div>
+
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99698-2321</div>
+                <div class="desc">Ajuda com pedidos ou dúvidas</div>
+              </div>
+            </div>
+
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99677-4237</div>
+                <div class="desc">Ajuda com site, dúvidas e outros</div>
+              </div>
+            </div>
+
+            <div class="notice-alert-box">
+              ⚠️ <strong>Aviso Importante:</strong> Antes de fazer qualquer pedido certifique-se que a conta esta correta. Observação: Não faça o pedido para a mesma conta ao mesmo tempo. Você tem que esperar a conclusão do primeiro pedido para poder fazer o pedido novamente.
+            </div>
           </div>
         </div>
 
-        <div class="hero-visual">
-          <div class="hero-card-preview">
-            <div class="preview-header">
-              <span class="preview-tag">Destaque da Semana</span>
-              <i class="fa-solid fa-star" style="color: var(--accent-yellow);"></i>
+      </div>
+    </section>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="badge-hero">
+          <i class="fa-solid fa-fire"></i> #1 Empresa de Marketing e Engajamento
+        </div>
+        <h1>
+          Turbine Seu Perfil e Conquiste <br /><span class="highlight"
+            >Milhares de Seguidores Reais</span
+          >
+        </h1>
+        <p>
+          Alcance autoridade máxima no Instagram, TikTok, YouTube e Kwai.
+          Entrega automatizada, 100% confiável e sem necessidade de senha!
+        </p>
+
+        <div class="hero-ctas">
+          <a href="#servicos" class="btn-main"
+            ><i class="fa-solid fa-rocket"></i> Ver Planos e Preços</a
+          >
+          <a
+            href="javascript:void(0)"
+            onclick="openPixWhatsApp()"
+            class="btn-secondary"
+            ><i class="fa-brands fa-whatsapp"></i> Pagamento Pix no WhatsApp</a
+          >
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">+50.000</div>
+            <div class="stat-label">Clientes Satisfeitos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">99.8%</div>
+            <div class="stat-label">Taxa de Satisfação</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">5 a 15 min</div>
+            <div class="stat-label">Início Instantâneo</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Seguro e Sem Senha</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform & Package Selector Section -->
+    <section class="services-section" id="servicos">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Escolha Sua Rede Social</h2>
+          <p class="section-subtitle">
+            Selecione a plataforma desejada e escolha o pacote ideal para
+            alavancar seu perfil hoje mesmo.
+          </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="platform-tabs">
+          <button
+            class="tab-btn active"
+            onclick="switchPlatform('instagram', this)"
+          >
+            <i class="fa-brands fa-instagram" style="color: #e1306c"></i>
+            Instagram
+          </button>
+          <button class="tab-btn" onclick="switchPlatform('tiktok', this)">
+            <i class="fa-brands fa-tiktok" style="color: #00f2fe"></i> TikTok
+          </button>
+          <button class="tab-btn" onclick="switchPlatform('youtube', this)">
+            <i class="fa-brands fa-youtube" style="color: #ff0000"></i> YouTube
+          </button>
+          <button class="tab-btn" onclick="switchPlatform('kwai', this)">
+            <i class="fa-solid fa-play" style="color: #ff5000"></i> Kwai
+          </button>
+        </div>
+
+        <!-- Dynamic Plans Grid (Instagram Default) -->
+        <div class="plans-grid" id="plans-container">
+          <!-- Card 1 -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <h3>1.000 Seguidores</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem">
+                Ideal para novos perfis
+              </p>
+              <div class="plan-price">R$ 29,90 <span>/ único</span></div>
             </div>
-            <div class="preview-img">
-              <i class="fa-solid fa-box-open"></i>
+            <ul class="plan-features">
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Sem necessidade de
+                senha
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Entrega Rápida e Segura
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Garantia de Reposição
+                30 dias
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP
+              </li>
+            </ul>
+            <a
+              href="javascript:void(0)"
+              onclick="openPixWhatsApp('1000 Seguidores Instagram')"
+              class="btn-plan"
+              >Comprar via Pix WhatsApp</a
+            >
+          </div>
+
+          <!-- Card 2 (Featured) -->
+          <div class="plan-card featured">
+            <div class="featured-badge">Mais Vendido 🔥</div>
+            <div class="plan-header">
+              <h3>5.000 Seguidores</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem">
+                Mais popular para criadores
+              </p>
+              <div class="plan-price">R$ 89,90 <span>/ único</span></div>
             </div>
-            <div class="preview-info">
-              <h3>Pacote Pro Digital - 2026</h3>
-              <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Acesso irrestrito a todos os módulos e ferramentas premium da loja.</p>
-              <div class="preview-price">
-                <span>R$ 149,90</span>
-                <button class="btn-buy-trigger" style="width: auto; padding: 8px 16px;" onclick="toggleAuthModal(true)">Comprar</button>
+            <ul class="plan-features">
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Sem necessidade de
+                senha
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Início Instantâneo
+                (5-15 min)
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Garantia de Reposição
+                30 dias
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Bônus: 500 Curtidas em
+                Reels
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Suporte Prioritário
+                24/7
+              </li>
+            </ul>
+            <a
+              href="javascript:void(0)"
+              onclick="openPixWhatsApp('5000 Seguidores Instagram')"
+              class="btn-plan"
+              >Comprar via Pix WhatsApp</a
+            >
+          </div>
+
+          <!-- Card 3 -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <h3>10.000 Seguidores</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem">
+                Autoridade máxima para Marcas
+              </p>
+              <div class="plan-price">R$ 159,90 <span>/ único</span></div>
+            </div>
+            <ul class="plan-features">
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Sem necessidade de
+                senha
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Entrega Gradual e
+                Orgânica
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Garantia de Reposição
+                60 dias
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Bônus: 1.000 Curtidas
+                em Fotos
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Gerente de Conta
+                Exclusivo
+              </li>
+            </ul>
+            <a
+              href="javascript:void(0)"
+              onclick="openPixWhatsApp('10000 Seguidores Instagram')"
+              class="btn-plan"
+              >Comprar via Pix WhatsApp</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features / Differentials -->
+    <section class="features-section" id="vantagens">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Por que escolher o Turbine Brasil?</h2>
+          <p class="section-subtitle">
+            Segurança absoluta, entrega automatizada e o melhor suporte do
+            mercado.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-box">
+            <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+            <h4>100% Seguro & Sigiloso</h4>
+            <p>
+              Nunca pedimos sua senha ou dados confidenciais. Apenas o nome de
+              usuário (@) do seu perfil.
+            </p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+            <h4>Processamento Automático</h4>
+            <p>
+              Nosso sistema funciona 24 horas por dia, 7 dias por semana. Seu
+              pedido começa em minutos.
+            </p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h4>Garantia de Reposição</h4>
+            <p>
+              Oferecemos garantia de reposição para que o seu perfil se mantenha
+              sempre no topo e estável.
+            </p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
+            <h4>Suporte Humanizado</h4>
+            <p>
+              Equipe especialista pronta para te atender via WhatsApp para tirar
+              qualquer dúvida.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" id="depoimentos">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
+          <p class="section-subtitle">
+            Confira alguns dos milhares de feedbacks recebidos diariamente em
+            nossas redes.
+          </p>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+              "O serviço é sensacional! Comprei 5 mil seguidores pro meu perfil
+              de loja e em menos de 20 minutos já começou a cair. A autoridade
+              da minha conta mudou totalmente!"
+            </p>
+            <div class="user-info">
+              <div class="user-avatar">MC</div>
+              <div class="user-details">
+                <h5>Matheus Costa</h5>
+                <span>@matheus_store</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+              "Atendimento impecável via WhatsApp. Tive dúvidas no início sobre
+              a segurança, mas não pedem senha de nada e o resultado é imediato.
+              Recomendo de olhos fechados!"
+            </p>
+            <div class="user-info">
+              <div class="user-avatar">LA</div>
+              <div class="user-details">
+                <h5>Larissa Almeida</h5>
+                <span>Influenciadora Digital</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="stars">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i>
+            </div>
+            <p class="testimonial-text">
+              "Usei para impulsionar meus vídeos no TikTok e um deles acabou
+              indo para a For You! O engajamento realmente fez o algoritmo
+              entregar mais."
+            </p>
+            <div class="user-info">
+              <div class="user-avatar">RB</div>
+              <div class="user-details">
+                <h5>Rodrigo Barbosa</h5>
+                <span>Gamer & Creator</span>
               </div>
             </div>
           </div>
@@ -1173,430 +1770,414 @@
       </div>
     </section>
 
-    <!-- Recursos e Vantagens -->
-    <section class="features-section" id="recursos">
-      <div class="section-title">
-        <h2>Por Que Escolher a NexusStore?</h2>
-        <p>Desenvolvido para oferecer máxima eficiência, segurança e praticidade para todas as suas compras online.</p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
-          <h3>Processamento Instantâneo</h3>
-          <p>Após a confirmação do pagamento, os produtos e acessos digitais são liberados automaticamente no seu painel.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
-          <h3>Ambiente Altamente Protegido</h3>
-          <p>Criptografia de ponta a ponta e camadas reforçadas de segurança para garantir a integridade dos seus dados.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
-          <h3>Suporte Especializado 24/7</h3>
-          <p>Equipe de atendimento pronta para resolver suas dúvidas e auxiliar em todo o processo de pós-venda.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Vitrine de Ofertas Públicas -->
-    <section class="showcase-section" id="ofertas">
-      <div class="section-title">
-        <h2>Catálogo em Destaque</h2>
-        <p>Faça login na plataforma para desbloquear preços especiais de membro e itens exclusivos.</p>
-      </div>
-
-      <div class="products-grid">
-        <!-- Card Produto 1 -->
-        <div class="product-card-public">
-          <div class="product-thumb">
-            <span class="product-tag-discount">-20%</span>
-            <i class="fa-solid fa-code"></i>
-          </div>
-          <div class="product-details">
-            <h4>Licença Web Pro</h4>
-            <p>Acesso às ferramentas avançadas de desenvolvimento e hospedagem integrada.</p>
-            <div class="price-box">
-              <span class="price-current">R$ 89,90</span>
-              <span class="price-old">R$ 112,00</span>
-            </div>
-            <button class="btn-buy-trigger" onclick="toggleAuthModal(true)">Fazer Login para Comprar</button>
-          </div>
-        </div>
-
-        <!-- Card Produto 2 -->
-        <div class="product-card-public">
-          <div class="product-thumb">
-            <span class="product-tag-discount">-35%</span>
-            <i class="fa-solid fa-gamepad"></i>
-          </div>
-          <div class="product-details">
-            <h4>Passe VIP Gamer</h4>
-            <p>Benefícios exclusivos e recompensas digitais em todos os servidores da rede.</p>
-            <div class="price-box">
-              <span class="price-current">R$ 45,00</span>
-              <span class="price-old">R$ 70,00</span>
-            </div>
-            <button class="btn-buy-trigger" onclick="toggleAuthModal(true)">Fazer Login para Comprar</button>
-          </div>
-        </div>
-
-        <!-- Card Produto 3 -->
-        <div class="product-card-public">
-          <div class="product-thumb">
-            <i class="fa-solid fa-database"></i>
-          </div>
-          <div class="product-details">
-            <h4>Cloud Storage 1TB</h4>
-            <p>Espaço em nuvem de alta velocidade com backup automático para seus arquivos.</p>
-            <div class="price-box">
-              <span class="price-current">R$ 29,90</span>
-            </div>
-            <button class="btn-buy-trigger" onclick="toggleAuthModal(true)">Fazer Login para Comprar</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
+    <!-- FAQ Section -->
     <section class="faq-section" id="faq">
-      <div class="section-title">
-        <h2>Perguntas Frequentes</h2>
-        <p>Tire suas dúvidas sobre o funcionamento da plataforma antes de realizar seu cadastro.</p>
-      </div>
-
-      <div class="faq-container">
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-question">
-            <span>Como tenho acesso aos produtos após a compra?</span>
-            <i class="fa-solid fa-chevron-down"></i>
-          </div>
-          <div class="faq-answer">
-            Assim que fizer o login e concluir a compra dentro da área de membros, os seus produtos ficarão disponíveis instantaneamente na aba "Meus Pedidos".
-          </div>
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Dúvidas Frequentes</h2>
+          <p class="section-subtitle">
+            Tudo o que você precisa saber antes de fazer seu pedido.
+          </p>
         </div>
 
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-question">
-            <span>Quais são as formas de pagamento aceitas?</span>
-            <i class="fa-solid fa-chevron-down"></i>
+        <div class="faq-accordion">
+          <div class="faq-item">
+            <button class="faq-question">
+              Preciso informar minha senha?
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              Não! Nós nunca solicitamos a sua senha. Precisamos apenas do link
+              ou do nome de usuário (@) do seu perfil público para enviar os
+              serviços.
+            </div>
           </div>
-          <div class="faq-answer">
-            Aceitamos Pix com aprovação imediata, Cartões de Crédito em até 12x e Cartão de Débito Virtual.
-          </div>
-        </div>
 
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-question">
-            <span>Preciso de conta para comprar?</span>
-            <i class="fa-solid fa-chevron-down"></i>
+          <div class="faq-item">
+            <button class="faq-question">
+              Quanto tempo leva para os seguidores chegarem?
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              Nosso sistema é 100% automatizado. Após a confirmação do
+              pagamento, a entrega inicia em média de 5 a 15 minutos!
+            </div>
           </div>
-          <div class="faq-answer">
-            Sim. A conta garante que suas compras, histórico de pedidos e licenças fiquem salvos com total segurança.
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Existe algum risco para o meu perfil?
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              Absolutamente nenhum. Nossos métodos respeitam as diretrizes das
+              redes sociais e não utilizam automações invasivas na sua conta.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              Quais são as formas de pagamento aceitas?
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer">
+              Aceitamos Pix (com aprovação e entrega instantânea via WhatsApp) e Cartão de Crédito.
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Banner Final CTA -->
+    <!-- Call to Action Banner -->
     <section class="cta-banner">
-      <div class="cta-banner-box">
-        <h2 style="font-size: 2.2rem; margin-bottom: 15px;">Pronto para Acessar a Loja?</h2>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Crie sua conta em menos de 1 minuto ou faça login para ter acesso total ao nosso catálogo de produtos.</p>
-        <button class="btn-cta-primary" style="margin: 0 auto;" onclick="toggleAuthModal(true)">
-          Entrar Agora na Plataforma
-        </button>
+      <div class="container">
+        <h2>Pronto para Destacar Seu Perfil Hoje?</h2>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+          "
+        >
+          Não perca tempo e impulsione suas redes com quem entende do assunto.
+        </p>
+        <a href="#painel" class="btn-main"
+          ><i class="fa-solid fa-rocket"></i> TURBINAR MEU PERFIL AGORA</a
+        >
       </div>
     </section>
 
-  </main>
-
-  <!-- ==========================================================================
-       MODAL DE AUTENTICAÇÃO (LOGIN / CADASTRO)
-       ========================================================================== -->
-  <div class="modal-backdrop" id="authModal">
-    <div class="login-modal-card">
-      <button class="close-modal-btn" onclick="toggleAuthModal(false)">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="modal-header">
-        <h2 id="modalTitle">Acessar Conta</h2>
-        <p id="modalSub">Informe seus dados para acessar o painel de compras</p>
+    <!-- Modal Login Google -->
+    <div class="modal-login" id="loginModal">
+      <div class="modal-login-content">
+        <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
+        <h3 style="margin-bottom: 10px; color: #fff;">Entrar na sua conta</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Faça login com sua conta do Google para acompanhar seus pedidos e saldo no painel.</p>
+        
+        <div style="display: flex; justify-content: center;">
+          <div id="g_id_onload"
+               data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+               data-callback="handleCredentialResponse">
+          </div>
+          <div class="g_id_signin" data-type="standard"></div>
+        </div>
       </div>
-
-      <form class="auth-form" onsubmit="executeLogin(event)">
-        <div class="form-group">
-          <label for="loginEmail">E-mail de Acesso</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-envelope"></i>
-            <input type="email" id="loginEmail" placeholder="seu@email.com" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="loginPassword">Senha</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="loginPassword" placeholder="••••••••" required>
-          </div>
-        </div>
-
-        <div class="form-options">
-          <label class="remember-me">
-            <input type="checkbox" checked> Lembrar-me
-          </label>
-          <a href="#" class="forgot-link">Esqueceu a senha?</a>
-        </div>
-
-        <button type="submit" class="btn-submit-auth">
-          Entrar no Painel de Compras <i class="fa-solid fa-arrow-right-to-bracket"></i>
-        </button>
-      </form>
     </div>
-  </div>
 
-  <!-- ==========================================================================
-       VISÃO 2: ÁREA INTERNA LOGADA DE COMPRAS / DASHBOARD
-       ========================================================================== -->
-  <main id="dashboardView">
-    <div class="dashboard-layout">
-      
-      <!-- Sidebar da Área Logada -->
-      <aside class="dash-sidebar">
-        <div>
-          <div class="user-profile-summary">
-            <div class="avatar-box" id="userAvatar">U</div>
-            <div class="user-info">
-              <h4 id="userNameDisplay">Usuário Autenticado</h4>
-              <span><i class="fa-solid fa-circle" style="font-size: 0.6rem;"></i> Conta Ativa</span>
-            </div>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <a href="#" class="logo" style="margin-bottom: 15px">
+              <div class="logo-icon"><i class="fa-solid fa-rocket"></i></div>
+              <div class="logo-text">TURBINE <span>BRASIL</span></div>
+            </a>
+            <p style="color: var(--text-muted); font-size: 0.9rem">
+              Empresa líder em marketing digital, engajamento e crescimento para
+              redes sociais no Brasil.
+            </p>
           </div>
-
-          <nav class="sidebar-menu-list">
-            <a href="#" class="active"><i class="fa-solid fa-store"></i> Loja de Compras</a>
-            <a href="#"><i class="fa-solid fa-box"></i> Meus Pedidos</a>
-            <a href="#"><i class="fa-solid fa-wallet"></i> Minha Carteira</a>
-            <a href="#"><i class="fa-solid fa-gear"></i> Configurações</a>
-          </nav>
-        </div>
-
-        <button class="btn-logout" onclick="executeLogout()">
-          <i class="fa-solid fa-power-off"></i> Sair da Conta
-        </button>
-      </aside>
-
-      <!-- Painel Interno de Compras -->
-      <section class="dash-main-content">
-        <div class="dash-header-bar">
-          <div>
-            <h2>Loja Interna de Produtos</h2>
-            <p style="color: var(--text-muted);">Aproveite os preços exclusivos disponíveis apenas para usuários autenticados.</p>
+          <div class="footer-col">
+            <h4>Links Rápidos</h4>
+            <ul class="footer-links">
+              <li><a href="#painel">Novo Pedido</a></li>
+              <li><a href="#servicos">Instagram</a></li>
+              <li><a href="#servicos">TikTok</a></li>
+              <li><a href="#servicos">YouTube</a></li>
+              <li><a href="#servicos">Kwai</a></li>
+            </ul>
           </div>
-
-          <div class="cart-status-pill">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span>Carrinho:</span>
-            <span class="cart-count" id="cartCount">0</span>
+          <div class="footer-col">
+            <h4>Suporte</h4>
+            <ul class="footer-links">
+              <li><a href="#faq">Central de Ajuda</a></li>
+              <li><a href="#vantagens">Garantia e Segurança</a></li>
+              <li><a href="#depoimentos">Feedbacks</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Pagamento Seguro</h4>
+            <p
+              style="
+                color: var(--text-muted);
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+              "
+            >
+              Pagamento via Pix instantâneo no WhatsApp.
+            </p>
+            <i
+              class="fa-brands fa-pix"
+              style="font-size: 1.8rem; color: #32bcad; margin-right: 10px"
+            ></i>
+            <i
+              class="fa-solid fa-credit-card"
+              style="font-size: 1.8rem; color: var(--accent-magenta)"
+            ></i>
           </div>
         </div>
-
-        <!-- Filtro por Categoria -->
-        <div class="shop-categories">
-          <button class="cat-btn active">Todos os Produtos</button>
-          <button class="cat-btn">Licenças & Softwares</button>
-          <button class="cat-btn">Serviços em Nuvem</button>
-          <button class="cat-btn">Games & Vips</button>
+        <div class="footer-bottom">
+          &copy; 2026 Turbine Brasil ® - Todos os direitos reservados.
         </div>
+      </div>
+    </footer>
 
-        <!-- Grid da Loja Interna -->
-        <div class="store-grid">
+    <!-- Floating WhatsApp Button -->
+    <a
+      href="javascript:void(0)"
+      onclick="openPixWhatsApp()"
+      class="whatsapp-float"
+      title="Falar e Pagar via Pix no WhatsApp"
+    >
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Interactive Scripts -->
+    <script>
+      // Número do WhatsApp para recebimento do Pix e suporte
+      const whatsappNumber = "5588995470571";
+
+      // Banco de dados de serviços SMM Panel (Baseado no vídeo)
+      const smmServicesData = {
+        best: [
+          { id: 101, name: " Os Melhores Serviços para Revenda ou uso Proprio TOP", pricePerThousand: 0.79, min: 10, max: 10000 },
+          { id: 102, name: " Curtidas Instagram [Barato] (A melhor)", pricePerThousand: 0.79, min: 10, max: 10000 },
+          { id: 103, name: " Visualizações de Video TikTok [SEM QUEDA] - R$ 0,05", pricePerThousand: 0.05, min: 50, max: 500000 }
+        ],
+        likes: [
+          { id: 201, name: " Curtidas Instagram [Barato] (A melhor)", pricePerThousand: 0.79, min: 10, max: 10000 },
+          { id: 202, name: " Curtidas Instagram Brasileiras Reais", pricePerThousand: 2.50, min: 20, max: 50000 }
+        ],
+        views: [
+          { id: 301, name: " Visualizações com Garantia (Reels, IGTV, Story, Mass)", pricePerThousand: 0.15, min: 100, max: 1000000 },
+          { id: 302, name: " Visualizações de Reels Instantâneas", pricePerThousand: 0.10, min: 100, max: 500000 }
+        ],
+        tiktok: [
+          { id: 401, name: " TikTok Visualizações de Video [SEM QUEDA]", pricePerThousand: 0.05, min: 50, max: 500000 },
+          { id: 402, name: " TikTok Seguidores de Alta Qualidade", pricePerThousand: 8.50, min: 100, max: 50000 }
+        ],
+        kwai: [
+          { id: 501, name: " Kwai Seguidores Rápidos", pricePerThousand: 7.90, min: 100, max: 20000 },
+          { id: 502, name: " Kwai Curtidas em Vídeos", pricePerThousand: 3.20, min: 50, max: 50000 }
+        ],
+        br_followers: [
+          { id: 601, name: " Seguidores do Brasil Instagram [Mais Vendidos]", pricePerThousand: 4.50, min: 50, max: 30000 }
+        ],
+        comments: [
+          { id: 701, name: " Comentários Personalizados Instagram", pricePerThousand: 15.00, min: 5, max: 1000 }
+        ],
+        top_services: [
+          { id: 801, name: " Categoria com os Serviços + Rápidos e Vendidos no Site TOP", pricePerThousand: 1.36, min: 100, max: 100000 }
+        ]
+      };
+
+      // Inicialização da página
+      document.addEventListener("DOMContentLoaded", () => {
+        updateServicesOptions();
+      });
+
+      // Atualiza as opções do Select de Serviços com base na Categoria selecionada
+      function updateServicesOptions() {
+        const catSelect = document.getElementById("category-select");
+        const serviceSelect = document.getElementById("service-select");
+        const categoryKey = catSelect.value;
+        const services = smmServicesData[categoryKey] || [];
+
+        serviceSelect.innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+        updateServiceDetails();
+      }
+
+      // Atualiza os detalhes do serviço selecionado
+      function updateServiceDetails() {
+        calculateOrderPrice();
+      }
+
+      // Seleciona o serviço atual para calcular o valor
+      function getSelectedService() {
+        const catSelect = document.getElementById("category-select").value;
+        const serviceId = parseInt(document.getElementById("service-select").value);
+        const services = smmServicesData[catSelect] || [];
+        return services.find(s => s.id === serviceId) || services[0];
+      }
+
+      // Atalhos de quantidade
+      function setQty(val) {
+        document.getElementById("order-qty").value = val;
+        calculateOrderPrice();
+      }
+
+      // Transfere conteúdo da área de transferência para o campo de link
+      async function pasteLink() {
+        try {
+          const text = await navigator.clipboard.readText();
+          document.getElementById("order-link").value = text;
+        } catch (err) {
+          alert("Cole o link manualmente no campo.");
+        }
+      }
+
+      // Calcula valor total dinamicamente
+      function calculateOrderPrice() {
+        const qty = parseInt(document.getElementById("order-qty").value) || 0;
+        const service = getSelectedService();
+        if (!service) return;
+
+        const total = (qty / 1000) * service.pricePerThousand;
+        document.getElementById("total-price-display").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+      }
+
+      // Envia o pedido para pagamento via Pix WhatsApp
+      function submitOrder() {
+        const service = getSelectedService();
+        const link = document.getElementById("order-link").value;
+        const qty = document.getElementById("order-qty").value;
+        const price = document.getElementById("total-price-display").innerText;
+
+        if (!link) {
+          alert("Por favor, insira o link para a execução do pedido.");
+          return;
+        }
+
+        const message = `Olá! Gostaria de fazer o seguinte pedido e realizar o pagamento via Pix:\n\n` +
+                        `📌 *Serviço:* ${service.name}\n` +
+                        `🔗 *Link:* ${link}\n` +
+                        `🔢 *Quantidade:* ${qty}\n` +
+                        `💰 *Valor Total:* ${price}\n\n` +
+                        `Aguardando a chave Pix para pagamento!`;
+
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, "_blank");
+      }
+
+      // Função de abertura para Pix no WhatsApp
+      function openPixWhatsApp(itemText) {
+        let msg = "Olá! Gostaria de adicionar saldo no site via Pix.";
+        if (itemText) {
+          msg = `Olá! Gostaria de comprar o pacote "${itemText}" via Pix.`;
+        }
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+      }
+
+      // Alternar abas do painel
+      function switchPanelTab(tab, btn) {
+        document.querySelectorAll(".panel-tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (tab === 'add') {
+          document.getElementById("panel-add-form").style.display = "block";
+          document.getElementById("panel-orders-list").style.display = "none";
+        } else {
+          document.getElementById("panel-add-form").style.display = "none";
+          document.getElementById("panel-orders-list").style.display = "block";
+        }
+      }
+
+      // Pesquisar / Filtrar Serviços
+      function filterServices(query) {
+        const q = query.toLowerCase();
+        const catSelect = document.getElementById("category-select");
+        if (!q) return;
+
+        for (let cat in smmServicesData) {
+          const match = smmServicesData[cat].some(s => s.name.toLowerCase().includes(q));
+          if (match) {
+            catSelect.value = cat;
+            updateServicesOptions();
+            break;
+          }
+        }
+      }
+
+      // Modal de Autenticação Google
+      function openLoginModal() {
+        document.getElementById("loginModal").classList.add("active");
+      }
+
+      function closeLoginModal() {
+        document.getElementById("loginModal").classList.remove("active");
+      }
+
+      // Callback ao autenticar via Google Sign-In
+      function handleCredentialResponse(response) {
+        // Decodificação básica de payload do Google JWT para exibição
+        try {
+          const base64Url = response.credential.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+          const payload = JSON.parse(jsonPayload);
+
+          document.getElementById("user-name-display").innerText = payload.name;
+          document.getElementById("user-status-display").innerText = "Conectado via Google";
+          document.getElementById("user-avatar-display").innerHTML = `<img src="${payload.picture}" style="width: 100%; height: 100%; border-radius: 50%;">`;
           
-          <!-- Item 1 -->
-          <div class="store-item-card">
-            <div class="item-image"><i class="fa-solid fa-microchip"></i></div>
-            <h3 class="item-title">Módulo de Automação V3</h3>
-            <p class="item-desc">Sistema avançado para otimização de rotinas e integração de APIs.</p>
-            <div class="item-bottom">
-              <span class="item-price">R$ 120,00</span>
-              <button class="btn-add-cart" onclick="addToCart()"><i class="fa-solid fa-plus"></i></button>
-            </div>
-          </div>
-
-          <!-- Item 2 -->
-          <div class="store-item-card">
-            <div class="item-image"><i class="fa-solid fa-server"></i></div>
-            <h3 class="item-title">Servidor VPS Dedicated</h3>
-            <p class="item-desc">Hospedagem de alto desempenho com suporte total a SSD NVMe.</p>
-            <div class="item-bottom">
-              <span class="item-price">R$ 199,00</span>
-              <button class="btn-add-cart" onclick="addToCart()"><i class="fa-solid fa-plus"></i></button>
-            </div>
-          </div>
-
-          <!-- Item 3 -->
-          <div class="store-item-card">
-            <div class="item-image"><i class="fa-solid fa-shield-virus"></i></div>
-            <h3 class="item-title">Firewall Pro Security</h3>
-            <p class="item-desc">Proteção em tempo real contra ataques DDoS e varredura de vulnerabilidades.</p>
-            <div class="item-bottom">
-              <span class="item-price">R$ 75,00</span>
-              <button class="btn-add-cart" onclick="addToCart()"><i class="fa-solid fa-plus"></i></button>
-            </div>
-          </div>
-
-          <!-- Item 4 -->
-          <div class="store-item-card">
-            <div class="item-image"><i class="fa-solid fa-palette"></i></div>
-            <h3 class="item-title">Pack de Assets UI/UX 2026</h3>
-            <p class="item-desc">Coleção completa de componentes gráficos em alta resolução estilo Cyberpunk/Futurista.</p>
-            <div class="item-bottom">
-              <span class="item-price">R$ 49,90</span>
-              <button class="btn-add-cart" onclick="addToCart()"><i class="fa-solid fa-plus"></i></button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-    </div>
-  </main>
-
-  <!-- ==========================================================================
-       RODAPÉ GLOBAL
-       ========================================================================== -->
-  <footer class="main-footer">
-    <div class="footer-grid">
-      <div class="footer-col">
-        <div class="brand-logo" style="margin-bottom: 15px;">
-          <i class="fa-solid fa-bolt"></i>
-          <span>NEXUS</span>STORE
-        </div>
-        <p>Sua plataforma completa de soluções, produtos digitais e serviços de alta tecnologia.</p>
-      </div>
-
-      <div class="footer-col">
-        <h4>Navegação</h4>
-        <ul>
-          <li><a href="#hero">Início</a></li>
-          <li><a href="#recursos">Recursos</a></li>
-          <li><a href="#ofertas">Ofertas</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Suporte</h4>
-        <ul>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a href="#">Central de Ajuda</a></li>
-          <li><a href="#">Termos de Uso</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col">
-        <h4>Redes Sociais</h4>
-        <div style="display: flex; gap: 15px; font-size: 1.3rem; color: var(--accent-cyan); margin-top: 10px;">
-          <a href="#"><i class="fa-brands fa-discord"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-github"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; 2026 NexusStore. Todos os direitos reservados.</p>
-      <p>Desenvolvido com tecnologia de ponta.</p>
-    </div>
-  </footer>
-
-  <!-- ==========================================================================
-       7. SCRIPTS DE INTERAÇÃO E NAVEGAÇÃO ENTRE ÁREAS
-       ========================================================================== -->
-  <script>
-    // Estado da aplicação
-    let itemCount = 0;
-
-    // Função para abrir/fechar Modal de Login
-    function toggleAuthModal(show) {
-      const modal = document.getElementById('authModal');
-      if (show) {
-        modal.classList.add('show');
-      } else {
-        modal.classList.remove('show');
+          closeLoginModal();
+          alert(`Bem-vindo, ${payload.name}! Seu login Google foi realizado com sucesso.`);
+        } catch(e) {
+          console.error(e);
+        }
       }
-    }
 
-    // Função de Sanfona para o FAQ
-    function toggleFaq(element) {
-      element.classList.toggle('active');
-    }
+      // Dados para trocar abas das redes sociais no site principal
+      const platformData = {
+        instagram: [
+          { title: "1.000 Seguidores", subtitle: "Ideal para novos perfis", price: "R$ 29,90", bonus: "Sem necessidade de senha", badge: false },
+          { title: "5.000 Seguidores", subtitle: "Mais popular para criadores", price: "R$ 89,90", bonus: "Bônus: 500 Curtidas em Reels", badge: "Mais Vendido 🔥", featured: true },
+          { title: "10.000 Seguidores", subtitle: "Autoridade máxima para Marcas", price: "R$ 159,90", bonus: "Bônus: 1.000 Curtidas em Fotos", badge: false }
+        ],
+        tiktok: [
+          { title: "1.000 Seguidores", subtitle: "Para desbloquear Lives", price: "R$ 34,90", bonus: "Ativação rápida", badge: false },
+          { title: "5.000 Seguidores", subtitle: "Aumente entregas no For You", price: "R$ 99,90", bonus: "Bônus: 2.000 Curtidas nos Vídeos", badge: "Recomendado ⭐", featured: true },
+          { title: "10.000 Seguidores", subtitle: "Monetização e Autoridade", price: "R$ 179,90", bonus: "Bônus: 10.000 Visualizações", badge: false }
+        ],
+        youtube: [
+          { title: "500 Inscritos", subtitle: "Início do crescimento", price: "R$ 49,90", bonus: "Inscritos de alta qualidade", badge: false },
+          { title: "1.000 Inscritos", subtitle: "Meta de Monetização", price: "R$ 119,90", bonus: "Bônus: 1.000 Views no último vídeo", badge: "Monetização 💰", featured: true },
+          { title: "4.000 Horas de Exibição", subtitle: "Monetize seu canal", price: "R$ 249,90", bonus: "Suporte completo e acompanhamento", badge: false }
+        ],
+        kwai: [
+          { title: "1.000 Seguidores", subtitle: "Primeiros passos no Kwai", price: "R$ 27,90", bonus: "Sem necessidade de senha", badge: false },
+          { title: "5.000 Seguidores", subtitle: "Crescimento Acelerado", price: "R$ 79,90", bonus: "Bônus: 1.000 Curtidas", badge: "Populares 🔥", featured: true },
+          { title: "10.000 Seguidores", subtitle: "Impacto de Elite", price: "R$ 139,90", bonus: "Entrega Rápida e Garantida", badge: false }
+        ]
+      };
 
-    // Rola a página até a seção
-    function scrollToSection(id) {
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+      function switchPlatform(platform, btn) {
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const container = document.getElementById("plans-container");
+        const plans = platformData[platform];
+
+        container.innerHTML = plans.map((p) => `
+          <div class="plan-card ${p.featured ? "featured" : ""}">
+            ${p.badge ? `<div class="featured-badge">${p.badge}</div>` : ""}
+            <div class="plan-header">
+              <h3>${p.title}</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">${p.subtitle}</p>
+              <div class="plan-price">${p.price} <span>/ único</span></div>
+            </div>
+            <ul class="plan-features">
+              <li><i class="fa-solid fa-circle-check"></i> Sem necessidade de senha</li>
+              <li><i class="fa-solid fa-circle-check"></i> Início Instantâneo (5-15 min)</li>
+              <li><i class="fa-solid fa-circle-check"></i> Garantia de Reposição</li>
+              <li><i class="fa-solid fa-circle-check"></i> ${p.bonus}</li>
+              <li><i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP</li>
+            </ul>
+            <a href="javascript:void(0)" onclick="openPixWhatsApp('${p.title} ${platform.toUpperCase()}')" class="btn-plan">Comprar via Pix WhatsApp</a>
+          </div>
+        `).join("");
       }
-    }
 
-    // Execução do Login e Transição de Telas
-    function executeLogin(event) {
-      event.preventDefault();
-
-      const emailInput = document.getElementById('loginEmail').value;
-      const userName = emailInput.split('@')[0];
-
-      // Atualiza os dados do perfil logado
-      document.getElementById('userNameDisplay').innerText = userName.charAt(0).toUpperCase() + userName.slice(1);
-      document.getElementById('userAvatar').innerText = userName.charAt(0).toUpperCase();
-
-      // Esconde o modal e a Landing Page de Vendas
-      toggleAuthModal(false);
-      document.getElementById('landingView').style.display = 'none';
-
-      // Exibe a Área Logada de Compras
-      document.getElementById('dashboardView').style.display = 'block';
-
-      // Atualiza o Botão do Cabeçalho
-      const authBtn = document.getElementById('authNavBtn');
-      authBtn.innerHTML = `<i class="fa-solid fa-user-check"></i> <span>Minha Conta</span>`;
-      authBtn.onclick = null; // Remove a ação do modal na área logada
-
-      // Oculta menu de navegação pública
-      document.getElementById('publicNav').style.display = 'none';
-
-      // Rola para o topo do Dashboard
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Execução do Logout
-    function executeLogout() {
-      // Exibe a Landing Page de Vendas novamente
-      document.getElementById('landingView').style.display = 'block';
-      document.getElementById('dashboardView').style.display = 'none';
-
-      // Restaura o Botão do Cabeçalho
-      const authBtn = document.getElementById('authNavBtn');
-      authBtn.innerHTML = `<i class="fa-solid fa-user-lock"></i> <span>Entrar / Cadastrar</span>`;
-      authBtn.onclick = () => toggleAuthModal(true);
-
-      // Exibe o menu público
-      document.getElementById('publicNav').style.display = 'flex';
-
-      // Reseta carrinho
-      itemCount = 0;
-      document.getElementById('cartCount').innerText = itemCount;
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Adiciona itens ao carrinho no painel interno
-    function addToCart() {
-      itemCount++;
-      document.getElementById('cartCount').innerText = itemCount;
-    }
-  </script>
-</body>
+      // FAQ Accordion Toggle
+      document.querySelectorAll(".faq-question").forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = button.parentElement;
+          document.querySelectorAll(".faq-item").forEach((faq)=>{
+            if(faq!==item) faq.classList.remove("active");
+          });
+          item.classList.toggle("active");
+        });
+      });
+    </script>
+  </body>
 </html>
