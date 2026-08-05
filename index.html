@@ -6,6 +6,7 @@
     <title>
       Turbine Brasil ® | Crescimento e Engajamento para Redes Sociais
     </title>
+    <meta name="description" content="Serviços de crescimento para Instagram, TikTok, YouTube e Kwai com entrega rápida e suporte especializado." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,11 +18,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
-    <script
-      type="text/javascript"
-      src="https://ff.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=6IIHG60Y2DlbsjHyxl5qN7bM3MdSQz1WK5pnfY6ht_U6zDequozBuRiS-kGhIysjKiBoZOK8mdqzy1tTFpxsZ7TTqTJX133VAo-iMrHrpUm1Heg3euSBn9CflJ3ra4U_pbLS8vfJwdMwU1tB6AY9Xgdj6nck5wnhkeXMYdVv0kQPPGEUoZGc-6dub-WcEaaVNkjQf8HehT_pWG0fYp8YhKWSOtoV57_O7s6Qaaj1Aj7c_qr7RzfgYnvl2e7OBZK2KJKMJ243qsjBkGwTxzcJSlY3Vv06zRh8M2wMEufNcLE3KeqwV9A7IVqJIebqTOxGn5H0EwNWplmFx-_DI5iG9Oysnme8fiiPrkCnCOVPcH8"
-      charset="UTF-8"
-    ></script>
     <style>
       :root {
         --bg-dark: #0a0518;
@@ -50,6 +46,10 @@
         box-sizing: border-box;
         font-family: "Plus Jakarta Sans", sans-serif;
         scroll-behavior: smooth;
+      }
+
+      html {
+        scroll-padding-top: 100px;
       }
 
       body {
@@ -824,7 +824,7 @@
           <a
             href="https://wa.me/5531999999999?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20Turbine%20Brasil"
             class="btn-secondary"
-            target="_blank"
+            target="_blank" rel="noopener noreferrer"
             ><i class="fa-brands fa-whatsapp"></i> Falar no WhatsApp</a
           >
         </div>
@@ -912,7 +912,7 @@
             <a
               href="https://wa.me/5531999999999?text=Quero%20comprar%201000%20Seguidores%20no%20Instagram"
               class="btn-plan"
-              target="_blank"
+              target="_blank" rel="noopener noreferrer"
               >Comprar Agora</a
             >
           </div>
@@ -952,7 +952,7 @@
             <a
               href="https://wa.me/5531999999999?text=Quero%20comprar%205000%20Seguidores%20no%20Instagram"
               class="btn-plan"
-              target="_blank"
+              target="_blank" rel="noopener noreferrer"
               >Comprar Agora</a
             >
           </div>
@@ -991,7 +991,7 @@
             <a
               href="https://wa.me/5531999999999?text=Quero%20comprar%2010000%20Seguidores%20no%20Instagram"
               class="btn-plan"
-              target="_blank"
+              target="_blank" rel="noopener noreferrer"
               >Comprar Agora</a
             >
           </div>
@@ -1264,7 +1264,7 @@
     <a
       href="https://wa.me/5531999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20turbinar%20meu%20perfil"
       class="whatsapp-float"
-      target="_blank"
+      target="_blank" rel="noopener noreferrer"
       title="Falar no WhatsApp"
     >
       <i class="fa-brands fa-whatsapp"></i>
@@ -1400,20 +1400,25 @@
                         <li><i class="fa-solid fa-circle-check"></i> ${p.bonus}</li>
                         <li><i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP</li>
                     </ul>
-                    <a href="https://wa.me/5531999999999?text=Quero%20comprar%20${encodeURIComponent(p.title)}%20no%20${encodeURIComponent(platform.toUpperCase())}" class="btn-plan" target="_blank">Comprar Agora</a>
+                    <a href="https://wa.me/5531999999999?text=Quero%20comprar%20${encodeURIComponent(p.title)}%20no%20${encodeURIComponent(platform.toUpperCase())}" class="btn-plan" target="_blank" rel="noopener noreferrer">Comprar Agora</a>
                 </div>
             `,
           )
           .join("");
       }
 
-      // FAQ Accordion Toggle
-      document.querySelectorAll(".faq-question").forEach((button) => {
-        button.addEventListener("click", () => {
-          const faqItem = button.parentElement;
-          faqItem.classList.toggle("active");
-        });
+      
+  // FAQ Accordion Toggle
+  document.querySelectorAll(".faq-question").forEach((button) => {
+    button.addEventListener("click", () => {
+      const item = button.parentElement;
+      document.querySelectorAll(".faq-item").forEach((faq)=>{
+        if(faq!==item) faq.classList.remove("active");
       });
-    </script>
+      item.classList.toggle("active");
+    });
+  });
+</script>
+
   </body>
 </html>
