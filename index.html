@@ -17,6 +17,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- Google Sign-In SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
       :root {
@@ -38,6 +40,11 @@
         );
         --gradient-btn: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
         --gradient-orange: linear-gradient(135deg, #f97316 0%, #e11d48 100%);
+        --panel-bg: #0d131f;
+        --panel-card: #151d2a;
+        --panel-blue: #007bff;
+        --panel-blue-hover: #0056b3;
+        --panel-green: #28a745;
       }
 
       * {
@@ -151,7 +158,7 @@
 
       .nav-links {
         display: flex;
-        gap: 30px;
+        gap: 20px;
         list-style: none;
         align-items: center;
       }
@@ -169,19 +176,27 @@
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
 
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
       .btn-header {
         background: var(--gradient-btn);
         color: #fff;
-        padding: 10px 24px;
+        padding: 10px 20px;
         border-radius: 50px;
         text-decoration: none;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        border: none;
+        cursor: pointer;
       }
 
       .btn-header:hover {
@@ -189,9 +204,392 @@
         box-shadow: 0 0 35px rgba(236, 72, 153, 0.7);
       }
 
+      /* Ticker Ticker / Banner Superior */
+      .top-marquee {
+        background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+        color: #fff;
+        padding: 8px 0;
+        font-size: 0.85rem;
+        font-weight: 700;
+        overflow: hidden;
+        white-space: nowrap;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        margin-top: 75px;
+      }
+
+      .marquee-content {
+        display: inline-block;
+        animation: marquee 25s linear infinite;
+      }
+
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+
+      /* SMM PANEL SECTION */
+      .smm-panel-section {
+        padding: 30px 0 60px;
+        background: var(--panel-bg);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .smm-container {
+        display: grid;
+        grid-template-columns: 240px 1fr 340px;
+        gap: 20px;
+      }
+
+      /* Panel Sidebar */
+      .panel-sidebar {
+        background: var(--panel-card);
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .user-profile-box {
+        background: rgba(255,255,255,0.03);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .user-avatar-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--panel-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      .user-info-text h6 {
+        color: #fff;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+      }
+
+      .user-info-text span {
+        color: #28a745;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+      }
+
+      .sidebar-menu li {
+        margin-bottom: 6px;
+      }
+
+      .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        color: #a0aec0;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: 0.2s;
+      }
+
+      .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: rgba(0, 123, 255, 0.15);
+        color: #38bdf8;
+      }
+
+      .sidebar-menu a i {
+        width: 18px;
+        text-align: center;
+      }
+
+      .badge-menu {
+        margin-left: auto;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
+
+      /* Panel Main Feed */
+      .panel-main {
+        background: var(--panel-card);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .balance-banner {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .balance-info h4 {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        font-weight: 600;
+      }
+
+      .balance-info .amount {
+        font-size: 1.6rem;
+        font-weight: 800;
+      }
+
+      .btn-add-funds-head {
+        background: #fff;
+        color: #059669;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.8rem;
+        transition: 0.2s;
+      }
+
+      .btn-add-funds-head:hover {
+        background: #f0fdf4;
+      }
+
+      /* Form Nav Tabs */
+      .panel-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .panel-tab-btn {
+        flex: 1;
+        padding: 12px;
+        background: #1e293b;
+        border: 1px solid rgba(255,255,255,0.05);
+        color: #94a3b8;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .panel-tab-btn.active {
+        background: #0284c7;
+        color: #fff;
+        box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+      }
+
+      /* Form Controls */
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .search-box-input {
+        position: relative;
+      }
+
+      .search-box-input i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 12px 12px 38px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.2s;
+      }
+
+      .form-control-simple {
+        width: 100%;
+        padding: 12px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        outline: none;
+      }
+
+      .form-control:focus, .form-control-simple:focus {
+        border-color: #38bdf8;
+      }
+
+      .service-description-box {
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 18px;
+        font-size: 0.82rem;
+        color: #cbd5e1;
+      }
+
+      .service-description-box p {
+        margin-bottom: 6px;
+      }
+
+      .qty-shortcuts {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .btn-qty-shortcut {
+        background: #0284c7;
+        color: #fff;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .btn-qty-shortcut:hover {
+        background: #0369a1;
+      }
+
+      .price-calc-box {
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px dashed #38bdf8;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .price-calc-box span {
+        font-size: 0.85rem;
+        color: #94a3b8;
+      }
+
+      .price-calc-box strong {
+        font-size: 1.1rem;
+        color: #38bdf8;
+      }
+
+      .btn-submit-order {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        transition: 0.2s;
+      }
+
+      .btn-submit-order:hover {
+        opacity: 0.95;
+        transform: translateY(-1px);
+      }
+
+      /* Panel Right Widget */
+      .panel-right {
+        background: var(--panel-card);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .widget-box {
+        margin-bottom: 20px;
+      }
+
+      .widget-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+
+      .widget-content {
+        font-size: 0.82rem;
+        color: #94a3b8;
+      }
+
+      .whatsapp-support-card {
+        background: rgba(37, 211, 102, 0.08);
+        border: 1px solid rgba(37, 211, 102, 0.2);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .whatsapp-support-card i {
+        font-size: 1.5rem;
+        color: #25d366;
+      }
+
+      .whatsapp-support-card .num {
+        color: #fff;
+        font-weight: bold;
+        font-size: 0.8rem;
+      }
+
+      .whatsapp-support-card .desc {
+        color: #94a3b8;
+        font-size: 0.72rem;
+      }
+
+      .notice-alert-box {
+        background: rgba(234, 179, 8, 0.1);
+        border-left: 4px solid #eab308;
+        padding: 10px 12px;
+        border-radius: 4px;
+        font-size: 0.78rem;
+        color: #fef08a;
+        margin-top: 15px;
+      }
+
       /* Hero Section */
       .hero {
-        padding: 170px 0 90px;
+        padding: 90px 0 90px;
         text-align: center;
         position: relative;
       }
@@ -674,6 +1072,41 @@
         margin-bottom: 20px;
       }
 
+      /* Modal Login Google */
+      .modal-login {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-login.active {
+        display: flex;
+      }
+
+      .modal-login-content {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        border: 1px solid var(--accent-purple);
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
       /* Footer */
       footer {
         padding: 60px 0 30px;
@@ -757,6 +1190,12 @@
       }
 
       /* Mobile Responsive */
+      @media (max-width: 992px) {
+        .smm-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
       @media (max-width: 768px) {
         .hero h1 {
           font-size: 2.3rem;
@@ -790,16 +1229,213 @@
           <div class="logo-text">TURBINE <span>BRASIL</span></div>
         </a>
         <ul class="nav-links">
+          <li><a href="#painel">Painel de Pedidos</a></li>
           <li><a href="#servicos">Serviços</a></li>
           <li><a href="#vantagens">Vantagens</a></li>
           <li><a href="#depoimentos">Feedbacks</a></li>
           <li><a href="#faq">Dúvidas</a></li>
         </ul>
-        <a href="#servicos" class="btn-header"
-          ><i class="fa-solid fa-bolt"></i> Impulsionar Agora</a
-        >
+        <div class="header-actions">
+          <button class="btn-header" onclick="openLoginModal()">
+            <i class="fa-brands fa-google"></i> Login Google
+          </button>
+          <a href="#painel" class="btn-header" style="background: var(--gradient-orange);">
+            <i class="fa-solid fa-plus-circle"></i> Novo Pedido
+          </a>
+        </div>
       </div>
     </header>
+
+    <!-- Top Marquee Banner do Vídeo -->
+    <div class="top-marquee">
+      <div class="marquee-content">
+        🚀 VIRE REVENDEDOR DE SERVIÇOS E GANHE UMA RENDA EXTRA SEM SAIR DE CASA 🔥 SERVIÇOS ATUALIZADOS TODOS OS DIAS! ⚡ ENTREGA RÁPIDA E GARANTIDA ⚡
+      </div>
+    </div>
+
+    <!-- SMM Panel Section (Painel do Vídeo) -->
+    <section class="smm-panel-section" id="painel">
+      <div class="container smm-container">
+        
+        <!-- Sidebar Esquerda -->
+        <div class="panel-sidebar">
+          <div class="user-profile-box">
+            <div class="user-avatar-icon" id="user-avatar-display">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="user-info-text">
+              <h6 id="user-name-display">Visitante</h6>
+              <span id="user-status-display">Clique para entrar</span>
+            </div>
+          </div>
+
+          <ul class="sidebar-menu">
+            <li><a href="#painel" class="active"><i class="fa-solid fa-cart-plus"></i> Novo Pedido</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-list-check"></i> Serviços</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-box"></i> Pedidos</a></li>
+            <li><a href="javascript:void(0)" onclick="openPixWhatsApp()"><i class="fa-solid fa-wallet"></i> Adicionar saldo <span class="badge-menu">PIX</span></a></li>
+            <li><a href="#painel"><i class="fa-solid fa-gift"></i> Indique e ganhe 5%</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-code"></i> API</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-headset"></i> Suporte <span class="badge-menu">1</span></a></li>
+            <li><a href="https://chat.whatsapp.com/demo" target="_blank"><i class="fa-solid fa-users"></i> Grupo com suportes</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-bullhorn"></i> Banners para revendedores</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-layer-group"></i> Ordem em massa</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-coins"></i> Saldo grátis</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-rotate"></i> Atualizações</a></li>
+            <li><a href="#painel"><i class="fa-solid fa-mobile-screen"></i> App do site</a></li>
+          </ul>
+        </div>
+
+        <!-- Conteúdo Principal do Painel -->
+        <div class="panel-main">
+          
+          <!-- Banner de Saldo -->
+          <div class="balance-banner">
+            <div class="balance-info">
+              <h4>Seu saldo no site</h4>
+              <div class="amount" id="user-balance">R$ 0,00000</div>
+            </div>
+            <a href="javascript:void(0)" onclick="openPixWhatsApp()" class="btn-add-funds-head">
+              <i class="fa-brands fa-pix"></i> Adicionar Saldo via WhatsApp
+            </a>
+          </div>
+
+          <!-- Tabs de Ação -->
+          <div class="panel-tabs">
+            <button class="panel-tab-btn active" onclick="switchPanelTab('add', this)">Adicionar Saldo</button>
+            <button class="panel-tab-btn" onclick="switchPanelTab('orders', this)">Pedidos</button>
+          </div>
+
+          <!-- Formulário do Pedido -->
+          <div id="panel-add-form">
+            <div class="form-group">
+              <div class="search-box-input">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="form-control" placeholder="Procurar por seguidores, curtidas ou visualizações" onkeyup="filterServices(this.value)">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Categoria</label>
+              <select class="form-control-simple" id="category-select" onchange="updateServicesOptions()">
+                <option value="best">🎯 Os Melhores Serviços para Revenda ou uso Proprio TOP</option>
+                <option value="likes">📸 Curtidas Instagram 🟢</option>
+                <option value="views">📹 Visualizações com Garantia (Reels, IGTV, Story, Mass) 🟢</option>
+                <option value="tiktok">🎵 TikTok Seguidores, Likes, Visualizações e + 🟢</option>
+                <option value="kwai">⚙️ Serviços para Kwai 🟢</option>
+                <option value="br_followers">🇧🇷 Seguidores do Brasil Instagram 🟢</option>
+                <option value="comments">💬 Comentários a likes do Instagram 🟢</option>
+                <option value="top_services">🏆 Categoria com os Serviços + Rápidos e Vendidos no Site TOP</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Serviço</label>
+              <select class="form-control-simple" id="service-select" onchange="updateServiceDetails()">
+                <!-- Preenchido via JavaScript -->
+              </select>
+            </div>
+
+            <!-- Caixa de Descrição do Serviço -->
+            <div class="service-description-box" id="service-description">
+              <p>📌 <strong>Qualidade:</strong> Qualidade boa</p>
+              <p>⏱️ <strong>Hora de inicio:</strong> 0-1 hora</p>
+              <p>🚀 <strong>Velocidade por dia:</strong> 10.000</p>
+              <p>📉 <strong>Pedido mínimo:</strong> 10</p>
+              <p>📈 <strong>Pedido máximo:</strong> 10.000</p>
+              <p style="color: #ef4444; font-weight: bold; margin-top: 8px;">🚫 Não pode ocultar as curtidas e nem os comentários no momento da compra.</p>
+            </div>
+
+            <div class="form-group">
+              <label>Link</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" class="form-control-simple" id="order-link" placeholder="Link do vídeo ou perfil">
+                <button type="button" style="background: #0284c7; color: #fff; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="pasteLink()">Colar</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Quantidade</label>
+              <input type="number" class="form-control-simple" id="order-qty" value="100" min="10" oninput="calculateOrderPrice()">
+              <div class="qty-shortcuts">
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(30)">30</button>
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(50)">50</button>
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(100)">100</button>
+                <button type="button" class="btn-qty-shortcut" onclick="setQty(100000)">100K</button>
+              </div>
+            </div>
+
+            <div class="price-calc-box">
+              <span>Valor a Cobrar:</span>
+              <strong id="total-price-display">R$ 0,08</strong>
+            </div>
+
+            <button type="button" class="btn-submit-order" onclick="submitOrder()">
+              <i class="fa-solid fa-paper-plane"></i> Enviar Pedido
+            </button>
+          </div>
+
+          <!-- Aba de Pedidos Recentes -->
+          <div id="panel-orders-list" style="display: none;">
+            <p style="color: #94a3b8; text-align: center; padding: 20px 0;">Você ainda não possui pedidos recentes. Faça seu primeiro pedido acima!</p>
+          </div>
+
+        </div>
+
+        <!-- Painel Lateral Direita (Ajuda e Suporte do Vídeo) -->
+        <div class="panel-right">
+          <div class="widget-box">
+            <h5 class="widget-title">Trabalhe revendendo seguidores no site baratosocials.com</h5>
+            <div class="widget-content">
+              <p style="margin-bottom: 10px;">Resolvi fazer esse site para ajudar todos, seja você cliente ou revendedor de seguidores. Da uma força aí e solicite a agradecer!</p>
+              <p style="color: #38bdf8; font-weight: 800; font-size: 1.1rem; margin-bottom: 5px;">1000 Seguidores a partir de R$ 1,36</p>
+              <p style="color: #28a745; font-weight: bold; margin-bottom: 5px;">Seguidores com reposição entre outros!</p>
+              <p style="font-weight: bold; color: #fff;">Mínimo de depósito R$ 1,00</p>
+            </div>
+          </div>
+
+          <div class="widget-box">
+            <h5 class="widget-title">Como funciona:</h5>
+            <div class="widget-content">
+              <p>📺 Assista nosso tutorial de uso no YouTube para aprender a comprar e revender facilmente.</p>
+            </div>
+          </div>
+
+          <div class="widget-box">
+            <h5 class="widget-title">Caso tenha algum problema ou dúvida:</h5>
+            
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99547-0571</div>
+                <div class="desc">Ajuda com pedidos</div>
+              </div>
+            </div>
+
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99698-2321</div>
+                <div class="desc">Ajuda com pedidos ou dúvidas</div>
+              </div>
+            </div>
+
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99677-4237</div>
+                <div class="desc">Ajuda com site, dúvidas e outros</div>
+              </div>
+            </div>
+
+            <div class="notice-alert-box">
+              ⚠️ <strong>Aviso Importante:</strong> Antes de fazer qualquer pedido certifique-se que a conta esta correta. Observação: Não faça o pedido para a mesma conta ao mesmo tempo. Você tem que esperar a conclusão do primeiro pedido para poder fazer o pedido novamente.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -822,10 +1458,10 @@
             ><i class="fa-solid fa-rocket"></i> Ver Planos e Preços</a
           >
           <a
-            href="https://wa.me/5531999999999?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20Turbine%20Brasil"
+            href="javascript:void(0)"
+            onclick="openPixWhatsApp()"
             class="btn-secondary"
-            target="_blank" rel="noopener noreferrer"
-            ><i class="fa-brands fa-whatsapp"></i> Falar no WhatsApp</a
+            ><i class="fa-brands fa-whatsapp"></i> Pagamento Pix no WhatsApp</a
           >
         </div>
 
@@ -910,10 +1546,10 @@
               </li>
             </ul>
             <a
-              href="https://wa.me/5531999999999?text=Quero%20comprar%201000%20Seguidores%20no%20Instagram"
+              href="javascript:void(0)"
+              onclick="openPixWhatsApp('1000 Seguidores Instagram')"
               class="btn-plan"
-              target="_blank" rel="noopener noreferrer"
-              >Comprar Agora</a
+              >Comprar via Pix WhatsApp</a
             >
           </div>
 
@@ -950,10 +1586,10 @@
               </li>
             </ul>
             <a
-              href="https://wa.me/5531999999999?text=Quero%20comprar%205000%20Seguidores%20no%20Instagram"
+              href="javascript:void(0)"
+              onclick="openPixWhatsApp('5000 Seguidores Instagram')"
               class="btn-plan"
-              target="_blank" rel="noopener noreferrer"
-              >Comprar Agora</a
+              >Comprar via Pix WhatsApp</a
             >
           </div>
 
@@ -989,10 +1625,10 @@
               </li>
             </ul>
             <a
-              href="https://wa.me/5531999999999?text=Quero%20comprar%2010000%20Seguidores%20no%20Instagram"
+              href="javascript:void(0)"
+              onclick="openPixWhatsApp('10000 Seguidores Instagram')"
               class="btn-plan"
-              target="_blank" rel="noopener noreferrer"
-              >Comprar Agora</a
+              >Comprar via Pix WhatsApp</a
             >
           </div>
         </div>
@@ -1175,8 +1811,7 @@
               <i class="fa-solid fa-chevron-down"></i>
             </button>
             <div class="faq-answer">
-              Aceitamos Pix (com aprovação e entrega instantânea) e Cartão de
-              Crédito em até 12x.
+              Aceitamos Pix (com aprovação e entrega instantânea via WhatsApp) e Cartão de Crédito.
             </div>
           </div>
         </div>
@@ -1196,11 +1831,28 @@
         >
           Não perca tempo e impulsione suas redes com quem entende do assunto.
         </p>
-        <a href="#servicos" class="btn-main"
+        <a href="#painel" class="btn-main"
           ><i class="fa-solid fa-rocket"></i> TURBINAR MEU PERFIL AGORA</a
         >
       </div>
     </section>
+
+    <!-- Modal Login Google -->
+    <div class="modal-login" id="loginModal">
+      <div class="modal-login-content">
+        <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
+        <h3 style="margin-bottom: 10px; color: #fff;">Entrar na sua conta</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Faça login com sua conta do Google para acompanhar seus pedidos e saldo no painel.</p>
+        
+        <div style="display: flex; justify-content: center;">
+          <div id="g_id_onload"
+               data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+               data-callback="handleCredentialResponse">
+          </div>
+          <div class="g_id_signin" data-type="standard"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -1219,6 +1871,7 @@
           <div class="footer-col">
             <h4>Links Rápidos</h4>
             <ul class="footer-links">
+              <li><a href="#painel">Novo Pedido</a></li>
               <li><a href="#servicos">Instagram</a></li>
               <li><a href="#servicos">TikTok</a></li>
               <li><a href="#servicos">YouTube</a></li>
@@ -1242,7 +1895,7 @@
                 margin-bottom: 10px;
               "
             >
-              Processamento 100% protegido via SSL e aprovação imediata.
+              Pagamento via Pix instantâneo no WhatsApp.
             </p>
             <i
               class="fa-brands fa-pix"
@@ -1262,163 +1915,259 @@
 
     <!-- Floating WhatsApp Button -->
     <a
-      href="https://wa.me/5531999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20turbinar%20meu%20perfil"
+      href="javascript:void(0)"
+      onclick="openPixWhatsApp()"
       class="whatsapp-float"
-      target="_blank" rel="noopener noreferrer"
-      title="Falar no WhatsApp"
+      title="Falar e Pagar via Pix no WhatsApp"
     >
       <i class="fa-brands fa-whatsapp"></i>
     </a>
 
     <!-- Interactive Scripts -->
     <script>
-      // Data for platform plans
-      const platformData = {
-        instagram: [
-          {
-            title: "1.000 Seguidores",
-            subtitle: "Ideal para novos perfis",
-            price: "R$ 29,90",
-            bonus: "Sem necessidade de senha",
-            badge: false,
-          },
-          {
-            title: "5.000 Seguidores",
-            subtitle: "Mais popular para criadores",
-            price: "R$ 89,90",
-            bonus: "Bônus: 500 Curtidas em Reels",
-            badge: "Mais Vendido 🔥",
-            featured: true,
-          },
-          {
-            title: "10.000 Seguidores",
-            subtitle: "Autoridade máxima para Marcas",
-            price: "R$ 159,90",
-            bonus: "Bônus: 1.000 Curtidas em Fotos",
-            badge: false,
-          },
+      // Número do WhatsApp para recebimento do Pix e suporte
+      const whatsappNumber = "5588995470571";
+
+      // Banco de dados de serviços SMM Panel (Baseado no vídeo)
+      const smmServicesData = {
+        best: [
+          { id: 101, name: " Os Melhores Serviços para Revenda ou uso Proprio TOP", pricePerThousand: 0.79, min: 10, max: 10000 },
+          { id: 102, name: " Curtidas Instagram [Barato] (A melhor)", pricePerThousand: 0.79, min: 10, max: 10000 },
+          { id: 103, name: " Visualizações de Video TikTok [SEM QUEDA] - R$ 0,05", pricePerThousand: 0.05, min: 50, max: 500000 }
+        ],
+        likes: [
+          { id: 201, name: " Curtidas Instagram [Barato] (A melhor)", pricePerThousand: 0.79, min: 10, max: 10000 },
+          { id: 202, name: " Curtidas Instagram Brasileiras Reais", pricePerThousand: 2.50, min: 20, max: 50000 }
+        ],
+        views: [
+          { id: 301, name: " Visualizações com Garantia (Reels, IGTV, Story, Mass)", pricePerThousand: 0.15, min: 100, max: 1000000 },
+          { id: 302, name: " Visualizações de Reels Instantâneas", pricePerThousand: 0.10, min: 100, max: 500000 }
         ],
         tiktok: [
-          {
-            title: "1.000 Seguidores",
-            subtitle: "Para desbloquear Lives",
-            price: "R$ 34,90",
-            bonus: "Ativação rápida",
-            badge: false,
-          },
-          {
-            title: "5.000 Seguidores",
-            subtitle: "Aumente entregas no For You",
-            price: "R$ 99,90",
-            bonus: "Bônus: 2.000 Curtidas nos Vídeos",
-            badge: "Recomendado ⭐",
-            featured: true,
-          },
-          {
-            title: "10.000 Seguidores",
-            subtitle: "Monetização e Autoridade",
-            price: "R$ 179,90",
-            bonus: "Bônus: 10.000 Visualizações",
-            badge: false,
-          },
-        ],
-        youtube: [
-          {
-            title: "500 Inscritos",
-            subtitle: "Início do crescimento",
-            price: "R$ 49,90",
-            bonus: "Inscritos de alta qualidade",
-            badge: false,
-          },
-          {
-            title: "1.000 Inscritos",
-            subtitle: "Meta de Monetização",
-            price: "R$ 119,90",
-            bonus: "Bônus: 1.000 Views no último vídeo",
-            badge: "Monetização 💰",
-            featured: true,
-          },
-          {
-            title: "4.000 Horas de Exibição",
-            subtitle: "Monetize seu canal",
-            price: "R$ 249,90",
-            bonus: "Suporte completo e acompanhamento",
-            badge: false,
-          },
+          { id: 401, name: " TikTok Visualizações de Video [SEM QUEDA]", pricePerThousand: 0.05, min: 50, max: 500000 },
+          { id: 402, name: " TikTok Seguidores de Alta Qualidade", pricePerThousand: 8.50, min: 100, max: 50000 }
         ],
         kwai: [
-          {
-            title: "1.000 Seguidores",
-            subtitle: "Primeiros passos no Kwai",
-            price: "R$ 27,90",
-            bonus: "Sem necessidade de senha",
-            badge: false,
-          },
-          {
-            title: "5.000 Seguidores",
-            subtitle: "Crescimento Acelerado",
-            price: "R$ 79,90",
-            bonus: "Bônus: 1.000 Curtidas",
-            badge: "Populares 🔥",
-            featured: true,
-          },
-          {
-            title: "10.000 Seguidores",
-            subtitle: "Impacto de Elite",
-            price: "R$ 139,90",
-            bonus: "Entrega Rápida e Garantida",
-            badge: false,
-          },
+          { id: 501, name: " Kwai Seguidores Rápidos", pricePerThousand: 7.90, min: 100, max: 20000 },
+          { id: 502, name: " Kwai Curtidas em Vídeos", pricePerThousand: 3.20, min: 50, max: 50000 }
         ],
+        br_followers: [
+          { id: 601, name: " Seguidores do Brasil Instagram [Mais Vendidos]", pricePerThousand: 4.50, min: 50, max: 30000 }
+        ],
+        comments: [
+          { id: 701, name: " Comentários Personalizados Instagram", pricePerThousand: 15.00, min: 5, max: 1000 }
+        ],
+        top_services: [
+          { id: 801, name: " Categoria com os Serviços + Rápidos e Vendidos no Site TOP", pricePerThousand: 1.36, min: 100, max: 100000 }
+        ]
+      };
+
+      // Inicialização da página
+      document.addEventListener("DOMContentLoaded", () => {
+        updateServicesOptions();
+      });
+
+      // Atualiza as opções do Select de Serviços com base na Categoria selecionada
+      function updateServicesOptions() {
+        const catSelect = document.getElementById("category-select");
+        const serviceSelect = document.getElementById("service-select");
+        const categoryKey = catSelect.value;
+        const services = smmServicesData[categoryKey] || [];
+
+        serviceSelect.innerHTML = services.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+        updateServiceDetails();
+      }
+
+      // Atualiza os detalhes do serviço selecionado
+      function updateServiceDetails() {
+        calculateOrderPrice();
+      }
+
+      // Seleciona o serviço atual para calcular o valor
+      function getSelectedService() {
+        const catSelect = document.getElementById("category-select").value;
+        const serviceId = parseInt(document.getElementById("service-select").value);
+        const services = smmServicesData[catSelect] || [];
+        return services.find(s => s.id === serviceId) || services[0];
+      }
+
+      // Atalhos de quantidade
+      function setQty(val) {
+        document.getElementById("order-qty").value = val;
+        calculateOrderPrice();
+      }
+
+      // Transfere conteúdo da área de transferência para o campo de link
+      async function pasteLink() {
+        try {
+          const text = await navigator.clipboard.readText();
+          document.getElementById("order-link").value = text;
+        } catch (err) {
+          alert("Cole o link manualmente no campo.");
+        }
+      }
+
+      // Calcula valor total dinamicamente
+      function calculateOrderPrice() {
+        const qty = parseInt(document.getElementById("order-qty").value) || 0;
+        const service = getSelectedService();
+        if (!service) return;
+
+        const total = (qty / 1000) * service.pricePerThousand;
+        document.getElementById("total-price-display").innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+      }
+
+      // Envia o pedido para pagamento via Pix WhatsApp
+      function submitOrder() {
+        const service = getSelectedService();
+        const link = document.getElementById("order-link").value;
+        const qty = document.getElementById("order-qty").value;
+        const price = document.getElementById("total-price-display").innerText;
+
+        if (!link) {
+          alert("Por favor, insira o link para a execução do pedido.");
+          return;
+        }
+
+        const message = `Olá! Gostaria de fazer o seguinte pedido e realizar o pagamento via Pix:\n\n` +
+                        `📌 *Serviço:* ${service.name}\n` +
+                        `🔗 *Link:* ${link}\n` +
+                        `🔢 *Quantidade:* ${qty}\n` +
+                        `💰 *Valor Total:* ${price}\n\n` +
+                        `Aguardando a chave Pix para pagamento!`;
+
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, "_blank");
+      }
+
+      // Função de abertura para Pix no WhatsApp
+      function openPixWhatsApp(itemText) {
+        let msg = "Olá! Gostaria de adicionar saldo no site via Pix.";
+        if (itemText) {
+          msg = `Olá! Gostaria de comprar o pacote "${itemText}" via Pix.`;
+        }
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank");
+      }
+
+      // Alternar abas do painel
+      function switchPanelTab(tab, btn) {
+        document.querySelectorAll(".panel-tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (tab === 'add') {
+          document.getElementById("panel-add-form").style.display = "block";
+          document.getElementById("panel-orders-list").style.display = "none";
+        } else {
+          document.getElementById("panel-add-form").style.display = "none";
+          document.getElementById("panel-orders-list").style.display = "block";
+        }
+      }
+
+      // Pesquisar / Filtrar Serviços
+      function filterServices(query) {
+        const q = query.toLowerCase();
+        const catSelect = document.getElementById("category-select");
+        if (!q) return;
+
+        for (let cat in smmServicesData) {
+          const match = smmServicesData[cat].some(s => s.name.toLowerCase().includes(q));
+          if (match) {
+            catSelect.value = cat;
+            updateServicesOptions();
+            break;
+          }
+        }
+      }
+
+      // Modal de Autenticação Google
+      function openLoginModal() {
+        document.getElementById("loginModal").classList.add("active");
+      }
+
+      function closeLoginModal() {
+        document.getElementById("loginModal").classList.remove("active");
+      }
+
+      // Callback ao autenticar via Google Sign-In
+      function handleCredentialResponse(response) {
+        // Decodificação básica de payload do Google JWT para exibição
+        try {
+          const base64Url = response.credential.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+          const payload = JSON.parse(jsonPayload);
+
+          document.getElementById("user-name-display").innerText = payload.name;
+          document.getElementById("user-status-display").innerText = "Conectado via Google";
+          document.getElementById("user-avatar-display").innerHTML = `<img src="${payload.picture}" style="width: 100%; height: 100%; border-radius: 50%;">`;
+          
+          closeLoginModal();
+          alert(`Bem-vindo, ${payload.name}! Seu login Google foi realizado com sucesso.`);
+        } catch(e) {
+          console.error(e);
+        }
+      }
+
+      // Dados para trocar abas das redes sociais no site principal
+      const platformData = {
+        instagram: [
+          { title: "1.000 Seguidores", subtitle: "Ideal para novos perfis", price: "R$ 29,90", bonus: "Sem necessidade de senha", badge: false },
+          { title: "5.000 Seguidores", subtitle: "Mais popular para criadores", price: "R$ 89,90", bonus: "Bônus: 500 Curtidas em Reels", badge: "Mais Vendido 🔥", featured: true },
+          { title: "10.000 Seguidores", subtitle: "Autoridade máxima para Marcas", price: "R$ 159,90", bonus: "Bônus: 1.000 Curtidas em Fotos", badge: false }
+        ],
+        tiktok: [
+          { title: "1.000 Seguidores", subtitle: "Para desbloquear Lives", price: "R$ 34,90", bonus: "Ativação rápida", badge: false },
+          { title: "5.000 Seguidores", subtitle: "Aumente entregas no For You", price: "R$ 99,90", bonus: "Bônus: 2.000 Curtidas nos Vídeos", badge: "Recomendado ⭐", featured: true },
+          { title: "10.000 Seguidores", subtitle: "Monetização e Autoridade", price: "R$ 179,90", bonus: "Bônus: 10.000 Visualizações", badge: false }
+        ],
+        youtube: [
+          { title: "500 Inscritos", subtitle: "Início do crescimento", price: "R$ 49,90", bonus: "Inscritos de alta qualidade", badge: false },
+          { title: "1.000 Inscritos", subtitle: "Meta de Monetização", price: "R$ 119,90", bonus: "Bônus: 1.000 Views no último vídeo", badge: "Monetização 💰", featured: true },
+          { title: "4.000 Horas de Exibição", subtitle: "Monetize seu canal", price: "R$ 249,90", bonus: "Suporte completo e acompanhamento", badge: false }
+        ],
+        kwai: [
+          { title: "1.000 Seguidores", subtitle: "Primeiros passos no Kwai", price: "R$ 27,90", bonus: "Sem necessidade de senha", badge: false },
+          { title: "5.000 Seguidores", subtitle: "Crescimento Acelerado", price: "R$ 79,90", bonus: "Bônus: 1.000 Curtidas", badge: "Populares 🔥", featured: true },
+          { title: "10.000 Seguidores", subtitle: "Impacto de Elite", price: "R$ 139,90", bonus: "Entrega Rápida e Garantida", badge: false }
+        ]
       };
 
       function switchPlatform(platform, btn) {
-        // Update active tab button style
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
-        // Render plans
         const container = document.getElementById("plans-container");
         const plans = platformData[platform];
 
-        container.innerHTML = plans
-          .map(
-            (p) => `
-                <div class="plan-card ${p.featured ? "featured" : ""}">
-                    ${p.badge ? `<div class="featured-badge">${p.badge}</div>` : ""}
-                    <div class="plan-header">
-                        <h3>${p.title}</h3>
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">${p.subtitle}</p>
-                        <div class="plan-price">${p.price} <span>/ único</span></div>
-                    </div>
-                    <ul class="plan-features">
-                        <li><i class="fa-solid fa-circle-check"></i> Sem necessidade de senha</li>
-                        <li><i class="fa-solid fa-circle-check"></i> Início Instantâneo (5-15 min)</li>
-                        <li><i class="fa-solid fa-circle-check"></i> Garantia de Reposição</li>
-                        <li><i class="fa-solid fa-circle-check"></i> ${p.bonus}</li>
-                        <li><i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP</li>
-                    </ul>
-                    <a href="https://wa.me/5531999999999?text=Quero%20comprar%20${encodeURIComponent(p.title)}%20no%20${encodeURIComponent(platform.toUpperCase())}" class="btn-plan" target="_blank" rel="noopener noreferrer">Comprar Agora</a>
-                </div>
-            `,
-          )
-          .join("");
+        container.innerHTML = plans.map((p) => `
+          <div class="plan-card ${p.featured ? "featured" : ""}">
+            ${p.badge ? `<div class="featured-badge">${p.badge}</div>` : ""}
+            <div class="plan-header">
+              <h3>${p.title}</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">${p.subtitle}</p>
+              <div class="plan-price">${p.price} <span>/ único</span></div>
+            </div>
+            <ul class="plan-features">
+              <li><i class="fa-solid fa-circle-check"></i> Sem necessidade de senha</li>
+              <li><i class="fa-solid fa-circle-check"></i> Início Instantâneo (5-15 min)</li>
+              <li><i class="fa-solid fa-circle-check"></i> Garantia de Reposição</li>
+              <li><i class="fa-solid fa-circle-check"></i> ${p.bonus}</li>
+              <li><i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP</li>
+            </ul>
+            <a href="javascript:void(0)" onclick="openPixWhatsApp('${p.title} ${platform.toUpperCase()}')" class="btn-plan">Comprar via Pix WhatsApp</a>
+          </div>
+        `).join("");
       }
 
-      
-  // FAQ Accordion Toggle
-  document.querySelectorAll(".faq-question").forEach((button) => {
-    button.addEventListener("click", () => {
-      const item = button.parentElement;
-      document.querySelectorAll(".faq-item").forEach((faq)=>{
-        if(faq!==item) faq.classList.remove("active");
+      // FAQ Accordion Toggle
+      document.querySelectorAll(".faq-question").forEach((button) => {
+        button.addEventListener("click", () => {
+          const item = button.parentElement;
+          document.querySelectorAll(".faq-item").forEach((faq)=>{
+            if(faq!==item) faq.classList.remove("active");
+          });
+          item.classList.toggle("active");
+        });
       });
-      item.classList.toggle("active");
-    });
-  });
-</script>
-
+    </script>
   </body>
 </html>
