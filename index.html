@@ -2551,7 +2551,8 @@
             ><i class="fa-solid fa-rocket"></i> Ver Planos e Preços</a
           >
           <a
-            href="https://wa.me/5531999999999?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20Turbine%20Brasil"
+            href="https://wa.me/5511997694937?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20Turbine%20Brasil"
+            id="hero-whatsapp-link"
             class="btn-secondary"
             target="_blank"
             rel="noopener noreferrer"
@@ -3350,20 +3351,20 @@
 
       const APP_CONFIG = {
         firebase: {
-          apiKey: "COLOQUE_SUA_FIREBASE_API_KEY",
-          authDomain: "SEU-PROJETO.firebaseapp.com",
-          projectId: "SEU-PROJETO",
-          storageBucket: "SEU-PROJETO.appspot.com",
-          messagingSenderId: "COLOQUE_SEU_SENDER_ID",
-          appId: "COLOQUE_SEU_APP_ID",
+          apiKey: "AIzaSyASZ-4kyXHFwHbl-Pkl2ygQlzUj2C4bv3k",
+          authDomain: "turbinebrasil-aeec6.firebaseapp.com",
+          projectId: "turbinebrasil-aeec6",
+          storageBucket: "turbinebrasil-aeec6.firebasestorage.app",
+          messagingSenderId: "493990561200",
+          appId: "1:493990561200:web:a3ddf00faac5ddef690275",
         },
         pix: {
-          key: "SUA_CHAVE_PIX_AQUI",
+          key: "+5511997694937",
           merchantName: "TURBINE BRASIL",
           merchantCity: "BELO HORIZONTE",
         },
-        adminEmail: "SEU_EMAIL_GOOGLE_ADMIN@EXEMPLO.COM",
-        whatsappNumber: "5531999999999",
+        adminEmail: "piiterthor@gmail.com",
+        whatsappNumber: "5511997694937",
       };
 
       let firebaseReady = false;
@@ -4257,6 +4258,12 @@
       document.addEventListener("DOMContentLoaded", () => {
         updateServicesOptions();
         renderPlatformPlans("instagram");
+
+        // Mantém o link de WhatsApp do topo sempre igual ao número configurado em APP_CONFIG.whatsappNumber.
+        const heroWhatsapp = document.getElementById("hero-whatsapp-link");
+        if (heroWhatsapp && APP_CONFIG.whatsappNumber) {
+          heroWhatsapp.href = `https://wa.me/${APP_CONFIG.whatsappNumber}?text=${encodeURIComponent("Olá, gostaria de saber mais sobre o Turbine Brasil")}`;
+        }
 
         /* Menu mobile: abre/fecha e fecha ao selecionar um link. */
         const mobileToggle = document.getElementById("mobile-menu-toggle");
