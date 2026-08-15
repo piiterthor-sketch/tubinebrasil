@@ -2057,6 +2057,158 @@
     display:none !important;
   }
 }
+
+
+/* =========================================================
+   CORREÇÃO DEFINITIVA DO MENU MOBILE
+   Botão independente do header para garantir visibilidade
+   em Android, iPhone e telas pequenas.
+   ========================================================= */
+@media (max-width: 900px) {
+  header {
+    height: 60px !important;
+    min-height: 60px !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  header .nav-wrapper {
+    height: 60px !important;
+    padding: 0 58px 0 10px !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .brand-logo {
+    display: flex !important;
+    align-items: center !important;
+    max-width: calc(100vw - 70px) !important;
+    overflow: hidden !important;
+  }
+
+  .logo-img {
+    width: auto !important;
+    height: 44px !important;
+    max-width: 145px !important;
+    display: block !important;
+  }
+
+  /* O botão fica preso diretamente à viewport do celular. */
+  #mobile-menu-toggle.mobile-menu-toggle {
+    position: fixed !important;
+    top: 9px !important;
+    right: 9px !important;
+    left: auto !important;
+    bottom: auto !important;
+    z-index: 2147483647 !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 2px solid rgba(255,255,255,.75) !important;
+    border-radius: 11px !important;
+    background: rgba(10,5,24,.96) !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,.55), 0 0 12px rgba(139,92,246,.45) !important;
+    color: #fff !important;
+    transform: none !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  #mobile-menu-toggle.mobile-menu-toggle span {
+    display: block !important;
+    width: 22px !important;
+    height: 3px !important;
+    min-height: 3px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    border-radius: 3px !important;
+    flex: 0 0 3px !important;
+  }
+
+  /* Menu aberto também fica preso à viewport. */
+  #main-navigation.nav-links {
+    position: fixed !important;
+    top: 60px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-height: calc(100vh - 70px) !important;
+    overflow-y: auto !important;
+    z-index: 2147483646 !important;
+    display: none !important;
+    padding: 10px !important;
+    margin: 0 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    background: rgba(10,5,24,.99) !important;
+    border: 1px solid rgba(139,92,246,.45) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,.65) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  #main-navigation.nav-links.open {
+    display: flex !important;
+  }
+
+  #main-navigation.nav-links li,
+  #main-navigation.nav-links a {
+    width: 100% !important;
+  }
+
+  #main-navigation.nav-links a {
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 11px 14px !important;
+    color: #fff !important;
+    font-size: 15px !important;
+  }
+
+  .header-actions {
+    display: none !important;
+  }
+
+  .top-marquee {
+    margin-top: 60px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #mobile-menu-toggle.mobile-menu-toggle {
+    top: 8px !important;
+    right: 7px !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .logo-img {
+    height: 40px !important;
+    max-width: 132px !important;
+  }
+}
+
+@media (min-width: 901px) {
+  #mobile-menu-toggle.mobile-menu-toggle {
+    display: none !important;
+  }
+}
 </style>
 
     <!-- Firebase: Google Auth + Firestore (preparado para operação real) -->
@@ -2077,9 +2229,6 @@
         <a href="#" class="brand-logo" aria-label="Turbine Brasil">
           <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img">
         </a>
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="main-navigation">
-          <span></span><span></span><span></span>
-        </button>
         <ul class="nav-links" id="main-navigation">
           <li><a href="#painel">Painel de Pedidos</a></li>
           <li><a href="#servicos">Serviços</a></li>
@@ -2098,6 +2247,11 @@
         </div>
       </div>
     </header>
+
+    <!-- Botão de menu mobile: fora do cabeçalho para não ser cortado -->
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="main-navigation">
+      <span></span><span></span><span></span>
+    </button>
 
     <!-- Top Marquee Banner do Vídeo -->
     <div class="top-marquee">
