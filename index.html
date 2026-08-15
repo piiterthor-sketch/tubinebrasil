@@ -2780,7 +2780,7 @@
             <button
               type="button"
               class="btn-submit-order"
-              onclick="submitOrder()"
+              onclick="submitOrder(this)"
             >
               <i class="fa-solid fa-paper-plane"></i> Enviar Pedido
             </button>
@@ -3168,7 +3168,7 @@
           readonly
           placeholder="Faça login com Google"
         />
-        <button class="op-btn" onclick="createManualPixOrder()">
+        <button class="op-btn" onclick="createManualPixOrder(this)">
           <i class="fa-brands fa-pix"></i> Gerar Pix e criar pedido
         </button>
         <p style="margin-top: 10px; font-size: 0.72rem">
@@ -3230,7 +3230,7 @@
           step="0.01"
           value="20.00"
         />
-        <button class="op-btn" onclick="createDepositPix()">
+        <button class="op-btn" onclick="createDepositPix(this)">
           <i class="fa-brands fa-pix"></i> Gerar Pix
         </button>
         <div id="deposit-pix-area"></div>
@@ -3451,6 +3451,45 @@
       }
       function formatQty(n) {
         return Number(n || 0).toLocaleString("pt-BR");
+      }
+      // Traduz erros comuns do Firebase para mensagens que ajudam a diagnosticar o problema.
+      function friendlyError(e) {
+        const code = (e && e.code) || "";
+        const map = {
+          "permission-denied":
+            "Sem permissão para gravar no banco de dados. Confira se o arquivo firestore.rules foi publicado no Firebase e se o e-mail de admin está exatamente igual em index.html e em firestore.rules.",
+          unavailable:
+            "Não foi possível conectar ao banco de dados agora. Confira sua internet e tente de novo.",
+          "not-found":
+            "O banco de dados Firestore ainda não existe neste projeto Firebase (veja o Passo 3 do guia).",
+          "failed-precondition":
+            "O banco de dados Firestore ainda não foi criado neste projeto Firebase (veja o Passo 3 do guia).",
+        };
+        return (
+          map[code] ||
+          (e && e.message) ||
+          "Erro desconhecido. Abra o Console do navegador (F12) para ver os detalhes."
+        );
+      }
+      // Deixa um botão "ocupado" (desabilitado + texto de carregando) enquanto uma ação assíncrona roda,
+      // e sempre devolve o estado original, mesmo se der erro — assim o botão nunca fica travado sem explicação.
+      async function withBusyButton(btn, busyText, fn) {
+        const original = btn ? btn.innerHTML : null;
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = busyText;
+        }
+        try {
+          await fn();
+        } catch (e) {
+          console.error(e);
+          alert("Não foi possível concluir: " + friendlyError(e));
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = original;
+          }
+        }
       }
       function esc(v) {
         return String(v ?? "").replace(
@@ -3724,7 +3763,7 @@
         showModal("checkoutModal");
       }
 
-      async function createManualPixOrder() {
+      async function createManualPixOrder(btn) {
         if (!requireLogin()) return;
         if (!firebaseReady) {
           alert("Configure o Firebase antes de criar pedidos.");
@@ -3741,34 +3780,43 @@
           );
           return;
         }
-        const plan = JSON.parse(
-          document.getElementById("checkoutModal").dataset.plan || "{}",
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Gerando Pix...',
+          async () => {
+            const plan = JSON.parse(
+              document.getElementById("checkoutModal").dataset.plan || "{}",
+            );
+            const order = {
+              userId: currentUser.uid,
+              userName: currentUser.displayName || "",
+              userEmail: currentUser.email || "",
+              service: plan.title || "",
+              platform: plan.platform || "",
+              quantity: plan.quantity || extractQuantity(plan.title),
+              link,
+              amount: Number(plan.value || 0),
+              status: "pending_payment",
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            const ref = await db.collection("orders").add(order);
+            currentOrderId = ref.id;
+            const payload = buildPixPayload(
+              order.amount,
+              APP_CONFIG.pix.key,
+              APP_CONFIG.pix.merchantName,
+              APP_CONFIG.pix.merchantCity,
+              "PED" + ref.id.slice(0, 20),
+            );
+            await ref.update({
+              pixPayload: payload,
+              pixKey: APP_CONFIG.pix.key,
+            });
+            showPixForOrder(order.amount, payload, "pixModal");
+            closeOperationModal("checkoutModal");
+          },
         );
-        const order = {
-          userId: currentUser.uid,
-          userName: currentUser.displayName || "",
-          userEmail: currentUser.email || "",
-          service: plan.title || "",
-          platform: plan.platform || "",
-          quantity: plan.quantity || extractQuantity(plan.title),
-          link,
-          amount: Number(plan.value || 0),
-          status: "pending_payment",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        };
-        const ref = await db.collection("orders").add(order);
-        currentOrderId = ref.id;
-        const payload = buildPixPayload(
-          order.amount,
-          APP_CONFIG.pix.key,
-          APP_CONFIG.pix.merchantName,
-          APP_CONFIG.pix.merchantCity,
-          "PED" + ref.id.slice(0, 20),
-        );
-        await ref.update({ pixPayload: payload, pixKey: APP_CONFIG.pix.key });
-        showPixForOrder(order.amount, payload, "pixModal");
-        closeOperationModal("checkoutModal");
       }
 
       function extractQuantity(title) {
@@ -3856,21 +3904,27 @@
           alert("Pedido não localizado.");
           return;
         }
-        await db.collection("orders").doc(currentOrderId).set(
-          {
-            status: "payment_reported",
-            paymentReportedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
-        document.getElementById("pix-status").textContent =
-          "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
-        document.getElementById("pix-status").className =
-          "status-pill status-pending";
-        alert(
-          "Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.",
-        );
+        try {
+          await db.collection("orders").doc(currentOrderId).set(
+            {
+              status: "payment_reported",
+              paymentReportedAt:
+                firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          );
+          document.getElementById("pix-status").textContent =
+            "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
+          document.getElementById("pix-status").className =
+            "status-pill status-pending";
+          alert(
+            "Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.",
+          );
+        } catch (e) {
+          console.error(e);
+          alert("Não foi possível informar o pagamento: " + friendlyError(e));
+        }
       }
 
       function openBalanceModal() {
@@ -3878,7 +3932,7 @@
         document.getElementById("deposit-pix-area").innerHTML = "";
         showModal("balanceModal");
       }
-      async function createDepositPix() {
+      async function createDepositPix(btn) {
         if (!requireLogin() || !firebaseReady) return;
         const amount = Number(
           document.getElementById("deposit-amount").value || 0,
@@ -3891,27 +3945,36 @@
           alert("Configure sua chave Pix no APP_CONFIG.pix.key.");
           return;
         }
-        const ref = await db.collection("deposits").add({
-          userId: currentUser.uid,
-          userName: currentUser.displayName || "",
-          userEmail: currentUser.email || "",
-          amount,
-          status: "pending_payment",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        currentDepositId = ref.id;
-        const payload = buildPixPayload(
-          amount,
-          APP_CONFIG.pix.key,
-          APP_CONFIG.pix.merchantName,
-          APP_CONFIG.pix.merchantCity,
-          "DEP" + ref.id.slice(0, 20),
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Gerando Pix...',
+          async () => {
+            const ref = await db.collection("deposits").add({
+              userId: currentUser.uid,
+              userName: currentUser.displayName || "",
+              userEmail: currentUser.email || "",
+              amount,
+              status: "pending_payment",
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+            currentDepositId = ref.id;
+            const payload = buildPixPayload(
+              amount,
+              APP_CONFIG.pix.key,
+              APP_CONFIG.pix.merchantName,
+              APP_CONFIG.pix.merchantCity,
+              "DEP" + ref.id.slice(0, 20),
+            );
+            await ref.update({
+              pixPayload: payload,
+              pixKey: APP_CONFIG.pix.key,
+            });
+            document.getElementById("deposit-pix-area").innerHTML =
+              `<div class="pix-card"><strong>${money(amount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(payload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
+            setQrImage(document.getElementById("deposit-qr-img"), payload);
+          },
         );
-        await ref.update({ pixPayload: payload, pixKey: APP_CONFIG.pix.key });
-        document.getElementById("deposit-pix-area").innerHTML =
-          `<div class="pix-card"><strong>${money(amount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(payload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
-        setQrImage(document.getElementById("deposit-qr-img"), payload);
       }
       async function copyDepositCode() {
         const el = document.getElementById("deposit-copy-code");
@@ -3920,15 +3983,21 @@
       }
       async function reportDepositPaid() {
         if (!currentDepositId) return;
-        await db.collection("deposits").doc(currentDepositId).set(
-          {
-            status: "payment_reported",
-            paymentReportedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true },
-        );
-        alert("Pagamento informado. Aguarde a confirmação do proprietário.");
+        try {
+          await db.collection("deposits").doc(currentDepositId).set(
+            {
+              status: "payment_reported",
+              paymentReportedAt:
+                firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          );
+          alert("Pagamento informado. Aguarde a confirmação do proprietário.");
+        } catch (e) {
+          console.error(e);
+          alert("Não foi possível informar o pagamento: " + friendlyError(e));
+        }
       }
 
       function renderOrders(orders) {
@@ -4209,7 +4278,7 @@
           tier.price,
         );
       }
-      async function submitOrder() {
+      async function submitOrder(btn) {
         if (!requireLogin()) return;
         const { data, group, tier } = getSelectedTier();
         const link = document.getElementById("order-link").value.trim();
@@ -4221,31 +4290,46 @@
           alert("Configure o Firebase antes de criar pedidos.");
           return;
         }
-        const amount = Number(tier.price.toFixed(2));
-        const order = {
-          userId: currentUser.uid,
-          userName: currentUser.displayName || "",
-          userEmail: currentUser.email || "",
-          service: `${formatQty(tier.qty)} ${group.label}`,
-          platform: data.label,
-          quantity: tier.qty,
-          link,
-          amount,
-          status: "pending_payment",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        };
-        const ref = await db.collection("orders").add(order);
-        currentOrderId = ref.id;
-        const payload = buildPixPayload(
-          amount,
-          APP_CONFIG.pix.key,
-          APP_CONFIG.pix.merchantName,
-          APP_CONFIG.pix.merchantCity,
-          "PED" + ref.id.slice(0, 20),
+        if (!APP_CONFIG.pix.key || APP_CONFIG.pix.key.includes("SUA_CHAVE")) {
+          alert(
+            "Configure sua chave Pix no APP_CONFIG.pix.key antes de receber pagamentos.",
+          );
+          return;
+        }
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
+          async () => {
+            const amount = Number(tier.price.toFixed(2));
+            const order = {
+              userId: currentUser.uid,
+              userName: currentUser.displayName || "",
+              userEmail: currentUser.email || "",
+              service: `${formatQty(tier.qty)} ${group.label}`,
+              platform: data.label,
+              quantity: tier.qty,
+              link,
+              amount,
+              status: "pending_payment",
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            const ref = await db.collection("orders").add(order);
+            currentOrderId = ref.id;
+            const payload = buildPixPayload(
+              amount,
+              APP_CONFIG.pix.key,
+              APP_CONFIG.pix.merchantName,
+              APP_CONFIG.pix.merchantCity,
+              "PED" + ref.id.slice(0, 20),
+            );
+            await ref.update({
+              pixPayload: payload,
+              pixKey: APP_CONFIG.pix.key,
+            });
+            showPixForOrder(amount, payload, "pixModal");
+          },
         );
-        await ref.update({ pixPayload: payload, pixKey: APP_CONFIG.pix.key });
-        showPixForOrder(amount, payload, "pixModal");
       }
       function openPixWhatsApp(itemText) {
         window.open(
