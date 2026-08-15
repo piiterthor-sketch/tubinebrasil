@@ -6,7 +6,10 @@
     <title>
       Turbine Brasil ® | Crescimento e Engajamento para Redes Sociais
     </title>
-    <meta name="description" content="Serviços de crescimento para Instagram, TikTok, YouTube e Kwai com entrega rápida e suporte especializado." />
+    <meta
+      name="description"
+      content="Seguidores, curtidas, comentários e visualizações para Instagram e TikTok com entrega rápida e suporte especializado."
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -219,7 +222,7 @@
         font-weight: 700;
         overflow: hidden;
         white-space: nowrap;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         margin-top: 74px;
       }
 
@@ -229,15 +232,19 @@
       }
 
       @keyframes marquee {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
       }
 
       /* SMM PANEL SECTION */
       .smm-panel-section {
         padding: 30px 0 60px;
         background: var(--panel-bg);
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .smm-container {
@@ -251,11 +258,11 @@
         background: var(--panel-card);
         border-radius: 12px;
         padding: 15px;
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       .user-profile-box {
-        background: rgba(255,255,255,0.03);
+        background: rgba(255, 255, 255, 0.03);
         border-radius: 10px;
         padding: 12px;
         margin-bottom: 15px;
@@ -309,7 +316,8 @@
         transition: 0.2s;
       }
 
-      .sidebar-menu a:hover, .sidebar-menu a.active {
+      .sidebar-menu a:hover,
+      .sidebar-menu a.active {
         background: rgba(0, 123, 255, 0.15);
         color: #38bdf8;
       }
@@ -334,7 +342,7 @@
         background: var(--panel-card);
         border-radius: 12px;
         padding: 20px;
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       .balance-banner {
@@ -386,7 +394,7 @@
         flex: 1;
         padding: 12px;
         background: #1e293b;
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         color: #94a3b8;
         font-weight: 700;
         font-size: 0.9rem;
@@ -449,7 +457,8 @@
         outline: none;
       }
 
-      .form-control:focus, .form-control-simple:focus {
+      .form-control:focus,
+      .form-control-simple:focus {
         border-color: #38bdf8;
       }
 
@@ -537,7 +546,7 @@
         background: var(--panel-card);
         border-radius: 12px;
         padding: 20px;
-        border: 1px solid rgba(255,255,255,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       .widget-box {
@@ -787,6 +796,13 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 25px;
+      }
+
+      .service-group-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 34px 0 16px;
       }
 
       .plan-card {
@@ -1083,7 +1099,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.8);
+        background: rgba(0, 0, 0, 0.8);
         z-index: 2000;
         align-items: center;
         justify-content: center;
@@ -1227,81 +1243,95 @@
 
       /* A imagem principal da logo usa .brand-logo + .logo-img acima. */
 
-
       /* =========================================================
          RESPONSIVIDADE TURBINE BRASIL
          Mobile / Tablet / iPhone / Android / Safari
          ========================================================= */
 
-      .brand-logo{
-        display:flex;
-        align-items:center;
-        flex:0 0 auto;
-        text-decoration:none;
-        min-width:0;
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        flex: 0 0 auto;
+        text-decoration: none;
+        min-width: 0;
       }
 
-      .logo-img{
-        width:auto;
-        height:58px;
-        max-width:210px;
-        object-fit:contain;
-        display:block;
+      .logo-img {
+        width: auto;
+        height: 58px;
+        max-width: 210px;
+        object-fit: contain;
+        display: block;
       }
 
-      .mobile-menu-toggle{
-        display:none;
-        width:44px;
-        height:44px;
-        flex:0 0 44px;
-        border:1px solid rgba(255,255,255,.12);
-        border-radius:12px;
-        background:rgba(255,255,255,.06);
-        color:#fff;
-        cursor:pointer;
-        align-items:center;
-        justify-content:center;
-        flex-direction:column;
-        gap:5px;
-        -webkit-tap-highlight-color:transparent;
+      .mobile-menu-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        -webkit-tap-highlight-color: transparent;
       }
 
-      .mobile-menu-toggle span{
-        display:block;
-        width:21px;
-        height:2px;
-        border-radius:2px;
-        background:#fff;
-        transition:transform .25s ease,opacity .25s ease;
+      .mobile-menu-toggle span {
+        display: block;
+        width: 21px;
+        height: 2px;
+        border-radius: 2px;
+        background: #fff;
+        transition:
+          transform 0.25s ease,
+          opacity 0.25s ease;
       }
 
-      .mobile-menu-toggle.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-      .mobile-menu-toggle.active span:nth-child(2){opacity:0}
-      .mobile-menu-toggle.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-
-      img,svg,video,canvas{
-        max-width:100%;
+      .mobile-menu-toggle.active span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+      .mobile-menu-toggle.active span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
       }
 
-      input,select,textarea,button{
-        max-width:100%;
-        font:inherit;
+      img,
+      svg,
+      video,
+      canvas {
+        max-width: 100%;
       }
 
-      button,a{
-        -webkit-tap-highlight-color:transparent;
+      input,
+      select,
+      textarea,
+      button {
+        max-width: 100%;
+        font: inherit;
       }
 
-      .container{
-        width:100%;
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .container {
+        width: 100%;
       }
 
       .smm-container > *,
       .plans-grid > *,
       .features-grid > *,
       .testimonials-grid > *,
-      .footer-grid > *{
-        min-width:0;
+      .footer-grid > * {
+        min-width: 0;
       }
 
       .panel-main,
@@ -1310,906 +1340,1130 @@
       .plan-card,
       .feature-box,
       .testimonial-card,
-      .operation-box{
-        overflow-wrap:anywhere;
+      .operation-box {
+        overflow-wrap: anywhere;
       }
 
       .form-control,
       .form-control-simple,
       .op-input,
       .pix-code,
-      select{
-        min-width:0;
+      select {
+        min-width: 0;
       }
 
-      .top-marquee{
-        position:relative;
-        z-index:900;
+      .top-marquee {
+        position: relative;
+        z-index: 900;
       }
 
-      @media (max-width: 1100px){
-        .smm-container{
-          grid-template-columns:220px minmax(0,1fr);
+      @media (max-width: 1100px) {
+        .smm-container {
+          grid-template-columns: 220px minmax(0, 1fr);
         }
 
-        .panel-right{
-          grid-column:1 / -1;
+        .panel-right {
+          grid-column: 1 / -1;
         }
 
-        .nav-links{
-          gap:14px;
+        .nav-links {
+          gap: 14px;
         }
 
-        .header-actions{
-          gap:8px;
+        .header-actions {
+          gap: 8px;
         }
 
-        .btn-header{
-          padding:9px 14px;
+        .btn-header {
+          padding: 9px 14px;
         }
       }
 
-      @media (max-width: 900px){
-        header{
-          padding:10px 0;
+      @media (max-width: 900px) {
+        header {
+          padding: 10px 0;
         }
 
-        .nav-wrapper{
-          gap:10px;
+        .nav-wrapper {
+          gap: 10px;
         }
 
-        .logo-img{
-          height:54px;
-          max-width:190px;
+        .logo-img {
+          height: 54px;
+          max-width: 190px;
         }
 
-        .mobile-menu-toggle{
-          display:flex;
-          margin-left:auto;
-          order:2;
+        .mobile-menu-toggle {
+          display: flex;
+          margin-left: auto;
+          order: 2;
         }
 
-        .nav-links{
-          position:absolute;
-          top:calc(100% + 8px);
-          left:12px;
-          right:12px;
-          display:none;
-          flex-direction:column;
-          align-items:stretch;
-          gap:4px;
-          padding:10px;
-          background:rgba(10,5,24,.98);
-          border:1px solid rgba(255,255,255,.10);
-          border-radius:16px;
-          box-shadow:0 20px 50px rgba(0,0,0,.45);
-          backdrop-filter:blur(18px);
-          -webkit-backdrop-filter:blur(18px);
+        .nav-links {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 12px;
+          right: 12px;
+          display: none;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 4px;
+          padding: 10px;
+          background: rgba(10, 5, 24, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
         }
 
-        .nav-links.open{
-          display:flex;
+        .nav-links.open {
+          display: flex;
         }
 
-        .nav-links li{
-          width:100%;
+        .nav-links li {
+          width: 100%;
         }
 
-        .nav-links a{
-          display:flex;
-          align-items:center;
-          min-height:46px;
-          width:100%;
-          padding:10px 12px;
-          border-radius:10px;
+        .nav-links a {
+          display: flex;
+          align-items: center;
+          min-height: 46px;
+          width: 100%;
+          padding: 10px 12px;
+          border-radius: 10px;
         }
 
         .nav-links a:hover,
-        .nav-links a:focus{
-          background:rgba(139,92,246,.14);
+        .nav-links a:focus {
+          background: rgba(139, 92, 246, 0.14);
         }
 
-        .header-actions{
-          order:3;
-          margin-left:0;
+        .header-actions {
+          order: 3;
+          margin-left: 0;
         }
 
-        .header-actions .btn-header{
-          white-space:nowrap;
+        .header-actions .btn-header {
+          white-space: nowrap;
         }
 
-        .account-chip{
-          max-width:150px;
-          overflow:hidden;
+        .account-chip {
+          max-width: 150px;
+          overflow: hidden;
         }
 
-        .account-chip span{
-          overflow:hidden;
-          text-overflow:ellipsis;
-          white-space:nowrap;
+        .account-chip span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
-        .smm-container{
-          grid-template-columns:1fr;
+        .smm-container {
+          grid-template-columns: 1fr;
         }
 
-        .panel-right{
-          grid-column:auto;
+        .panel-right {
+          grid-column: auto;
         }
       }
 
-      @media (max-width: 700px){
-        html{
-          scroll-padding-top:88px;
+      @media (max-width: 700px) {
+        html {
+          scroll-padding-top: 88px;
         }
 
-        body{
-          width:100%;
-          min-width:0;
-          overflow-x:hidden;
-          -webkit-text-size-adjust:100%;
+        body {
+          width: 100%;
+          min-width: 0;
+          overflow-x: hidden;
+          -webkit-text-size-adjust: 100%;
         }
 
-        .container{
-          padding-left:16px;
-          padding-right:16px;
+        .container {
+          padding-left: 16px;
+          padding-right: 16px;
         }
 
-        header{
-          padding:8px 0;
+        header {
+          padding: 8px 0;
         }
 
-        .logo-img{
-          height:48px;
-          max-width:160px;
+        .logo-img {
+          height: 48px;
+          max-width: 160px;
         }
 
-        .header-actions{
-          gap:6px;
+        .header-actions {
+          gap: 6px;
         }
 
-        .header-actions .account-chip{
-          display:none !important;
+        .header-actions .account-chip {
+          display: none !important;
         }
 
-        .header-actions .btn-header{
-          padding:9px 11px;
-          min-height:42px;
-          font-size:.76rem;
-          gap:5px;
+        .header-actions .btn-header {
+          padding: 9px 11px;
+          min-height: 42px;
+          font-size: 0.76rem;
+          gap: 5px;
         }
 
-        .header-actions .btn-header:first-of-type{
-          font-size:0;
-          width:42px;
-          justify-content:center;
-          padding:0;
+        .header-actions .btn-header:first-of-type {
+          font-size: 0;
+          width: 42px;
+          justify-content: center;
+          padding: 0;
         }
 
-        .header-actions .btn-header:first-of-type i{
-          font-size:1rem;
+        .header-actions .btn-header:first-of-type i {
+          font-size: 1rem;
         }
 
-        .top-marquee{
-          margin-top:64px;
-          padding:7px 0;
-          font-size:.72rem;
+        .top-marquee {
+          margin-top: 64px;
+          padding: 7px 0;
+          font-size: 0.72rem;
         }
 
-        .hero{
-          padding:52px 0 55px;
+        .hero {
+          padding: 52px 0 55px;
         }
 
-        .badge-hero{
-          max-width:100%;
-          justify-content:center;
-          text-align:center;
-          padding:8px 12px;
-          font-size:.68rem;
-          line-height:1.35;
-          letter-spacing:.4px;
+        .badge-hero {
+          max-width: 100%;
+          justify-content: center;
+          text-align: center;
+          padding: 8px 12px;
+          font-size: 0.68rem;
+          line-height: 1.35;
+          letter-spacing: 0.4px;
         }
 
-        .hero h1{
-          font-size:clamp(1.9rem,8.5vw,2.45rem);
-          line-height:1.12;
-          letter-spacing:-.7px;
-          margin-bottom:18px;
+        .hero h1 {
+          font-size: clamp(1.9rem, 8.5vw, 2.45rem);
+          line-height: 1.12;
+          letter-spacing: -0.7px;
+          margin-bottom: 18px;
         }
 
-        .hero h1 br{
-          display:none;
+        .hero h1 br {
+          display: none;
         }
 
-        .hero p{
-          font-size:.95rem;
-          line-height:1.55;
-          margin-bottom:28px;
+        .hero p {
+          font-size: 0.95rem;
+          line-height: 1.55;
+          margin-bottom: 28px;
         }
 
-        .hero-ctas{
-          flex-direction:column;
-          gap:10px;
-          margin-bottom:38px;
+        .hero-ctas {
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 38px;
         }
 
         .btn-main,
-        .btn-secondary{
-          width:100%;
-          justify-content:center;
-          min-height:50px;
-          padding:13px 18px;
-          font-size:.94rem;
+        .btn-secondary {
+          width: 100%;
+          justify-content: center;
+          min-height: 50px;
+          padding: 13px 18px;
+          font-size: 0.94rem;
         }
 
-        .stats-grid{
-          grid-template-columns:1fr 1fr;
-          gap:10px;
-          padding:15px 10px;
-          border-radius:18px;
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          padding: 15px 10px;
+          border-radius: 18px;
         }
 
-        .stat-number{
-          font-size:1.35rem;
+        .stat-number {
+          font-size: 1.35rem;
         }
 
-        .stat-label{
-          font-size:.72rem;
-          line-height:1.35;
+        .stat-label {
+          font-size: 0.72rem;
+          line-height: 1.35;
         }
 
-        .smm-panel-section{
-          padding:22px 0 38px;
+        .smm-panel-section {
+          padding: 22px 0 38px;
         }
 
-        .smm-container{
-          gap:12px;
+        .smm-container {
+          gap: 12px;
         }
 
         .panel-sidebar,
         .panel-main,
-        .panel-right{
-          padding:14px;
-          border-radius:14px;
+        .panel-right {
+          padding: 14px;
+          border-radius: 14px;
         }
 
-        .user-profile-box{
-          padding:10px;
+        .user-profile-box {
+          padding: 10px;
         }
 
-        .sidebar-menu a{
-          min-height:44px;
-          padding:10px;
-          font-size:.8rem;
+        .sidebar-menu a {
+          min-height: 44px;
+          padding: 10px;
+          font-size: 0.8rem;
         }
 
-        .balance-banner{
-          flex-direction:column;
-          align-items:stretch;
-          gap:12px;
-          padding:14px;
+        .balance-banner {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+          padding: 14px;
         }
 
-        .balance-info .amount{
-          font-size:1.35rem;
+        .balance-info .amount {
+          font-size: 1.35rem;
         }
 
-        .btn-add-funds-head{
-          width:100%;
-          min-height:44px;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          text-align:center;
+        .btn-add-funds-head {
+          width: 100%;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
         }
 
-        .panel-tabs{
-          gap:6px;
+        .panel-tabs {
+          gap: 6px;
         }
 
-        .panel-tab-btn{
-          min-height:46px;
-          padding:10px 7px;
-          font-size:.78rem;
+        .panel-tab-btn {
+          min-height: 46px;
+          padding: 10px 7px;
+          font-size: 0.78rem;
         }
 
-        .form-group{
-          margin-bottom:14px;
+        .form-group {
+          margin-bottom: 14px;
         }
 
         .form-control,
         .form-control-simple,
-        .op-input{
-          min-height:46px;
-          padding-top:11px;
-          padding-bottom:11px;
-          font-size:16px;
+        .op-input {
+          min-height: 46px;
+          padding-top: 11px;
+          padding-bottom: 11px;
+          font-size: 16px;
         }
 
         /* Evita zoom automático no iPhone ao tocar nos campos. */
         input,
         select,
-        textarea{
-          font-size:16px !important;
+        textarea {
+          font-size: 16px !important;
         }
 
-        .form-group > div[style*="display: flex"]{
-          flex-direction:column !important;
+        .form-group > div[style*="display: flex"] {
+          flex-direction: column !important;
         }
 
-        .form-group > div[style*="display: flex"] button{
-          min-height:44px;
-          padding:10px 15px !important;
-          width:100%;
+        .form-group > div[style*="display: flex"] button {
+          min-height: 44px;
+          padding: 10px 15px !important;
+          width: 100%;
         }
 
-        .qty-shortcuts{
-          display:grid;
-          grid-template-columns:repeat(4,minmax(0,1fr));
-          gap:6px;
+        .qty-shortcuts {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 6px;
         }
 
-        .btn-qty-shortcut{
-          min-height:40px;
-          padding:6px 4px;
+        .btn-qty-shortcut {
+          min-height: 40px;
+          padding: 6px 4px;
         }
 
-        .price-calc-box{
-          gap:10px;
-          flex-wrap:wrap;
-          padding:10px 12px;
+        .price-calc-box {
+          gap: 10px;
+          flex-wrap: wrap;
+          padding: 10px 12px;
         }
 
-        .price-calc-box strong{
-          font-size:1rem;
+        .price-calc-box strong {
+          font-size: 1rem;
         }
 
-        .btn-submit-order{
-          min-height:50px;
+        .btn-submit-order {
+          min-height: 50px;
         }
 
         .services-section,
-        .testimonials-section{
-          padding:58px 0;
+        .testimonials-section {
+          padding: 58px 0;
         }
 
         .features-section,
-        .faq-section{
-          padding:58px 0;
+        .faq-section {
+          padding: 58px 0;
         }
 
-        .section-header{
-          margin-bottom:28px;
+        .section-header {
+          margin-bottom: 28px;
         }
 
-        .section-title{
-          font-size:clamp(1.65rem,7vw,2.1rem);
-          line-height:1.2;
+        .section-title {
+          font-size: clamp(1.65rem, 7vw, 2.1rem);
+          line-height: 1.2;
         }
 
-        .section-subtitle{
-          font-size:.92rem;
-          line-height:1.5;
+        .section-subtitle {
+          font-size: 0.92rem;
+          line-height: 1.5;
         }
 
-        .platform-tabs{
-          display:grid;
-          grid-template-columns:1fr 1fr;
-          gap:8px;
-          margin-bottom:28px;
+        .platform-tabs {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          margin-bottom: 28px;
         }
 
-        .tab-btn{
-          width:100%;
-          justify-content:center;
-          min-height:48px;
-          padding:10px 8px;
-          border-radius:12px;
-          font-size:.82rem;
+        .tab-btn {
+          width: 100%;
+          justify-content: center;
+          min-height: 48px;
+          padding: 10px 8px;
+          border-radius: 12px;
+          font-size: 0.82rem;
         }
 
-        .tab-btn i{
-          font-size:1.05rem;
+        .tab-btn i {
+          font-size: 1.05rem;
         }
 
         .plans-grid,
         .features-grid,
-        .testimonials-grid{
-          grid-template-columns:1fr;
-          gap:14px;
+        .testimonials-grid {
+          grid-template-columns: 1fr;
+          gap: 14px;
         }
 
-        .plan-card{
-          padding:26px 18px;
-          border-radius:18px;
+        .plan-card {
+          padding: 26px 18px;
+          border-radius: 18px;
         }
 
-        .plan-price{
-          font-size:2rem;
-          flex-wrap:wrap;
+        .plan-price {
+          font-size: 2rem;
+          flex-wrap: wrap;
         }
 
-        .plan-features li{
-          align-items:flex-start;
-          font-size:.86rem;
-          line-height:1.4;
+        .plan-features li {
+          align-items: flex-start;
+          font-size: 0.86rem;
+          line-height: 1.4;
         }
 
         .feature-box,
-        .testimonial-card{
-          padding:22px 18px;
+        .testimonial-card {
+          padding: 22px 18px;
         }
 
-        .faq-question{
-          padding:17px 16px;
-          font-size:.92rem;
-          gap:12px;
+        .faq-question {
+          padding: 17px 16px;
+          font-size: 0.92rem;
+          gap: 12px;
         }
 
-        .faq-answer{
-          padding:0 16px 18px;
-          font-size:.88rem;
+        .faq-answer {
+          padding: 0 16px 18px;
+          font-size: 0.88rem;
         }
 
-        .cta-banner{
-          padding:55px 0;
-          margin:25px 0;
+        .cta-banner {
+          padding: 55px 0;
+          margin: 25px 0;
         }
 
-        .cta-banner h2{
-          font-size:clamp(1.65rem,7vw,2rem);
-          line-height:1.2;
+        .cta-banner h2 {
+          font-size: clamp(1.65rem, 7vw, 2rem);
+          line-height: 1.2;
         }
 
-        .cta-banner p{
-          font-size:.95rem !important;
-          line-height:1.5;
+        .cta-banner p {
+          font-size: 0.95rem !important;
+          line-height: 1.5;
         }
 
-        footer{
-          padding:45px 0 25px;
+        footer {
+          padding: 45px 0 25px;
         }
 
-        .footer-grid{
-          grid-template-columns:1fr;
-          gap:26px;
+        .footer-grid {
+          grid-template-columns: 1fr;
+          gap: 26px;
         }
 
-        .footer-bottom{
-          font-size:.75rem;
-          line-height:1.5;
+        .footer-bottom {
+          font-size: 0.75rem;
+          line-height: 1.5;
         }
 
-        .whatsapp-float{
-          width:54px;
-          height:54px;
-          right:16px;
-          bottom:calc(16px + env(safe-area-inset-bottom));
-          font-size:26px;
+        .whatsapp-float {
+          width: 54px;
+          height: 54px;
+          right: 16px;
+          bottom: calc(16px + env(safe-area-inset-bottom));
+          font-size: 26px;
         }
 
         .operation-modal,
-        .modal-login{
-          padding:10px;
-          align-items:flex-end;
+        .modal-login {
+          padding: 10px;
+          align-items: flex-end;
         }
 
         .operation-box,
-        .modal-login-content{
-          width:100%;
-          max-width:none;
-          max-height:calc(100dvh - 20px);
-          border-radius:20px 20px 14px 14px;
-          padding:17px;
-          overflow-y:auto;
-          -webkit-overflow-scrolling:touch;
+        .modal-login-content {
+          width: 100%;
+          max-width: none;
+          max-height: calc(100dvh - 20px);
+          border-radius: 20px 20px 14px 14px;
+          padding: 17px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
 
-        .operation-box h3{
-          font-size:1.15rem;
-          padding-right:35px;
+        .operation-box h3 {
+          font-size: 1.15rem;
+          padding-right: 35px;
         }
 
-        .op-summary{
-          grid-template-columns:1fr;
-          gap:4px;
+        .op-summary {
+          grid-template-columns: 1fr;
+          gap: 4px;
         }
 
-        .op-price{
-          font-size:1.3rem;
+        .op-price {
+          font-size: 1.3rem;
         }
 
-        .pix-card{
-          padding:12px;
+        .pix-card {
+          padding: 12px;
         }
 
-        .pix-qr{
-          width:min(190px,70vw);
-          height:min(190px,70vw);
+        .pix-qr {
+          width: min(190px, 70vw);
+          height: min(190px, 70vw);
         }
 
-        .pix-qr img{
-          width:100%;
-          height:100%;
+        .pix-qr img {
+          width: 100%;
+          height: 100%;
         }
 
-        .pix-code{
-          min-height:100px;
-          font-size:.72rem !important;
+        .pix-code {
+          min-height: 100px;
+          font-size: 0.72rem !important;
         }
 
-        .op-btn{
-          min-height:48px;
+        .op-btn {
+          min-height: 48px;
         }
 
-        .order-row-top{
-          flex-direction:column;
-          gap:6px;
+        .order-row-top {
+          flex-direction: column;
+          gap: 6px;
         }
 
-        .admin-tools{
-          grid-template-columns:1fr !important;
+        .admin-tools {
+          grid-template-columns: 1fr !important;
         }
 
-        .glow-1{
-          width:260px;
-          height:260px;
-          filter:blur(80px);
+        .glow-1 {
+          width: 260px;
+          height: 260px;
+          filter: blur(80px);
         }
 
-        .glow-2{
-          width:300px;
-          height:300px;
-          filter:blur(80px);
+        .glow-2 {
+          width: 300px;
+          height: 300px;
+          filter: blur(80px);
         }
 
-        .glow-3{
-          width:250px;
-          height:250px;
-          filter:blur(80px);
-        }
-      }
-
-      @media (max-width: 380px){
-        .container{
-          padding-left:12px;
-          padding-right:12px;
-        }
-
-        .logo-img{
-          max-width:135px;
-        }
-
-        .header-actions .btn-header:last-child{
-          font-size:0;
-          width:42px;
-          justify-content:center;
-          padding:0;
-        }
-
-        .header-actions .btn-header:last-child i{
-          font-size:1rem;
-        }
-
-        .stats-grid{
-          padding:12px 7px;
-        }
-
-        .stat-number{
-          font-size:1.18rem;
-        }
-
-        .stat-label{
-          font-size:.66rem;
-        }
-
-        .platform-tabs{
-          grid-template-columns:1fr;
-        }
-
-        .qty-shortcuts{
-          grid-template-columns:1fr 1fr;
+        .glow-3 {
+          width: 250px;
+          height: 250px;
+          filter: blur(80px);
         }
       }
 
-      @media (prefers-reduced-motion: reduce){
+      @media (max-width: 380px) {
+        .container {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+
+        .logo-img {
+          max-width: 135px;
+        }
+
+        .header-actions .btn-header:last-child {
+          font-size: 0;
+          width: 42px;
+          justify-content: center;
+          padding: 0;
+        }
+
+        .header-actions .btn-header:last-child i {
+          font-size: 1rem;
+        }
+
+        .stats-grid {
+          padding: 12px 7px;
+        }
+
+        .stat-number {
+          font-size: 1.18rem;
+        }
+
+        .stat-label {
+          font-size: 0.66rem;
+        }
+
+        .platform-tabs {
+          grid-template-columns: 1fr;
+        }
+
+        .qty-shortcuts {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
         *,
         *::before,
-        *::after{
-          scroll-behavior:auto !important;
-          animation-duration:.01ms !important;
-          animation-iteration-count:1 !important;
-          transition-duration:.01ms !important;
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
         }
       }
 
       /* ===== OPERAÇÃO TURBINE BRASIL — CHECKOUT / PIX / CONTA / ADMIN ===== */
-      .operation-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:3000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
-      .operation-modal.active{display:flex}
-      .operation-box{width:min(560px,100%);max-height:92vh;overflow:auto;background:#0f172a;border:1px solid rgba(139,92,246,.45);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(0,0,0,.55)}
-      .operation-box h3{font-size:1.35rem;margin-bottom:7px;color:#fff}.operation-box p{color:#94a3b8;font-size:.86rem}
-      .op-close{float:right;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:1rem}
-      .op-summary{display:grid;grid-template-columns:1fr auto;gap:8px;padding:15px;background:#111827;border:1px solid #253047;border-radius:14px;margin:18px 0}.op-summary strong{color:#fff}.op-price{font-size:1.5rem;color:#38bdf8;font-weight:800}
-      .op-input{width:100%;padding:12px;background:#0b1220;border:1px solid #334155;border-radius:9px;color:#fff;outline:none;margin-top:6px}.op-input:focus{border-color:#38bdf8}
-      .op-label{display:block;color:#cbd5e1;font-size:.82rem;font-weight:700;margin:13px 0 0}.op-btn{width:100%;padding:13px;border:0;border-radius:10px;background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;font-weight:800;cursor:pointer;margin-top:14px}.op-btn.secondary{background:#1e293b}.op-btn.danger{background:#7f1d1d}.op-btn.success{background:linear-gradient(135deg,#059669,#10b981)}
-      .pix-card{background:#07111d;border:1px solid rgba(50,188,173,.35);border-radius:16px;padding:18px;text-align:center;margin-top:16px}.pix-qr{width:220px;height:220px;background:#fff;padding:10px;border-radius:12px;margin:12px auto;display:flex;align-items:center;justify-content:center}.pix-qr img{max-width:100%;width:200px;height:200px}.pix-code{width:100%;min-height:82px;resize:none;background:#020617;color:#cbd5e1;border:1px solid #334155;border-radius:9px;padding:10px;font-size:.75rem}.status-pill{display:inline-flex;padding:5px 10px;border-radius:999px;font-size:.72rem;font-weight:800;margin-top:8px}.status-pending{background:#713f12;color:#fde68a}.status-paid{background:#064e3b;color:#a7f3d0}.status-processing{background:#164e63;color:#a5f3fc}.status-done{background:#14532d;color:#bbf7d0}.status-cancelled{background:#450a0a;color:#fecaca}
-      .order-row{background:#111827;border:1px solid #263244;border-radius:13px;padding:14px;margin-bottom:10px}.order-row-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.order-row small{color:#94a3b8}.admin-tools{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.admin-banner{background:linear-gradient(135deg,#7c3aed,#2563eb);border-radius:12px;padding:12px;margin-bottom:14px}.admin-banner strong{color:#fff}.empty-state{text-align:center;padding:25px;color:#94a3b8}
-      .account-chip{display:none;align-items:center;gap:8px;padding:7px 12px;border-radius:50px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:.78rem;font-weight:700}.account-chip img{width:25px;height:25px;border-radius:50%}.account-chip.active{display:flex}
-      @media(max-width:768px){.operation-box{padding:18px}.pix-qr{width:190px;height:190px}.admin-tools{grid-template-columns:1fr}.account-chip{display:none!important}}
-    
+      .operation-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.82);
+        z-index: 3000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(8px);
+      }
+      .operation-modal.active {
+        display: flex;
+      }
+      .operation-box {
+        width: min(560px, 100%);
+        max-height: 92vh;
+        overflow: auto;
+        background: #0f172a;
+        border: 1px solid rgba(139, 92, 246, 0.45);
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.55);
+      }
+      .operation-box h3 {
+        font-size: 1.35rem;
+        margin-bottom: 7px;
+        color: #fff;
+      }
+      .operation-box p {
+        color: #94a3b8;
+        font-size: 0.86rem;
+      }
+      .op-close {
+        float: right;
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .op-summary {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        padding: 15px;
+        background: #111827;
+        border: 1px solid #253047;
+        border-radius: 14px;
+        margin: 18px 0;
+      }
+      .op-summary strong {
+        color: #fff;
+      }
+      .op-price {
+        font-size: 1.5rem;
+        color: #38bdf8;
+        font-weight: 800;
+      }
+      .op-input {
+        width: 100%;
+        padding: 12px;
+        background: #0b1220;
+        border: 1px solid #334155;
+        border-radius: 9px;
+        color: #fff;
+        outline: none;
+        margin-top: 6px;
+      }
+      .op-input:focus {
+        border-color: #38bdf8;
+      }
+      .op-label {
+        display: block;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin: 13px 0 0;
+      }
+      .op-btn {
+        width: 100%;
+        padding: 13px;
+        border: 0;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0284c7, #2563eb);
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+        margin-top: 14px;
+      }
+      .op-btn.secondary {
+        background: #1e293b;
+      }
+      .op-btn.danger {
+        background: #7f1d1d;
+      }
+      .op-btn.success {
+        background: linear-gradient(135deg, #059669, #10b981);
+      }
+      .pix-card {
+        background: #07111d;
+        border: 1px solid rgba(50, 188, 173, 0.35);
+        border-radius: 16px;
+        padding: 18px;
+        text-align: center;
+        margin-top: 16px;
+      }
+      .pix-qr {
+        width: 220px;
+        height: 220px;
+        background: #fff;
+        padding: 10px;
+        border-radius: 12px;
+        margin: 12px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pix-qr img {
+        max-width: 100%;
+        width: 200px;
+        height: 200px;
+      }
+      .pix-code {
+        width: 100%;
+        min-height: 82px;
+        resize: none;
+        background: #020617;
+        color: #cbd5e1;
+        border: 1px solid #334155;
+        border-radius: 9px;
+        padding: 10px;
+        font-size: 0.75rem;
+      }
+      .status-pill {
+        display: inline-flex;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        margin-top: 8px;
+      }
+      .status-pending {
+        background: #713f12;
+        color: #fde68a;
+      }
+      .status-paid {
+        background: #064e3b;
+        color: #a7f3d0;
+      }
+      .status-processing {
+        background: #164e63;
+        color: #a5f3fc;
+      }
+      .status-done {
+        background: #14532d;
+        color: #bbf7d0;
+      }
+      .status-cancelled {
+        background: #450a0a;
+        color: #fecaca;
+      }
+      .order-row {
+        background: #111827;
+        border: 1px solid #263244;
+        border-radius: 13px;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+      .order-row-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .order-row small {
+        color: #94a3b8;
+      }
+      .admin-tools {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .admin-banner {
+        background: linear-gradient(135deg, #7c3aed, #2563eb);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 14px;
+      }
+      .admin-banner strong {
+        color: #fff;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 25px;
+        color: #94a3b8;
+      }
+      .account-chip {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .account-chip img {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+      }
+      .account-chip.active {
+        display: flex;
+      }
+      @media (max-width: 768px) {
+        .operation-box {
+          padding: 18px;
+        }
+        .pix-qr {
+          width: 190px;
+          height: 190px;
+        }
+        .admin-tools {
+          grid-template-columns: 1fr;
+        }
+        .account-chip {
+          display: none !important;
+        }
+      }
 
-/* =========================================================
+      /* =========================================================
    AJUSTE FINAL DO CABEÇALHO MOBILE — TURBINE BRASIL
    ========================================================= */
-@media (max-width: 900px){
-  /* Cabeçalho mobile: botão fixado dentro da viewport para nunca ser cortado. */
-  header{
-    min-height:60px !important;
-    height:60px !important;
-    padding:6px 0 !important;
-    display:flex !important;
-    align-items:center !important;
-    overflow:visible !important;
-  }
+      @media (max-width: 900px) {
+        /* Cabeçalho mobile: botão fixado dentro da viewport para nunca ser cortado. */
+        header {
+          min-height: 60px !important;
+          height: 60px !important;
+          padding: 6px 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          overflow: visible !important;
+        }
 
-  header .container.nav-wrapper{
-    position:relative !important;
-    width:100% !important;
-    max-width:none !important;
-    height:48px !important;
-    margin:0 !important;
-    padding:0 62px 0 12px !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
-    gap:0 !important;
-    overflow:visible !important;
-  }
+        header .container.nav-wrapper {
+          position: relative !important;
+          width: 100% !important;
+          max-width: none !important;
+          height: 48px !important;
+          margin: 0 !important;
+          padding: 0 62px 0 12px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 0 !important;
+          overflow: visible !important;
+        }
 
-  .brand-logo{
-    min-width:0 !important;
-    max-width:calc(100% - 4px) !important;
-    overflow:hidden !important;
-    display:flex !important;
-    align-items:center !important;
-  }
+        .brand-logo {
+          min-width: 0 !important;
+          max-width: calc(100% - 4px) !important;
+          overflow: hidden !important;
+          display: flex !important;
+          align-items: center !important;
+        }
 
-  .logo-img{
-    display:block !important;
-    width:auto !important;
-    height:42px !important;
-    max-width:145px !important;
-    object-fit:contain !important;
-  }
+        .logo-img {
+          display: block !important;
+          width: auto !important;
+          height: 42px !important;
+          max-width: 145px !important;
+          object-fit: contain !important;
+        }
 
-  /* Posicionamento absoluto elimina qualquer conflito de flex/grid no Android. */
-  .mobile-menu-toggle{
-    position:absolute !important;
-    top:50% !important;
-    right:10px !important;
-    transform:translateY(-50%) !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    flex-direction:column !important;
-    width:42px !important;
-    height:42px !important;
-    min-width:42px !important;
-    min-height:42px !important;
-    margin:0 !important;
-    padding:0 !important;
-    z-index:1200 !important;
-    visibility:visible !important;
-    opacity:1 !important;
-  }
+        /* Posicionamento absoluto elimina qualquer conflito de flex/grid no Android. */
+        .mobile-menu-toggle {
+          position: absolute !important;
+          top: 50% !important;
+          right: 10px !important;
+          transform: translateY(-50%) !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          flex-direction: column !important;
+          width: 42px !important;
+          height: 42px !important;
+          min-width: 42px !important;
+          min-height: 42px !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          z-index: 1200 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
 
-  .mobile-menu-toggle span{
-    width:21px !important;
-    height:2px !important;
-    display:block !important;
-    flex:0 0 2px !important;
-  }
+        .mobile-menu-toggle span {
+          width: 21px !important;
+          height: 2px !important;
+          display: block !important;
+          flex: 0 0 2px !important;
+        }
 
-  .nav-links{
-    position:absolute !important;
-    top:60px !important;
-    left:8px !important;
-    right:8px !important;
-    width:auto !important;
-    max-height:calc(100vh - 72px) !important;
-    overflow-y:auto !important;
-    z-index:1100 !important;
-  }
+        .nav-links {
+          position: absolute !important;
+          top: 60px !important;
+          left: 8px !important;
+          right: 8px !important;
+          width: auto !important;
+          max-height: calc(100vh - 72px) !important;
+          overflow-y: auto !important;
+          z-index: 1100 !important;
+        }
 
-  .header-actions{
-    display:none !important;
-  }
+        .header-actions {
+          display: none !important;
+        }
 
-  .top-marquee{
-    margin-top:60px !important;
-  }
-}
+        .top-marquee {
+          margin-top: 60px !important;
+        }
+      }
 
-@media (max-width:380px){
-  header .container.nav-wrapper{
-    padding-left:10px !important;
-    padding-right:58px !important;
-  }
-  .logo-img{
-    height:39px !important;
-    max-width:132px !important;
-  }
-  .mobile-menu-toggle{
-    right:8px !important;
-    width:40px !important;
-    height:40px !important;
-    min-width:40px !important;
-    min-height:40px !important;
-  }
-  .nav-links{
-    left:6px !important;
-    right:6px !important;
-  }
-}
+      @media (max-width: 380px) {
+        header .container.nav-wrapper {
+          padding-left: 10px !important;
+          padding-right: 58px !important;
+        }
+        .logo-img {
+          height: 39px !important;
+          max-width: 132px !important;
+        }
+        .mobile-menu-toggle {
+          right: 8px !important;
+          width: 40px !important;
+          height: 40px !important;
+          min-width: 40px !important;
+          min-height: 40px !important;
+        }
+        .nav-links {
+          left: 6px !important;
+          right: 6px !important;
+        }
+      }
 
-@media (min-width:901px){
-  .mobile-menu-toggle{
-    display:none !important;
-  }
-}
+      @media (min-width: 901px) {
+        .mobile-menu-toggle {
+          display: none !important;
+        }
+      }
 
-
-/* =========================================================
+      /* =========================================================
    CORREÇÃO DEFINITIVA DO MENU MOBILE
    Botão independente do header para garantir visibilidade
    em Android, iPhone e telas pequenas.
    ========================================================= */
-@media (max-width: 900px) {
-  header {
-    height: 60px !important;
-    min-height: 60px !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
+      @media (max-width: 900px) {
+        header {
+          height: 60px !important;
+          min-height: 60px !important;
+          padding: 0 !important;
+          overflow: visible !important;
+        }
 
-  header .nav-wrapper {
-    height: 60px !important;
-    padding: 0 58px 0 10px !important;
-    margin: 0 !important;
-    width: 100% !important;
-  }
+        header .nav-wrapper {
+          height: 60px !important;
+          padding: 0 58px 0 10px !important;
+          margin: 0 !important;
+          width: 100% !important;
+        }
 
-  .brand-logo {
-    display: flex !important;
-    align-items: center !important;
-    max-width: calc(100vw - 70px) !important;
-    overflow: hidden !important;
-  }
+        .brand-logo {
+          display: flex !important;
+          align-items: center !important;
+          max-width: calc(100vw - 70px) !important;
+          overflow: hidden !important;
+        }
 
-  .logo-img {
-    width: auto !important;
-    height: 44px !important;
-    max-width: 145px !important;
-    display: block !important;
-  }
+        .logo-img {
+          width: auto !important;
+          height: 44px !important;
+          max-width: 145px !important;
+          display: block !important;
+        }
 
-  /* O botão fica preso diretamente à viewport do celular. */
-  #mobile-menu-toggle.mobile-menu-toggle {
-    position: fixed !important;
-    top: 9px !important;
-    right: 9px !important;
-    left: auto !important;
-    bottom: auto !important;
-    z-index: 2147483647 !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    width: 42px !important;
-    height: 42px !important;
-    min-width: 42px !important;
-    min-height: 42px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 2px solid rgba(255,255,255,.75) !important;
-    border-radius: 11px !important;
-    background: rgba(10,5,24,.96) !important;
-    box-shadow: 0 4px 18px rgba(0,0,0,.55), 0 0 12px rgba(139,92,246,.45) !important;
-    color: #fff !important;
-    transform: none !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 5px !important;
-    -webkit-appearance: none !important;
-    appearance: none !important;
-  }
+        /* O botão fica preso diretamente à viewport do celular. */
+        #mobile-menu-toggle.mobile-menu-toggle {
+          position: fixed !important;
+          top: 9px !important;
+          right: 9px !important;
+          left: auto !important;
+          bottom: auto !important;
+          z-index: 2147483647 !important;
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+          width: 42px !important;
+          height: 42px !important;
+          min-width: 42px !important;
+          min-height: 42px !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: 2px solid rgba(255, 255, 255, 0.75) !important;
+          border-radius: 11px !important;
+          background: rgba(10, 5, 24, 0.96) !important;
+          box-shadow:
+            0 4px 18px rgba(0, 0, 0, 0.55),
+            0 0 12px rgba(139, 92, 246, 0.45) !important;
+          color: #fff !important;
+          transform: none !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 5px !important;
+          -webkit-appearance: none !important;
+          appearance: none !important;
+        }
 
-  #mobile-menu-toggle.mobile-menu-toggle span {
-    display: block !important;
-    width: 22px !important;
-    height: 3px !important;
-    min-height: 3px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #fff !important;
-    border-radius: 3px !important;
-    flex: 0 0 3px !important;
-  }
+        #mobile-menu-toggle.mobile-menu-toggle span {
+          display: block !important;
+          width: 22px !important;
+          height: 3px !important;
+          min-height: 3px !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #fff !important;
+          border-radius: 3px !important;
+          flex: 0 0 3px !important;
+        }
 
-  /* Menu aberto também fica preso à viewport. */
-  #main-navigation.nav-links {
-    position: fixed !important;
-    top: 60px !important;
-    left: 8px !important;
-    right: 8px !important;
-    width: auto !important;
-    max-height: calc(100vh - 70px) !important;
-    overflow-y: auto !important;
-    z-index: 2147483646 !important;
-    display: none !important;
-    padding: 10px !important;
-    margin: 0 !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 4px !important;
-    background: rgba(10,5,24,.99) !important;
-    border: 1px solid rgba(139,92,246,.45) !important;
-    border-radius: 14px !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,.65) !important;
-    -webkit-backdrop-filter: blur(18px) !important;
-    backdrop-filter: blur(18px) !important;
-  }
+        /* Menu aberto também fica preso à viewport. */
+        #main-navigation.nav-links {
+          position: fixed !important;
+          top: 60px !important;
+          left: 8px !important;
+          right: 8px !important;
+          width: auto !important;
+          max-height: calc(100vh - 70px) !important;
+          overflow-y: auto !important;
+          z-index: 2147483646 !important;
+          display: none !important;
+          padding: 10px !important;
+          margin: 0 !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 4px !important;
+          background: rgba(10, 5, 24, 0.99) !important;
+          border: 1px solid rgba(139, 92, 246, 0.45) !important;
+          border-radius: 14px !important;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65) !important;
+          -webkit-backdrop-filter: blur(18px) !important;
+          backdrop-filter: blur(18px) !important;
+        }
 
-  #main-navigation.nav-links.open {
-    display: flex !important;
-  }
+        #main-navigation.nav-links.open {
+          display: flex !important;
+        }
 
-  #main-navigation.nav-links li,
-  #main-navigation.nav-links a {
-    width: 100% !important;
-  }
+        #main-navigation.nav-links li,
+        #main-navigation.nav-links a {
+          width: 100% !important;
+        }
 
-  #main-navigation.nav-links a {
-    min-height: 48px !important;
-    display: flex !important;
-    align-items: center !important;
-    padding: 11px 14px !important;
-    color: #fff !important;
-    font-size: 15px !important;
-  }
+        #main-navigation.nav-links a {
+          min-height: 48px !important;
+          display: flex !important;
+          align-items: center !important;
+          padding: 11px 14px !important;
+          color: #fff !important;
+          font-size: 15px !important;
+        }
 
-  .header-actions {
-    display: none !important;
-  }
+        .header-actions {
+          display: none !important;
+        }
 
-  .top-marquee {
-    margin-top: 60px !important;
-  }
-}
+        .top-marquee {
+          margin-top: 60px !important;
+        }
+      }
 
-@media (max-width: 380px) {
-  #mobile-menu-toggle.mobile-menu-toggle {
-    top: 8px !important;
-    right: 7px !important;
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-  }
+      @media (max-width: 380px) {
+        #mobile-menu-toggle.mobile-menu-toggle {
+          top: 8px !important;
+          right: 7px !important;
+          width: 40px !important;
+          height: 40px !important;
+          min-width: 40px !important;
+          min-height: 40px !important;
+        }
 
-  .logo-img {
-    height: 40px !important;
-    max-width: 132px !important;
-  }
-}
+        .logo-img {
+          height: 40px !important;
+          max-width: 132px !important;
+        }
+      }
 
-@media (min-width: 901px) {
-  #mobile-menu-toggle.mobile-menu-toggle {
-    display: none !important;
-  }
-}
-</style>
+      @media (min-width: 901px) {
+        #mobile-menu-toggle.mobile-menu-toggle {
+          display: none !important;
+        }
+      }
+    </style>
 
     <!-- Firebase: Google Auth + Firestore (preparado para operação real) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -2227,7 +2481,7 @@
     <header>
       <div class="container nav-wrapper">
         <a href="#" class="brand-logo" aria-label="Turbine Brasil">
-          <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img">
+          <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img" />
         </a>
         <ul class="nav-links" id="main-navigation">
           <li><a href="#painel">Painel de Pedidos</a></li>
@@ -2238,10 +2492,18 @@
         </ul>
         <div class="header-actions">
           <div class="account-chip" id="account-chip"></div>
-          <button class="btn-header" id="header-login-btn" onclick="openLoginModal()">
+          <button
+            class="btn-header"
+            id="header-login-btn"
+            onclick="openLoginModal()"
+          >
             <i class="fa-brands fa-google"></i> Login Google
           </button>
-          <a href="#painel" class="btn-header" style="background: var(--gradient-orange);">
+          <a
+            href="#painel"
+            class="btn-header"
+            style="background: var(--gradient-orange)"
+          >
             <i class="fa-solid fa-plus-circle"></i> Novo Pedido
           </a>
         </div>
@@ -2249,14 +2511,22 @@
     </header>
 
     <!-- Botão de menu mobile: fora do cabeçalho para não ser cortado -->
-    <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="main-navigation">
+    <button
+      class="mobile-menu-toggle"
+      id="mobile-menu-toggle"
+      type="button"
+      aria-label="Abrir menu"
+      aria-expanded="false"
+      aria-controls="main-navigation"
+    >
       <span></span><span></span><span></span>
     </button>
 
     <!-- Top Marquee Banner do Vídeo -->
     <div class="top-marquee">
       <div class="marquee-content">
-        🚀 SERVIÇOS ATUALIZADOS TODOS OS DIAS! ⚡ ENTREGA RÁPIDA E GARANTIDA ⚡ SUPORTE VIA WHATSAPP
+        🚀 SEGUIDORES, CURTIDAS E COMENTÁRIOS PARA INSTAGRAM E TIKTOK ⚡ ENTREGA
+        RÁPIDA E GARANTIDA ⚡ SUPORTE VIA WHATSAPP
       </div>
     </div>
 
@@ -2272,8 +2542,8 @@
           >
         </h1>
         <p>
-          Alcance autoridade máxima no Instagram, TikTok, YouTube e Kwai.
-          Entrega automatizada, 100% confiável e sem necessidade de senha!
+          Alcance autoridade máxima no Instagram e no TikTok. Entrega
+          automatizada, 100% confiável e sem necessidade de senha!
         </p>
 
         <div class="hero-ctas">
@@ -2283,7 +2553,8 @@
           <a
             href="https://wa.me/5531999999999?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20Turbine%20Brasil"
             class="btn-secondary"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
             ><i class="fa-brands fa-whatsapp"></i> Falar no WhatsApp</a
           >
         </div>
@@ -2313,7 +2584,6 @@
     <!-- SMM Panel Section (Painel do Vídeo) -->
     <section class="smm-panel-section" id="painel">
       <div class="container smm-container">
-        
         <!-- Sidebar Esquerda -->
         <div class="panel-sidebar">
           <div class="user-profile-box">
@@ -2327,38 +2597,95 @@
           </div>
 
           <ul class="sidebar-menu">
-            <li><a href="#painel" class="active"><i class="fa-solid fa-cart-plus"></i> Novo Pedido</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-list-check"></i> Serviços</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-box"></i> Pedidos</a></li>
-            <li><a href="javascript:void(0)" onclick="openBalanceModal()"><i class="fa-solid fa-wallet"></i> Adicionar saldo <span class="badge-menu">PIX</span></a></li>
-            <li><a href="#painel"><i class="fa-solid fa-gift"></i> Indique e ganhe 5%</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-headset"></i> Suporte <span class="badge-menu">1</span></a></li>
-            <li><a href="https://chat.whatsapp.com/demo" target="_blank"><i class="fa-solid fa-users"></i> Grupo com suportes</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-layer-group"></i> Ordem em massa</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-coins"></i> Saldo grátis</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-rotate"></i> Atualizações</a></li>
-            <li><a href="#painel"><i class="fa-solid fa-mobile-screen"></i> App do site</a></li>
+            <li>
+              <a href="#painel" class="active"
+                ><i class="fa-solid fa-cart-plus"></i> Novo Pedido</a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-list-check"></i> Serviços</a
+              >
+            </li>
+            <li>
+              <a href="#painel"><i class="fa-solid fa-box"></i> Pedidos</a>
+            </li>
+            <li>
+              <a href="javascript:void(0)" onclick="openBalanceModal()"
+                ><i class="fa-solid fa-wallet"></i> Adicionar saldo
+                <span class="badge-menu">PIX</span></a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-gift"></i> Indique e ganhe 5%</a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-headset"></i> Suporte
+                <span class="badge-menu">1</span></a
+              >
+            </li>
+            <li>
+              <a href="https://chat.whatsapp.com/demo" target="_blank"
+                ><i class="fa-solid fa-users"></i> Grupo com suportes</a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-layer-group"></i> Ordem em massa</a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-coins"></i> Saldo grátis</a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-rotate"></i> Atualizações</a
+              >
+            </li>
+            <li>
+              <a href="#painel"
+                ><i class="fa-solid fa-mobile-screen"></i> App do site</a
+              >
+            </li>
           </ul>
         </div>
 
         <!-- Conteúdo Principal do Painel -->
         <div class="panel-main">
-          
           <!-- Banner de Saldo -->
           <div class="balance-banner">
             <div class="balance-info">
               <h4>Seu saldo no site</h4>
               <div class="amount" id="user-balance">R$ 0,00000</div>
             </div>
-            <a href="javascript:void(0)" onclick="openBalanceModal()" class="btn-add-funds-head">
+            <a
+              href="javascript:void(0)"
+              onclick="openBalanceModal()"
+              class="btn-add-funds-head"
+            >
               <i class="fa-brands fa-pix"></i> Adicionar Saldo via WhatsApp
             </a>
           </div>
 
           <!-- Tabs de Ação -->
           <div class="panel-tabs">
-            <button class="panel-tab-btn active" onclick="switchPanelTab('add', this)">Adicionar Saldo</button>
-            <button class="panel-tab-btn" onclick="switchPanelTab('orders', this)">Pedidos</button>
+            <button
+              class="panel-tab-btn active"
+              onclick="switchPanelTab('add', this)"
+            >
+              Adicionar Saldo
+            </button>
+            <button
+              class="panel-tab-btn"
+              onclick="switchPanelTab('orders', this)"
+            >
+              Pedidos
+            </button>
           </div>
 
           <!-- Formulário do Pedido -->
@@ -2366,75 +2693,105 @@
             <div class="form-group">
               <div class="search-box-input">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" class="form-control" placeholder="Procurar por seguidores, curtidas ou visualizações" onkeyup="filterServices(this.value)">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Procurar por seguidores, curtidas ou comentários"
+                  onkeyup="filterServices(this.value)"
+                />
               </div>
             </div>
 
             <div class="form-group">
               <label>Categoria</label>
-              <select class="form-control-simple" id="category-select" onchange="updateServicesOptions()">
-                <option value="best">🎯 Os Melhores Serviços para Crescimento no Instagram e TikTok</option>
-                <option value="likes">📸 Curtidas Instagram 🟢</option>
-                <option value="views">📹 Visualizações com Garantia (Reels, IGTV, Story, Mass) 🟢</option>
-                <option value="tiktok">🎵 TikTok Seguidores, Likes, Visualizações e + 🟢</option>
-                <option value="kwai">⚙️ Serviços para Kwai 🟢</option>
-                <option value="br_followers">🇧🇷 Seguidores do Brasil Instagram 🟢</option>
-                <option value="comments">💬 Comentários a likes do Instagram 🟢</option>
-                <option value="top_services">🏆 Categoria com os Serviços + Rápidos e Procurados no Site TOP</option>
+              <select
+                class="form-control-simple"
+                id="category-select"
+                onchange="updateServicesOptions()"
+              >
+                <option value="instagram|seguidores">
+                  📸 Instagram — Seguidores
+                </option>
+                <option value="instagram|curtidas">
+                  ❤️ Instagram — Curtidas
+                </option>
+                <option value="instagram|comentarios">
+                  💬 Instagram — Comentários
+                </option>
+                <option value="instagram|visualizacoes">
+                  👁️ Instagram — Visualizações
+                </option>
+                <option value="tiktok|seguidores">
+                  🎵 TikTok — Seguidores
+                </option>
+                <option value="tiktok|curtidas">🎵 TikTok — Curtidas</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label>Serviço</label>
-              <select class="form-control-simple" id="service-select" onchange="updateServiceDetails()">
+              <label>Pacote</label>
+              <select
+                class="form-control-simple"
+                id="service-select"
+                onchange="updateServiceDetails()"
+              >
                 <!-- Preenchido via JavaScript -->
               </select>
             </div>
 
             <!-- Caixa de Descrição do Serviço -->
             <div class="service-description-box" id="service-description">
-              <p>📌 <strong>Qualidade:</strong> Qualidade boa</p>
-              <p>⏱️ <strong>Hora de inicio:</strong> 0-1 hora</p>
-              <p>🚀 <strong>Velocidade por dia:</strong> 10.000</p>
-              <p>📉 <strong>Pedido mínimo:</strong> 10</p>
-              <p>📈 <strong>Pedido máximo:</strong> 10.000</p>
-              <p style="color: #ef4444; font-weight: bold; margin-top: 8px;">🚫 Não pode ocultar as curtidas e nem os comentários no momento da compra.</p>
+              <p>📦 <strong>Pacote:</strong> carregando...</p>
             </div>
 
             <div class="form-group">
               <label>Link</label>
-              <div style="display: flex; gap: 8px;">
-                <input type="text" class="form-control-simple" id="order-link" placeholder="Link do vídeo ou perfil">
-                <button type="button" style="background: #0284c7; color: #fff; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="pasteLink()">Colar</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Quantidade</label>
-              <input type="number" class="form-control-simple" id="order-qty" value="100" min="10" oninput="calculateOrderPrice()">
-              <div class="qty-shortcuts">
-                <button type="button" class="btn-qty-shortcut" onclick="setQty(30)">30</button>
-                <button type="button" class="btn-qty-shortcut" onclick="setQty(50)">50</button>
-                <button type="button" class="btn-qty-shortcut" onclick="setQty(100)">100</button>
-                <button type="button" class="btn-qty-shortcut" onclick="setQty(100000)">100K</button>
+              <div style="display: flex; gap: 8px">
+                <input
+                  type="text"
+                  class="form-control-simple"
+                  id="order-link"
+                  placeholder="Link do vídeo ou perfil"
+                />
+                <button
+                  type="button"
+                  style="
+                    background: #0284c7;
+                    color: #fff;
+                    border: none;
+                    padding: 0 15px;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                  "
+                  onclick="pasteLink()"
+                >
+                  Colar
+                </button>
               </div>
             </div>
 
             <div class="price-calc-box">
               <span>Valor a Cobrar:</span>
-              <strong id="total-price-display">R$ 0,08</strong>
+              <strong id="total-price-display">R$ 0,00</strong>
             </div>
 
-            <button type="button" class="btn-submit-order" onclick="submitOrder()">
+            <button
+              type="button"
+              class="btn-submit-order"
+              onclick="submitOrder()"
+            >
               <i class="fa-solid fa-paper-plane"></i> Enviar Pedido
             </button>
           </div>
 
           <!-- Aba de Pedidos Recentes -->
-          <div id="panel-orders-list" style="display: none;">
-            <p style="color: #94a3b8; text-align: center; padding: 20px 0;">Você ainda não possui pedidos recentes. Faça seu primeiro pedido acima!</p>
+          <div id="panel-orders-list" style="display: none">
+            <p style="color: #94a3b8; text-align: center; padding: 20px 0">
+              Você ainda não possui pedidos recentes. Faça seu primeiro pedido
+              acima!
+            </p>
           </div>
-
         </div>
 
         <!-- Painel Lateral Direita (Ajuda e Suporte do Vídeo) -->
@@ -2442,23 +2799,42 @@
           <div class="widget-box">
             <h5 class="widget-title">Cresça suas redes sociais com rapidez</h5>
             <div class="widget-content">
-              <p style="margin-bottom: 10px;">Tenha acesso a serviços para aumentar sua presença nas redes sociais com praticidade, rapidez e segurança.</p>
-              <p style="color: #38bdf8; font-weight: 800; font-size: 1.1rem; margin-bottom: 5px;">1000 Seguidores a partir de R$ 1,36</p>
-              <p style="color: #28a745; font-weight: bold; margin-bottom: 5px;">Seguidores com reposição entre outros!</p>
-              <p style="font-weight: bold; color: #fff;">Mínimo de depósito R$ 1,00</p>
+              <p style="margin-bottom: 10px">
+                Tenha acesso a serviços para aumentar sua presença no Instagram
+                e no TikTok com praticidade, rapidez e segurança.
+              </p>
+              <p
+                style="
+                  color: #38bdf8;
+                  font-weight: 800;
+                  font-size: 1.1rem;
+                  margin-bottom: 5px;
+                "
+              >
+                Pacotes a partir de R$ 4,00
+              </p>
+              <p style="color: #28a745; font-weight: bold; margin-bottom: 5px">
+                Seguidores, curtidas, comentários e visualizações com garantia!
+              </p>
+              <p style="font-weight: bold; color: #fff">
+                Mínimo de depósito R$ 1,00
+              </p>
             </div>
           </div>
 
           <div class="widget-box">
             <h5 class="widget-title">Como funciona:</h5>
             <div class="widget-content">
-              <p>📺 Acesse seus serviços de forma simples e acompanhe seus pedidos pelo painel.</p>
+              <p>
+                📺 Acesse seus serviços de forma simples e acompanhe seus
+                pedidos pelo painel.
+              </p>
             </div>
           </div>
 
           <div class="widget-box">
             <h5 class="widget-title">Caso tenha algum problema ou dúvida:</h5>
-            
+
             <div class="whatsapp-support-card">
               <i class="fa-brands fa-whatsapp"></i>
               <div>
@@ -2484,11 +2860,14 @@
             </div>
 
             <div class="notice-alert-box">
-              ⚠️ <strong>Aviso Importante:</strong> Antes de fazer qualquer pedido certifique-se que a conta esta correta. Observação: Não faça o pedido para a mesma conta ao mesmo tempo. Você tem que esperar a conclusão do primeiro pedido para poder fazer o pedido novamente.
+              ⚠️ <strong>Aviso Importante:</strong> Antes de fazer qualquer
+              pedido certifique-se que a conta esta correta. Observação: Não
+              faça o pedido para a mesma conta ao mesmo tempo. Você tem que
+              esperar a conclusão do primeiro pedido para poder fazer o pedido
+              novamente.
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -2515,128 +2894,10 @@
           <button class="tab-btn" onclick="switchPlatform('tiktok', this)">
             <i class="fa-brands fa-tiktok" style="color: #00f2fe"></i> TikTok
           </button>
-          <button class="tab-btn" onclick="switchPlatform('youtube', this)">
-            <i class="fa-brands fa-youtube" style="color: #ff0000"></i> YouTube
-          </button>
-          <button class="tab-btn" onclick="switchPlatform('kwai', this)">
-            <i class="fa-solid fa-play" style="color: #ff5000"></i> Kwai
-          </button>
         </div>
 
-        <!-- Dynamic Plans Grid (Instagram Default) -->
-        <div class="plans-grid" id="plans-container">
-          <!-- Card 1 -->
-          <div class="plan-card">
-            <div class="plan-header">
-              <h3>1.000 Seguidores</h3>
-              <p style="color: var(--text-muted); font-size: 0.85rem">
-                Ideal para novos perfis
-              </p>
-              <div class="plan-price">R$ 29,90 <span>/ único</span></div>
-            </div>
-            <ul class="plan-features">
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Sem necessidade de
-                senha
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Entrega Rápida e Segura
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Garantia de Reposição
-                30 dias
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP
-              </li>
-            </ul>
-            <a
-              href="javascript:void(0)"
-              onclick="openPlanCheckout(\'1000 Seguidores Instagram\')"
-              class="btn-plan"
-              >Comprar via Pix WhatsApp</a
-            >
-          </div>
-
-          <!-- Card 2 (Featured) -->
-          <div class="plan-card featured">
-            <div class="featured-badge">Mais Vendido 🔥</div>
-            <div class="plan-header">
-              <h3>5.000 Seguidores</h3>
-              <p style="color: var(--text-muted); font-size: 0.85rem">
-                Mais popular para criadores
-              </p>
-              <div class="plan-price">R$ 89,90 <span>/ único</span></div>
-            </div>
-            <ul class="plan-features">
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Sem necessidade de
-                senha
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Início Instantâneo
-                (5-15 min)
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Garantia de Reposição
-                30 dias
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Bônus: 500 Curtidas em
-                Reels
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Suporte Prioritário
-                24/7
-              </li>
-            </ul>
-            <a
-              href="javascript:void(0)"
-              onclick="openPlanCheckout(\'5000 Seguidores Instagram\')"
-              class="btn-plan"
-              >Comprar via Pix WhatsApp</a
-            >
-          </div>
-
-          <!-- Card 3 -->
-          <div class="plan-card">
-            <div class="plan-header">
-              <h3>10.000 Seguidores</h3>
-              <p style="color: var(--text-muted); font-size: 0.85rem">
-                Autoridade máxima para Marcas
-              </p>
-              <div class="plan-price">R$ 159,90 <span>/ único</span></div>
-            </div>
-            <ul class="plan-features">
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Sem necessidade de
-                senha
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Entrega Gradual e
-                Orgânica
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Garantia de Reposição
-                60 dias
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Bônus: 1.000 Curtidas
-                em Fotos
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-check"></i> Gerente de Conta
-                Exclusivo
-              </li>
-            </ul>
-            <a
-              href="javascript:void(0)"
-              onclick="openPlanCheckout(\'10000 Seguidores Instagram\')"
-              class="btn-plan"
-              >Comprar via Pix WhatsApp</a
-            >
-          </div>
-        </div>
+        <!-- Dynamic Plans Grid (Instagram Default, preenchido via JavaScript) -->
+        <div id="plans-container"></div>
       </div>
     </section>
 
@@ -2816,7 +3077,8 @@
               <i class="fa-solid fa-chevron-down"></i>
             </button>
             <div class="faq-answer">
-              Aceitamos Pix. O pagamento é conferido manualmente pelo proprietário antes da liberação do pedido.
+              Aceitamos Pix. O pagamento é conferido manualmente pelo
+              proprietário antes da liberação do pedido.
             </div>
           </div>
         </div>
@@ -2845,50 +3107,104 @@
     <!-- Modal Login Google -->
     <div class="modal-login" id="loginModal">
       <div class="modal-login-content">
-        <i class="fa-solid fa-xmark close-modal" onclick="closeLoginModal()"></i>
-        <h3 style="margin-bottom: 10px; color: #fff;">Entrar na sua conta</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Faça login com sua conta do Google para acompanhar seus pedidos e saldo no painel.</p>
-        
-        <div style="display: flex; justify-content: center;">
-          <div id="g_id_onload"
-               data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-               data-callback="handleCredentialResponse">
-          </div>
+        <i
+          class="fa-solid fa-xmark close-modal"
+          onclick="closeLoginModal()"
+        ></i>
+        <h3 style="margin-bottom: 10px; color: #fff">Entrar na sua conta</h3>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+          "
+        >
+          Faça login com sua conta do Google para acompanhar seus pedidos e
+          saldo no painel.
+        </p>
+
+        <div style="display: flex; justify-content: center">
+          <div
+            id="g_id_onload"
+            data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+            data-callback="handleCredentialResponse"
+          ></div>
           <div class="g_id_signin" data-type="standard"></div>
         </div>
       </div>
     </div>
 
-
     <!-- ===== MODAL: CHECKOUT ===== -->
     <div class="operation-modal" id="checkoutModal">
       <div class="operation-box">
-        <button class="op-close" onclick="closeOperationModal('checkoutModal')">×</button>
+        <button class="op-close" onclick="closeOperationModal('checkoutModal')">
+          ×
+        </button>
         <h3>Finalizar compra</h3>
-        <p>Entre com sua conta Google para registrar o pedido e acompanhar a confirmação.</p>
-        <div class="op-summary"><div><strong id="checkout-title">Plano</strong><br><small id="checkout-platform">Instagram</small></div><div class="op-price" id="checkout-price">R$ 0,00</div></div>
+        <p>
+          Entre com sua conta Google para registrar o pedido e acompanhar a
+          confirmação.
+        </p>
+        <div class="op-summary">
+          <div>
+            <strong id="checkout-title">Plano</strong><br /><small
+              id="checkout-platform"
+              >Instagram</small
+            >
+          </div>
+          <div class="op-price" id="checkout-price">R$ 0,00</div>
+        </div>
         <label class="op-label">Link / @ do perfil</label>
-        <input class="op-input" id="checkout-link" placeholder="https://instagram.com/seuperfil ou @seuperfil">
+        <input
+          class="op-input"
+          id="checkout-link"
+          placeholder="https://instagram.com/seuperfil ou @seuperfil"
+        />
         <label class="op-label">E-mail da conta</label>
-        <input class="op-input" id="checkout-email" readonly placeholder="Faça login com Google">
-        <button class="op-btn" onclick="createManualPixOrder()"><i class="fa-brands fa-pix"></i> Gerar Pix e criar pedido</button>
-        <p style="margin-top:10px;font-size:.72rem">Você não informa senha da rede social. O pedido só será liberado após sua confirmação manual do pagamento.</p>
+        <input
+          class="op-input"
+          id="checkout-email"
+          readonly
+          placeholder="Faça login com Google"
+        />
+        <button class="op-btn" onclick="createManualPixOrder()">
+          <i class="fa-brands fa-pix"></i> Gerar Pix e criar pedido
+        </button>
+        <p style="margin-top: 10px; font-size: 0.72rem">
+          Você não informa senha da rede social. O pedido só será liberado após
+          sua confirmação manual do pagamento.
+        </p>
       </div>
     </div>
 
     <!-- ===== MODAL: PIX ===== -->
     <div class="operation-modal" id="pixModal">
       <div class="operation-box">
-        <button class="op-close" onclick="closeOperationModal('pixModal')">×</button>
+        <button class="op-close" onclick="closeOperationModal('pixModal')">
+          ×
+        </button>
         <h3>Pagamento via Pix</h3>
-        <p id="pix-instruction">Faça o pagamento e depois toque em “Já fiz o pagamento”.</p>
+        <p id="pix-instruction">
+          Faça o pagamento e depois toque em “Já fiz o pagamento”.
+        </p>
         <div class="pix-card">
           <div><strong id="pix-amount">R$ 0,00</strong></div>
-          <div class="pix-qr"><img id="pix-qr-img" alt="QR Code Pix"></div>
+          <div class="pix-qr"><img id="pix-qr-img" alt="QR Code Pix" /></div>
           <textarea class="pix-code" id="pix-copy-code" readonly></textarea>
-          <button class="op-btn secondary" onclick="copyPixCode()"><i class="fa-solid fa-copy"></i> Copiar Pix Copia e Cola</button>
-          <button class="op-btn success" onclick="markCurrentOrderPaidByCustomer()"><i class="fa-solid fa-check"></i> Já fiz o pagamento</button>
-          <div><span class="status-pill status-pending" id="pix-status">AGUARDANDO PAGAMENTO</span></div>
+          <button class="op-btn secondary" onclick="copyPixCode()">
+            <i class="fa-solid fa-copy"></i> Copiar Pix Copia e Cola
+          </button>
+          <button
+            class="op-btn success"
+            onclick="markCurrentOrderPaidByCustomer()"
+          >
+            <i class="fa-solid fa-check"></i> Já fiz o pagamento
+          </button>
+          <div>
+            <span class="status-pill status-pending" id="pix-status"
+              >AGUARDANDO PAGAMENTO</span
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -2896,12 +3212,26 @@
     <!-- ===== MODAL: SALDO ===== -->
     <div class="operation-modal" id="balanceModal">
       <div class="operation-box">
-        <button class="op-close" onclick="closeOperationModal('balanceModal')">×</button>
+        <button class="op-close" onclick="closeOperationModal('balanceModal')">
+          ×
+        </button>
         <h3>Adicionar saldo via Pix</h3>
-        <p>O saldo será acrescentado somente depois que o proprietário confirmar o pagamento.</p>
+        <p>
+          O saldo será acrescentado somente depois que o proprietário confirmar
+          o pagamento.
+        </p>
         <label class="op-label">Valor do depósito</label>
-        <input class="op-input" id="deposit-amount" type="number" min="1" step="0.01" value="20.00">
-        <button class="op-btn" onclick="createDepositPix()"><i class="fa-brands fa-pix"></i> Gerar Pix</button>
+        <input
+          class="op-input"
+          id="deposit-amount"
+          type="number"
+          min="1"
+          step="0.01"
+          value="20.00"
+        />
+        <button class="op-btn" onclick="createDepositPix()">
+          <i class="fa-brands fa-pix"></i> Gerar Pix
+        </button>
         <div id="deposit-pix-area"></div>
       </div>
     </div>
@@ -2909,18 +3239,32 @@
     <!-- ===== MODAL: CONTA ===== -->
     <div class="operation-modal" id="accountModal">
       <div class="operation-box">
-        <button class="op-close" onclick="closeOperationModal('accountModal')">×</button>
+        <button class="op-close" onclick="closeOperationModal('accountModal')">
+          ×
+        </button>
         <h3>Minha conta</h3>
         <div id="account-content"></div>
-        <button class="op-btn secondary" onclick="logoutGoogle()">Sair da conta</button>
+        <button class="op-btn secondary" onclick="logoutGoogle()">
+          Sair da conta
+        </button>
       </div>
     </div>
 
     <!-- ===== MODAL: ADMIN ===== -->
     <div class="operation-modal" id="adminModal">
-      <div class="operation-box" style="width:min(760px,100%)">
-        <button class="op-close" onclick="closeOperationModal('adminModal')">×</button>
-        <div class="admin-banner"><strong><i class="fa-solid fa-shield-halved"></i> Painel do proprietário</strong><p style="color:#dbeafe;margin-top:3px">Confirmação manual dos pagamentos e controle dos pedidos.</p></div>
+      <div class="operation-box" style="width: min(760px, 100%)">
+        <button class="op-close" onclick="closeOperationModal('adminModal')">
+          ×
+        </button>
+        <div class="admin-banner">
+          <strong
+            ><i class="fa-solid fa-shield-halved"></i> Painel do
+            proprietário</strong
+          >
+          <p style="color: #dbeafe; margin-top: 3px">
+            Confirmação manual dos pagamentos e controle dos pedidos.
+          </p>
+        </div>
         <div id="admin-content"></div>
       </div>
     </div>
@@ -2945,8 +3289,6 @@
               <li><a href="#painel">Novo Pedido</a></li>
               <li><a href="#servicos">Instagram</a></li>
               <li><a href="#servicos">TikTok</a></li>
-              <li><a href="#servicos">YouTube</a></li>
-              <li><a href="#servicos">Kwai</a></li>
             </ul>
           </div>
           <div class="footer-col">
@@ -2999,10 +3341,11 @@
       /* =========================================================
          TURBINE BRASIL — OPERAÇÃO DE CONTA + PIX MANUAL + ADMIN
          ---------------------------------------------------------
-         1) Configure Firebase abaixo.
-         2) Configure PIX_KEY com sua chave Pix PJ.
+         1) Configure Firebase abaixo (veja o GUIA-PASSO-A-PASSO.md).
+         2) Configure PIX_KEY com sua chave Pix PJ/PF.
          3) Configure ADMIN_EMAIL com o e-mail Google do proprietário.
-         4) Publique também as regras Firestore fornecidas junto deste HTML.
+         4) Publique também as regras Firestore do arquivo firestore.rules
+            junto deste HTML no Console do Firebase.
          ========================================================= */
 
       const APP_CONFIG = {
@@ -3012,15 +3355,15 @@
           projectId: "SEU-PROJETO",
           storageBucket: "SEU-PROJETO.appspot.com",
           messagingSenderId: "COLOQUE_SEU_SENDER_ID",
-          appId: "COLOQUE_SEU_APP_ID"
+          appId: "COLOQUE_SEU_APP_ID",
         },
         pix: {
-          key: "SUA_CHAVE_PIX_PJ_AQUI",
+          key: "SUA_CHAVE_PIX_AQUI",
           merchantName: "TURBINE BRASIL",
-          merchantCity: "BELO HORIZONTE"
+          merchantCity: "BELO HORIZONTE",
         },
         adminEmail: "SEU_EMAIL_GOOGLE_ADMIN@EXEMPLO.COM",
-        whatsappNumber: "5531999999999"
+        whatsappNumber: "5531999999999",
       };
 
       let firebaseReady = false;
@@ -3034,336 +3377,960 @@
       let unsubscribeAdminOrders = null;
       let unsubscribeAdminDeposits = null;
 
-      const smmServicesData = {
-        best: [
-          { id: 101, name: "Os Melhores Serviços para Crescimento no Instagram e TikTok", pricePerThousand: 0.79, min: 10, max: 10000 },
-          { id: 102, name: "Curtidas Instagram [Barato] (A melhor)", pricePerThousand: 0.79, min: 10, max: 10000 },
-          { id: 103, name: "Visualizações de Video TikTok [SEM QUEDA] - R$ 0,05", pricePerThousand: 0.05, min: 50, max: 500000 }
-        ],
-        likes: [
-          { id: 201, name: "Curtidas Instagram [Barato] (A melhor)", pricePerThousand: 0.79, min: 10, max: 10000 },
-          { id: 202, name: "Curtidas Instagram Brasileiras Reais", pricePerThousand: 2.50, min: 20, max: 50000 }
-        ],
-        views: [
-          { id: 301, name: "Visualizações com Garantia (Reels, IGTV, Story, Mass)", pricePerThousand: 0.15, min: 100, max: 1000000 },
-          { id: 302, name: "Visualizações de Reels Instantâneas", pricePerThousand: 0.10, min: 100, max: 500000 }
-        ],
-        tiktok: [
-          { id: 401, name: "TikTok Visualizações de Video [SEM QUEDA]", pricePerThousand: 0.05, min: 50, max: 500000 },
-          { id: 402, name: "TikTok Seguidores de Alta Qualidade", pricePerThousand: 8.50, min: 100, max: 50000 }
-        ],
-        kwai: [
-          { id: 501, name: "Kwai Seguidores Rápidos", pricePerThousand: 7.90, min: 100, max: 20000 },
-          { id: 502, name: "Kwai Curtidas em Vídeos", pricePerThousand: 3.20, min: 50, max: 50000 }
-        ],
-        br_followers: [
-          { id: 601, name: "Seguidores do Brasil Instagram [Mais Vendidos]", pricePerThousand: 4.50, min: 50, max: 30000 }
-        ],
-        comments: [
-          { id: 701, name: "Comentários Personalizados Instagram", pricePerThousand: 15.00, min: 5, max: 1000 }
-        ],
-        top_services: [
-          { id: 801, name: "Categoria com os Serviços + Rápidos e Procurados no Site TOP", pricePerThousand: 1.36, min: 100, max: 100000 }
-        ]
+      /* =========================================================
+         CATÁLOGO DE SERVIÇOS — Instagram e TikTok
+         Única fonte de verdade: usada no painel de pedidos e na
+         seção de planos. Para alterar preços/pacotes, edite aqui.
+         ========================================================= */
+      const catalog = {
+        instagram: {
+          label: "Instagram",
+          groups: {
+            seguidores: {
+              label: "Seguidores",
+              tiers: [
+                { qty: 3000, price: 10.0 },
+                { qty: 5000, price: 15.0 },
+                { qty: 15000, price: 29.0 },
+              ],
+            },
+            curtidas: {
+              label: "Curtidas",
+              tiers: [
+                { qty: 500, price: 9.0 },
+                { qty: 1000, price: 12.0 },
+                { qty: 3000, price: 15.0 },
+              ],
+            },
+            comentarios: {
+              label: "Comentários",
+              tiers: [
+                { qty: 10, price: 9.0 },
+                { qty: 25, price: 19.0 },
+                { qty: 50, price: 34.0 },
+              ],
+            },
+            visualizacoes: {
+              label: "Visualizações",
+              tiers: [
+                { qty: 5000, price: 4.0 },
+                { qty: 10000, price: 6.0 },
+              ],
+            },
+          },
+        },
+        tiktok: {
+          label: "TikTok",
+          groups: {
+            seguidores: {
+              label: "Seguidores",
+              tiers: [
+                { qty: 5000, price: 12.0 },
+                { qty: 10000, price: 34.0 },
+                { qty: 50000, price: 100.0 },
+              ],
+            },
+            curtidas: {
+              label: "Curtidas",
+              tiers: [
+                { qty: 500, price: 9.0 },
+                { qty: 1000, price: 17.0 },
+                { qty: 5000, price: 24.0 },
+              ],
+            },
+          },
+        },
       };
 
-      const platformData = {
-        instagram: [
-          { title: "1.000 Seguidores", subtitle: "Ideal para novos perfis", price: "R$ 29,90", value: 29.90, bonus: "Sem necessidade de senha", badge: false },
-          { title: "5.000 Seguidores", subtitle: "Mais popular para criadores", price: "R$ 89,90", value: 89.90, bonus: "Bônus: 500 Curtidas em Reels", badge: "Mais Vendido 🔥", featured: true },
-          { title: "10.000 Seguidores", subtitle: "Autoridade máxima para Marcas", price: "R$ 159,90", value: 159.90, bonus: "Bônus: 1.000 Curtidas em Fotos", badge: false }
-        ],
-        tiktok: [
-          { title: "1.000 Seguidores", subtitle: "Para desbloquear Lives", price: "R$ 34,90", value: 34.90, bonus: "Ativação rápida", badge: false },
-          { title: "5.000 Seguidores", subtitle: "Aumente entregas no For You", price: "R$ 99,90", value: 99.90, bonus: "Bônus: 2.000 Curtidas nos Vídeos", badge: "Recomendado ⭐", featured: true },
-          { title: "10.000 Seguidores", subtitle: "Monetização e Autoridade", price: "R$ 179,90", value: 179.90, bonus: "Bônus: 10.000 Visualizações", badge: false }
-        ],
-        youtube: [
-          { title: "500 Inscritos", subtitle: "Início do crescimento", price: "R$ 49,90", value: 49.90, bonus: "Inscritos de alta qualidade", badge: false },
-          { title: "1.000 Inscritos", subtitle: "Meta de Monetização", price: "R$ 119,90", value: 119.90, bonus: "Bônus: 1.000 Views no último vídeo", badge: "Monetização 💰", featured: true },
-          { title: "4.000 Horas de Exibição", subtitle: "Monetize seu canal", price: "R$ 249,90", value: 249.90, bonus: "Suporte completo e acompanhamento", badge: false }
-        ],
-        kwai: [
-          { title: "1.000 Seguidores", subtitle: "Primeiros passos no Kwai", price: "R$ 27,90", value: 27.90, bonus: "Sem necessidade de senha", badge: false },
-          { title: "5.000 Seguidores", subtitle: "Crescimento Acelerado", price: "R$ 79,90", value: 79.90, bonus: "Bônus: 1.000 Curtidas", badge: "Populares 🔥", featured: true },
-          { title: "10.000 Seguidores", subtitle: "Impacto de Elite", price: "R$ 139,90", value: 139.90, bonus: "Entrega Rápida e Garantida", badge: false }
-        ]
-      };
-
-      function money(v){ return Number(v || 0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-      function esc(v){ return String(v ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-      function showModal(id){ document.getElementById(id)?.classList.add('active'); }
-      function closeOperationModal(id){ document.getElementById(id)?.classList.remove('active'); }
-
-      function firebaseConfigured(){
-        return APP_CONFIG.firebase.apiKey && !APP_CONFIG.firebase.apiKey.startsWith('COLOQUE_') && APP_CONFIG.firebase.projectId && !APP_CONFIG.firebase.projectId.startsWith('SEU-');
+      function money(v) {
+        return Number(v || 0).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatQty(n) {
+        return Number(n || 0).toLocaleString("pt-BR");
+      }
+      function esc(v) {
+        return String(v ?? "").replace(
+          /[&<>'"]/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            })[c],
+        );
+      }
+      function showModal(id) {
+        document.getElementById(id)?.classList.add("active");
+      }
+      function closeOperationModal(id) {
+        document.getElementById(id)?.classList.remove("active");
       }
 
-      function initFirebase(){
-        if(!firebaseConfigured()){
-          console.warn('Firebase ainda não configurado. O site está em modo de configuração.');
+      function firebaseConfigured() {
+        return (
+          APP_CONFIG.firebase.apiKey &&
+          !APP_CONFIG.firebase.apiKey.startsWith("COLOQUE_") &&
+          APP_CONFIG.firebase.projectId &&
+          !APP_CONFIG.firebase.projectId.startsWith("SEU-")
+        );
+      }
+
+      function initFirebase() {
+        if (!firebaseConfigured()) {
+          console.warn(
+            "Firebase ainda não configurado. O site está em modo de configuração.",
+          );
           return;
         }
-        try{
-          if(!firebase.apps.length) firebase.initializeApp(APP_CONFIG.firebase);
-          auth=firebase.auth(); db=firebase.firestore(); firebaseReady=true;
+        try {
+          if (!firebase.apps.length)
+            firebase.initializeApp(APP_CONFIG.firebase);
+          auth = firebase.auth();
+          db = firebase.firestore();
+          firebaseReady = true;
           auth.onAuthStateChanged(handleAuthState);
-        }catch(e){ console.error(e); alert('Erro ao inicializar a conta. Verifique a configuração do Firebase.'); }
+        } catch (e) {
+          console.error(e);
+          alert(
+            "Erro ao inicializar a conta. Verifique a configuração do Firebase.",
+          );
+        }
       }
 
-      function openLoginModal(){
-        if(firebaseReady){ showModal('loginModal'); return; }
-        showModal('loginModal');
-        const p=document.querySelector('#loginModal .modal-login-content p');
-        if(p) p.innerHTML='Configure o Firebase no bloco <strong>APP_CONFIG</strong> deste HTML para ativar o login Google real.';
+      function openLoginModal() {
+        if (firebaseReady) {
+          showModal("loginModal");
+          return;
+        }
+        showModal("loginModal");
+        const p = document.querySelector("#loginModal .modal-login-content p");
+        if (p)
+          p.innerHTML =
+            "Configure o Firebase no bloco <strong>APP_CONFIG</strong> deste HTML para ativar o login Google real.";
       }
-      function closeLoginModal(){ closeOperationModal('loginModal'); }
+      function closeLoginModal() {
+        closeOperationModal("loginModal");
+      }
 
-      async function loginGoogle(){
-        if(!firebaseReady){ alert('O login Google ainda não está configurado. Preencha o APP_CONFIG do Firebase.'); return; }
-        try{
-          const provider=new firebase.auth.GoogleAuthProvider();
-          provider.setCustomParameters({prompt:'select_account'});
+      async function loginGoogle() {
+        if (!firebaseReady) {
+          alert(
+            "O login Google ainda não está configurado. Preencha o APP_CONFIG do Firebase.",
+          );
+          return;
+        }
+        try {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: "select_account" });
           await auth.signInWithPopup(provider);
-        }catch(e){ console.error(e); alert('Não foi possível entrar com Google: '+(e.message||'erro')); }
+        } catch (e) {
+          console.error(e);
+          alert("Não foi possível entrar com Google: " + (e.message || "erro"));
+        }
       }
 
-      async function handleAuthState(user){
-        currentUser=user||null;
-        if(!user){
-          document.getElementById('user-name-display').textContent='Visitante';
-          document.getElementById('user-status-display').textContent='Clique para entrar';
-          document.getElementById('user-avatar-display').innerHTML='<i class="fa-solid fa-user"></i>';
-          document.getElementById('account-chip')?.classList.remove('active');
-          if(unsubscribeUser) unsubscribeUser(); if(unsubscribeOrders) unsubscribeOrders();
+      async function handleAuthState(user) {
+        currentUser = user || null;
+        if (!user) {
+          document.getElementById("user-name-display").textContent =
+            "Visitante";
+          document.getElementById("user-status-display").textContent =
+            "Clique para entrar";
+          document.getElementById("user-avatar-display").innerHTML =
+            '<i class="fa-solid fa-user"></i>';
+          document.getElementById("account-chip")?.classList.remove("active");
+          if (unsubscribeUser) unsubscribeUser();
+          if (unsubscribeOrders) unsubscribeOrders();
           return;
         }
         closeLoginModal();
-        document.getElementById('user-name-display').textContent=user.displayName||'Cliente';
-        document.getElementById('user-status-display').textContent='Conectado via Google';
-        document.getElementById('user-avatar-display').innerHTML=user.photoURL?`<img src="${esc(user.photoURL)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:'<i class="fa-solid fa-user"></i>';
-        const chip=document.getElementById('account-chip');
-        if(chip){chip.classList.add('active');chip.innerHTML=`${user.photoURL?`<img src="${esc(user.photoURL)}">`:''}<span>${esc(user.displayName||'Conta')}</span>`;chip.onclick=()=>openAccount();}
+        document.getElementById("user-name-display").textContent =
+          user.displayName || "Cliente";
+        document.getElementById("user-status-display").textContent =
+          "Conectado via Google";
+        document.getElementById("user-avatar-display").innerHTML = user.photoURL
+          ? `<img src="${esc(user.photoURL)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
+          : '<i class="fa-solid fa-user"></i>';
+        const chip = document.getElementById("account-chip");
+        if (chip) {
+          chip.classList.add("active");
+          chip.innerHTML = `${user.photoURL ? `<img src="${esc(user.photoURL)}">` : ""}<span>${esc(user.displayName || "Conta")}</span>`;
+          chip.onclick = () => openAccount();
+        }
         await ensureUserDocument(user);
         subscribeUserData(user.uid);
       }
 
-      async function ensureUserDocument(user){
-        if(!firebaseReady) return;
-        const ref=db.collection('users').doc(user.uid);
-        const snap=await ref.get();
-        if(!snap.exists){
-          await ref.set({uid:user.uid,name:user.displayName||'',email:user.email||'',photoURL:user.photoURL||'',balance:0,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-        }else{
-          await ref.set({name:user.displayName||'',email:user.email||'',photoURL:user.photoURL||'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+      async function ensureUserDocument(user) {
+        if (!firebaseReady) return;
+        const ref = db.collection("users").doc(user.uid);
+        const snap = await ref.get();
+        if (!snap.exists) {
+          await ref.set({
+            uid: user.uid,
+            name: user.displayName || "",
+            email: user.email || "",
+            photoURL: user.photoURL || "",
+            balance: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        } else {
+          await ref.set(
+            {
+              name: user.displayName || "",
+              email: user.email || "",
+              photoURL: user.photoURL || "",
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+          );
         }
       }
 
-      function subscribeUserData(uid){
-        if(unsubscribeUser) unsubscribeUser();
-        unsubscribeUser=db.collection('users').doc(uid).onSnapshot(s=>{
-          const d=s.data()||{}; document.getElementById('user-balance').textContent=money(d.balance||0); renderAccount(d);
+      function subscribeUserData(uid) {
+        if (unsubscribeUser) unsubscribeUser();
+        unsubscribeUser = db
+          .collection("users")
+          .doc(uid)
+          .onSnapshot((s) => {
+            const d = s.data() || {};
+            document.getElementById("user-balance").textContent = money(
+              d.balance || 0,
+            );
+            renderAccount(d);
+          });
+        if (unsubscribeOrders) unsubscribeOrders();
+        unsubscribeOrders = db
+          .collection("orders")
+          .where("userId", "==", uid)
+          .orderBy("createdAt", "desc")
+          .limit(20)
+          .onSnapshot(
+            (s) => {
+              renderOrders(s.docs.map((x) => ({ id: x.id, ...x.data() })));
+            },
+            (e) => {
+              console.warn("Pedidos:", e);
+            },
+          );
+      }
+
+      function renderAccount(d) {
+        const el = document.getElementById("account-content");
+        if (!el || !currentUser) return;
+        el.innerHTML = `<div class="op-summary"><div><strong>${esc(d.name || currentUser.displayName || "Cliente")}</strong><br><small>${esc(d.email || currentUser.email || "")}</small></div><div class="op-price">${money(d.balance || 0)}</div></div><p>Login permitido somente pela conta Google. Seu saldo e pedidos ficam vinculados a este usuário.</p>`;
+      }
+      function openAccount() {
+        if (!currentUser) {
+          openLoginModal();
+          return;
+        }
+        showModal("accountModal");
+      }
+
+      async function logoutGoogle() {
+        if (auth) await auth.signOut();
+        closeOperationModal("accountModal");
+        closeOperationModal("adminModal");
+      }
+
+      function requireLogin() {
+        if (!currentUser) {
+          openLoginModal();
+          alert("Entre com sua conta Google para continuar.");
+          return false;
+        }
+        return true;
+      }
+
+      /* =========================================================
+         CHECKOUT DE PLANOS (seção "Escolha Sua Rede Social")
+         ========================================================= */
+      function renderPlatformPlans(platform) {
+        const data = catalog[platform];
+        const container = document.getElementById("plans-container");
+        if (!container) return;
+        if (!data) {
+          container.innerHTML = "";
+          return;
+        }
+        let html = "";
+        Object.entries(data.groups).forEach(([groupKey, group], gi) => {
+          html += `<h3 class="service-group-title"${gi === 0 ? ' style="margin-top:0"' : ""}>${esc(group.label)} ${esc(data.label)}</h3>`;
+          html += `<div class="plans-grid">`;
+          group.tiers.forEach((tier, ti) => {
+            const featured = group.tiers.length >= 2 && ti === 1;
+            html += `<div class="plan-card ${featured ? "featured" : ""}">
+              ${featured ? '<div class="featured-badge">Mais Vendido 🔥</div>' : ""}
+              <div class="plan-header">
+                <h3>${formatQty(tier.qty)} ${esc(group.label)}</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem">${esc(data.label)}</p>
+                <div class="plan-price">${money(tier.price)} <span>/ único</span></div>
+              </div>
+              <ul class="plan-features">
+                <li><i class="fa-solid fa-circle-check"></i> Sem necessidade de senha</li>
+                <li><i class="fa-solid fa-circle-check"></i> Início Instantâneo (0-1h)</li>
+                <li><i class="fa-solid fa-circle-check"></i> Garantia de Reposição 30 dias</li>
+                <li><i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP</li>
+              </ul>
+              <a href="javascript:void(0)" onclick="openPlanCheckout('${platform}','${groupKey}',${ti})" class="btn-plan">Comprar via Pix</a>
+            </div>`;
+          });
+          html += `</div>`;
         });
-        if(unsubscribeOrders) unsubscribeOrders();
-        unsubscribeOrders=db.collection('orders').where('userId','==',uid).orderBy('createdAt','desc').limit(20).onSnapshot(s=>{
-          renderOrders(s.docs.map(x=>({id:x.id,...x.data()})));
-        },e=>{ console.warn('Pedidos:',e); });
+        container.innerHTML = html;
       }
 
-      function renderAccount(d){
-        const el=document.getElementById('account-content'); if(!el||!currentUser)return;
-        el.innerHTML=`<div class="op-summary"><div><strong>${esc(d.name||currentUser.displayName||'Cliente')}</strong><br><small>${esc(d.email||currentUser.email||'')}</small></div><div class="op-price">${money(d.balance||0)}</div></div><p>Login permitido somente pela conta Google. Seu saldo e pedidos ficam vinculados a este usuário.</p>`;
+      function switchPlatform(platform, btn) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderPlatformPlans(platform);
       }
-      function openAccount(){ if(!currentUser){openLoginModal();return;} showModal('accountModal'); }
 
-      async function logoutGoogle(){ if(auth) await auth.signOut(); closeOperationModal('accountModal'); closeOperationModal('adminModal'); }
-
-      function requireLogin(){ if(!currentUser){ openLoginModal(); alert('Entre com sua conta Google para continuar.'); return false;} return true; }
-
-      function parseBRL(text){ return Number(String(text).replace(/[^0-9,.-]/g,'').replace('.','').replace(',','.'))||0; }
-      function openPlanCheckout(label){
-        if(!requireLogin()) return;
-        let found=null, platform='';
-        for(const [p,plans] of Object.entries(platformData)){
-          const x=plans.find(z=>`${z.title} ${p.toUpperCase()}`===label || z.title===label); if(x){found=x;platform=p;break;}
+      function openPlanCheckout(platform, groupKey, tierIndex) {
+        if (!requireLogin()) return;
+        const data = catalog[platform];
+        const group = data && data.groups[groupKey];
+        const tier = group && group.tiers[tierIndex];
+        if (!group || !tier) {
+          alert("Pacote não encontrado.");
+          return;
         }
-        if(!found){
-          const parts=String(label).split(' '); const p=(parts.pop()||'').toLowerCase();
-          platform=p; found=(platformData[p]||[]).find(z=>z.title.startsWith(parts.join(' ')))||null;
+        const title = `${formatQty(tier.qty)} ${group.label} ${data.label}`;
+        document.getElementById("checkout-title").textContent = title;
+        document.getElementById("checkout-platform").textContent =
+          data.label.toUpperCase();
+        document.getElementById("checkout-price").textContent = money(
+          tier.price,
+        );
+        document.getElementById("checkout-email").value =
+          currentUser.email || "";
+        document.getElementById("checkoutModal").dataset.plan = JSON.stringify({
+          title,
+          platform: data.label,
+          value: tier.price,
+          quantity: tier.qty,
+        });
+        document.getElementById("checkout-link").value = "";
+        showModal("checkoutModal");
+      }
+
+      async function createManualPixOrder() {
+        if (!requireLogin()) return;
+        if (!firebaseReady) {
+          alert("Configure o Firebase antes de criar pedidos.");
+          return;
         }
-        if(!found){alert('Plano não encontrado.');return;}
-        document.getElementById('checkout-title').textContent=found.title;
-        document.getElementById('checkout-platform').textContent=platform.toUpperCase();
-        document.getElementById('checkout-price').textContent=money(found.value);
-        document.getElementById('checkout-email').value=currentUser.email||'';
-        document.getElementById('checkoutModal').dataset.plan=JSON.stringify({title:found.title,platform,value:found.value});
-        document.getElementById('checkout-link').value='';
-        showModal('checkoutModal');
+        const link = document.getElementById("checkout-link").value.trim();
+        if (!link) {
+          alert("Informe o link ou @ do perfil.");
+          return;
+        }
+        if (!APP_CONFIG.pix.key || APP_CONFIG.pix.key.includes("SUA_CHAVE")) {
+          alert(
+            "Configure sua chave Pix no APP_CONFIG.pix.key antes de receber pagamentos.",
+          );
+          return;
+        }
+        const plan = JSON.parse(
+          document.getElementById("checkoutModal").dataset.plan || "{}",
+        );
+        const order = {
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "",
+          userEmail: currentUser.email || "",
+          service: plan.title || "",
+          platform: plan.platform || "",
+          quantity: plan.quantity || extractQuantity(plan.title),
+          link,
+          amount: Number(plan.value || 0),
+          status: "pending_payment",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        const ref = await db.collection("orders").add(order);
+        currentOrderId = ref.id;
+        const payload = buildPixPayload(
+          order.amount,
+          APP_CONFIG.pix.key,
+          APP_CONFIG.pix.merchantName,
+          APP_CONFIG.pix.merchantCity,
+          "PED" + ref.id.slice(0, 20),
+        );
+        await ref.update({ pixPayload: payload, pixKey: APP_CONFIG.pix.key });
+        showPixForOrder(order.amount, payload, "pixModal");
+        closeOperationModal("checkoutModal");
       }
 
-      async function createManualPixOrder(){
-        if(!requireLogin())return;
-        if(!firebaseReady){alert('Configure o Firebase antes de criar pedidos.');return;}
-        const link=document.getElementById('checkout-link').value.trim();
-        if(!link){alert('Informe o link ou @ do perfil.');return;}
-        if(!APP_CONFIG.pix.key || APP_CONFIG.pix.key.includes('SUA_CHAVE')){alert('Configure sua chave Pix PJ no APP_CONFIG.pix.key antes de receber pagamentos.');return;}
-        const plan=JSON.parse(document.getElementById('checkoutModal').dataset.plan||'{}');
-        const order={userId:currentUser.uid,userName:currentUser.displayName||'',userEmail:currentUser.email||'',service:plan.title||'',platform:plan.platform||'',quantity:extractQuantity(plan.title),link,amount:Number(plan.value||0),status:'pending_payment',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-        const ref=await db.collection('orders').add(order); currentOrderId=ref.id;
-        const payload=buildPixPayload(order.amount, APP_CONFIG.pix.key, APP_CONFIG.pix.merchantName, APP_CONFIG.pix.merchantCity, 'PED'+ref.id.slice(0,20));
-        await ref.update({pixPayload:payload,pixKey:APP_CONFIG.pix.key});
-        showPixForOrder(order.amount,payload,'pixModal');
-        closeOperationModal('checkoutModal');
+      function extractQuantity(title) {
+        const m = String(title).match(/[0-9.]+/);
+        return m ? m[0] : "1";
       }
-
-      function extractQuantity(title){ const m=String(title).match(/[0-9.]+/); return m?m[0]:'1'; }
-      function buildPixPayload(amount,key,name,city,txid){
+      function buildPixPayload(amount, key, name, city, txid) {
         // BR Code EMV Pix payload (sem API): QR dinâmico/estático para chave Pix.
-        const merchant=normalizePixText(name).slice(0,25); const mcity=normalizePixText(city).slice(0,15); const k=String(key).trim();
-        let payload='000201010211';
-        const gui='0014BR.GOV.BCB.PIX'; const keyField=tag('01',k); payload+=tag('26',gui+keyField);
-        payload+=tag('52','0000')+tag('53','986')+tag('54',Number(amount).toFixed(2))+tag('58','BR')+tag('59',merchant)+tag('60',mcity)+tag('62',tag('05',String(txid).slice(0,25)));
-        payload+='6304'; payload+=crc16(payload); return payload;
+        const merchant = normalizePixText(name).slice(0, 25);
+        const mcity = normalizePixText(city).slice(0, 15);
+        const k = String(key).trim();
+        let payload = "000201010211";
+        const gui = "0014BR.GOV.BCB.PIX";
+        const keyField = tag("01", k);
+        payload += tag("26", gui + keyField);
+        payload +=
+          tag("52", "0000") +
+          tag("53", "986") +
+          tag("54", Number(amount).toFixed(2)) +
+          tag("58", "BR") +
+          tag("59", merchant) +
+          tag("60", mcity) +
+          tag("62", tag("05", String(txid).slice(0, 25)));
+        payload += "6304";
+        payload += crc16(payload);
+        return payload;
       }
-      function tag(id,value){ return id+String(value.length).padStart(2,'0')+value; }
-      function normalizePixText(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().toUpperCase();}
-      function crc16(str){let crc=0xFFFF;for(let i=0;i<str.length;i++){crc^=str.charCodeAt(i)<<8;for(let j=0;j<8;j++)crc=(crc&0x8000)?((crc<<1)^0x1021)&0xFFFF:(crc<<1)&0xFFFF;}return crc.toString(16).toUpperCase().padStart(4,'0');}
-      function setQrImage(img,payload){if(window.QRCode){QRCode.toDataURL(payload,{width:420,margin:1},(err,url)=>{if(!err&&img)img.src=url;});}else if(img){img.alt='QR Code Pix — carregando biblioteca QR';}}
-      function showPixForOrder(amount,payload,modalId){
-        document.getElementById('pix-amount').textContent=money(amount); document.getElementById('pix-copy-code').value=payload; setQrImage(document.getElementById('pix-qr-img'),payload); document.getElementById('pix-status').textContent='AGUARDANDO PAGAMENTO'; document.getElementById('pix-status').className='status-pill status-pending'; showModal(modalId);
+      function tag(id, value) {
+        return id + String(value.length).padStart(2, "0") + value;
       }
-      async function copyPixCode(){ const el=document.getElementById('pix-copy-code'); try{await navigator.clipboard.writeText(el.value);alert('Pix Copia e Cola copiado.');}catch(e){el.select();document.execCommand('copy');alert('Pix Copia e Cola copiado.');} }
+      function normalizePixText(s) {
+        return String(s)
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^A-Za-z0-9 ]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toUpperCase();
+      }
+      function crc16(str) {
+        let crc = 0xffff;
+        for (let i = 0; i < str.length; i++) {
+          crc ^= str.charCodeAt(i) << 8;
+          for (let j = 0; j < 8; j++)
+            crc =
+              crc & 0x8000
+                ? ((crc << 1) ^ 0x1021) & 0xffff
+                : (crc << 1) & 0xffff;
+        }
+        return crc.toString(16).toUpperCase().padStart(4, "0");
+      }
+      function setQrImage(img, payload) {
+        if (window.QRCode) {
+          QRCode.toDataURL(payload, { width: 420, margin: 1 }, (err, url) => {
+            if (!err && img) img.src = url;
+          });
+        } else if (img) {
+          img.alt = "QR Code Pix — carregando biblioteca QR";
+        }
+      }
+      function showPixForOrder(amount, payload, modalId) {
+        document.getElementById("pix-amount").textContent = money(amount);
+        document.getElementById("pix-copy-code").value = payload;
+        setQrImage(document.getElementById("pix-qr-img"), payload);
+        document.getElementById("pix-status").textContent =
+          "AGUARDANDO PAGAMENTO";
+        document.getElementById("pix-status").className =
+          "status-pill status-pending";
+        showModal(modalId);
+      }
+      async function copyPixCode() {
+        const el = document.getElementById("pix-copy-code");
+        try {
+          await navigator.clipboard.writeText(el.value);
+          alert("Pix Copia e Cola copiado.");
+        } catch (e) {
+          el.select();
+          document.execCommand("copy");
+          alert("Pix Copia e Cola copiado.");
+        }
+      }
 
-      async function markCurrentOrderPaidByCustomer(){
-        if(!currentOrderId||!firebaseReady){alert('Pedido não localizado.');return;}
-        await db.collection('orders').doc(currentOrderId).set({status:'payment_reported',paymentReportedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-        document.getElementById('pix-status').textContent='PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA'; document.getElementById('pix-status').className='status-pill status-pending';
-        alert('Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.');
+      async function markCurrentOrderPaidByCustomer() {
+        if (!currentOrderId || !firebaseReady) {
+          alert("Pedido não localizado.");
+          return;
+        }
+        await db.collection("orders").doc(currentOrderId).set(
+          {
+            status: "payment_reported",
+            paymentReportedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+        document.getElementById("pix-status").textContent =
+          "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
+        document.getElementById("pix-status").className =
+          "status-pill status-pending";
+        alert(
+          "Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.",
+        );
       }
 
-      function openBalanceModal(){ if(!requireLogin())return; document.getElementById('deposit-pix-area').innerHTML=''; showModal('balanceModal'); }
-      async function createDepositPix(){
-        if(!requireLogin()||!firebaseReady)return;
-        const amount=Number(document.getElementById('deposit-amount').value||0); if(amount<1){alert('Informe um valor mínimo de R$ 1,00.');return;}
-        if(APP_CONFIG.pix.key.includes('SUA_CHAVE')){alert('Configure sua chave Pix PJ no APP_CONFIG.pix.key.');return;}
-        const ref=await db.collection('deposits').add({userId:currentUser.uid,userName:currentUser.displayName||'',userEmail:currentUser.email||'',amount,status:'pending_payment',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-        currentDepositId=ref.id; const payload=buildPixPayload(amount,APP_CONFIG.pix.key,APP_CONFIG.pix.merchantName,APP_CONFIG.pix.merchantCity,'DEP'+ref.id.slice(0,20));
-        await ref.update({pixPayload:payload,pixKey:APP_CONFIG.pix.key});
-        document.getElementById('deposit-pix-area').innerHTML=`<div class="pix-card"><strong>${money(amount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(payload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`; setQrImage(document.getElementById('deposit-qr-img'),payload);
+      function openBalanceModal() {
+        if (!requireLogin()) return;
+        document.getElementById("deposit-pix-area").innerHTML = "";
+        showModal("balanceModal");
       }
-      async function copyDepositCode(){const el=document.getElementById('deposit-copy-code');await navigator.clipboard.writeText(el.value);alert('Pix Copia e Cola copiado.');}
-      async function reportDepositPaid(){if(!currentDepositId)return;await db.collection('deposits').doc(currentDepositId).set({status:'payment_reported',paymentReportedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});alert('Pagamento informado. Aguarde a confirmação do proprietário.');}
+      async function createDepositPix() {
+        if (!requireLogin() || !firebaseReady) return;
+        const amount = Number(
+          document.getElementById("deposit-amount").value || 0,
+        );
+        if (amount < 1) {
+          alert("Informe um valor mínimo de R$ 1,00.");
+          return;
+        }
+        if (APP_CONFIG.pix.key.includes("SUA_CHAVE")) {
+          alert("Configure sua chave Pix no APP_CONFIG.pix.key.");
+          return;
+        }
+        const ref = await db.collection("deposits").add({
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "",
+          userEmail: currentUser.email || "",
+          amount,
+          status: "pending_payment",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        currentDepositId = ref.id;
+        const payload = buildPixPayload(
+          amount,
+          APP_CONFIG.pix.key,
+          APP_CONFIG.pix.merchantName,
+          APP_CONFIG.pix.merchantCity,
+          "DEP" + ref.id.slice(0, 20),
+        );
+        await ref.update({ pixPayload: payload, pixKey: APP_CONFIG.pix.key });
+        document.getElementById("deposit-pix-area").innerHTML =
+          `<div class="pix-card"><strong>${money(amount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(payload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
+        setQrImage(document.getElementById("deposit-qr-img"), payload);
+      }
+      async function copyDepositCode() {
+        const el = document.getElementById("deposit-copy-code");
+        await navigator.clipboard.writeText(el.value);
+        alert("Pix Copia e Cola copiado.");
+      }
+      async function reportDepositPaid() {
+        if (!currentDepositId) return;
+        await db.collection("deposits").doc(currentDepositId).set(
+          {
+            status: "payment_reported",
+            paymentReportedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+        alert("Pagamento informado. Aguarde a confirmação do proprietário.");
+      }
 
-      function renderOrders(orders){
-        const box=document.getElementById('panel-orders-list'); if(!box)return;
-        if(!orders.length){box.innerHTML='<p class="empty-state">Você ainda não possui pedidos recentes.</p>';return;}
-        box.innerHTML=orders.map(o=>`<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>ID: ${esc(o.id)}</small></div>`).join('');
+      function renderOrders(orders) {
+        const box = document.getElementById("panel-orders-list");
+        if (!box) return;
+        if (!orders.length) {
+          box.innerHTML =
+            '<p class="empty-state">Você ainda não possui pedidos recentes.</p>';
+          return;
+        }
+        box.innerHTML = orders
+          .map(
+            (o) =>
+              `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>ID: ${esc(o.id)}</small></div>`,
+          )
+          .join("");
       }
-      function statusClass(s){return ({pending_payment:'status-pending',payment_reported:'status-pending',paid:'status-paid',processing:'status-processing',completed:'status-done',cancelled:'status-cancelled'}[s]||'status-pending');}
-      function statusLabel(s){return ({pending_payment:'AGUARDANDO PAGAMENTO',payment_reported:'PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA',paid:'PAGAMENTO CONFIRMADO',processing:'EM PROCESSAMENTO',completed:'CONCLUÍDO',cancelled:'CANCELADO'}[s]||String(s||'PENDENTE').toUpperCase());}
+      function statusClass(s) {
+        return (
+          {
+            pending_payment: "status-pending",
+            payment_reported: "status-pending",
+            paid: "status-paid",
+            processing: "status-processing",
+            completed: "status-done",
+            cancelled: "status-cancelled",
+          }[s] || "status-pending"
+        );
+      }
+      function statusLabel(s) {
+        return (
+          {
+            pending_payment: "AGUARDANDO PAGAMENTO",
+            payment_reported: "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA",
+            paid: "PAGAMENTO CONFIRMADO",
+            processing: "EM PROCESSAMENTO",
+            completed: "CONCLUÍDO",
+            cancelled: "CANCELADO",
+          }[s] || String(s || "PENDENTE").toUpperCase()
+        );
+      }
 
-      function isAdmin(){return currentUser && currentUser.email && currentUser.email.toLowerCase()===APP_CONFIG.adminEmail.toLowerCase();}
-      async function openAdmin(){
-        if(!requireLogin())return;
-        if(!isAdmin()){alert('Esta área é exclusiva do proprietário.');return;}
-        showModal('adminModal'); renderAdminLoading();
-        if(unsubscribeAdminOrders) unsubscribeAdminOrders();
-        if(unsubscribeAdminDeposits) unsubscribeAdminDeposits();
-        unsubscribeAdminOrders=db.collection('orders').orderBy('createdAt','desc').limit(50).onSnapshot(s=>renderAdminOrders(s.docs.map(x=>({id:x.id,...x.data()}))));
-        unsubscribeAdminDeposits=db.collection('deposits').orderBy('createdAt','desc').limit(50).onSnapshot(s=>renderAdminDeposits(s.docs.map(x=>({id:x.id,...x.data()}))));
+      function isAdmin() {
+        return (
+          currentUser &&
+          currentUser.email &&
+          currentUser.email.toLowerCase() ===
+            APP_CONFIG.adminEmail.toLowerCase()
+        );
       }
-      function renderAdminLoading(){document.getElementById('admin-content').innerHTML='<div class="empty-state">Carregando pedidos...</div>';}
-      let adminOrdersCache=[];
-      let adminDepositsCache=[];
-      function renderAdminOrders(orders){const had=adminOrdersCache.length;adminOrdersCache=orders;renderAdminDashboard();if(isAdmin()&&orders.filter(o=>['payment_reported'].includes(o.status)).length>had){try{if(Notification.permission==='granted')new Notification('Novo pagamento informado',{body:'Há um pedido aguardando confirmação.'});else if(Notification.permission==='default')Notification.requestPermission();}catch(e){}}}
-      function renderAdminDeposits(deposits){adminDepositsCache=deposits; renderAdminDashboard();}
-      function renderAdminDashboard(){
-        const orders=adminOrdersCache, deposits=adminDepositsCache;
-        const pendingOrders=orders.filter(o=>['payment_reported','pending_payment'].includes(o.status));
-        const pendingDeposits=deposits.filter(d=>['payment_reported','pending_payment'].includes(d.status));
-        const allOrders=orders.filter(o=>!['payment_reported','pending_payment'].includes(o.status));
-        const el=document.getElementById('admin-content'); if(!el)return;
-        el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join('')||'<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join('')||'<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join('')||'<div class="empty-state">Nenhum pedido.</div>'}`;
+      async function openAdmin() {
+        if (!requireLogin()) return;
+        if (!isAdmin()) {
+          alert("Esta área é exclusiva do proprietário.");
+          return;
+        }
+        showModal("adminModal");
+        renderAdminLoading();
+        if (unsubscribeAdminOrders) unsubscribeAdminOrders();
+        if (unsubscribeAdminDeposits) unsubscribeAdminDeposits();
+        unsubscribeAdminOrders = db
+          .collection("orders")
+          .orderBy("createdAt", "desc")
+          .limit(50)
+          .onSnapshot((s) =>
+            renderAdminOrders(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
+          );
+        unsubscribeAdminDeposits = db
+          .collection("deposits")
+          .orderBy("createdAt", "desc")
+          .limit(50)
+          .onSnapshot((s) =>
+            renderAdminDeposits(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
+          );
       }
-      function adminDepositCard(d){return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName||'Cliente')}</strong><br><small>${esc(d.userEmail||'')} · #${esc(d.id)}</small></div><strong>${money(d.amount)}</strong></div><span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${['pending_payment','payment_reported'].includes(d.status)?`<button class="op-btn success" onclick="confirmDepositPayment('${d.id}')">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}')">❌ Recusar</button>`:''}</div></div>`;}
-      function adminOrderCard(o){return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName||'Cliente')}</strong><br><small>${esc(o.userEmail||'')} · #${esc(o.id)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${['pending_payment','payment_reported'].includes(o.status)?`<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>`:''}${o.status==='paid'?`<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>`:''}${o.status==='processing'?`<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>`:''}</div></div>`;}
-      async function confirmOrderPayment(id){if(!isAdmin())return;const ref=db.collection('orders').doc(id);const snap=await ref.get();const o=snap.data();if(!o)return;await ref.set({status:'paid',paymentConfirmedAt:firebase.firestore.FieldValue.serverTimestamp(),confirmedBy:currentUser.email,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});alert('Pagamento confirmado. Pedido liberado.');}
-      async function cancelOrder(id){if(!isAdmin())return;if(!confirm('Recusar este pedido?'))return;await db.collection('orders').doc(id).set({status:'cancelled',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}
-      async function setOrderStatus(id,status){if(!isAdmin())return;await db.collection('orders').doc(id).set({status,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}
+      function renderAdminLoading() {
+        document.getElementById("admin-content").innerHTML =
+          '<div class="empty-state">Carregando pedidos...</div>';
+      }
+      let adminOrdersCache = [];
+      let adminDepositsCache = [];
+      function renderAdminOrders(orders) {
+        const had = adminOrdersCache.length;
+        adminOrdersCache = orders;
+        renderAdminDashboard();
+        if (
+          isAdmin() &&
+          orders.filter((o) => ["payment_reported"].includes(o.status)).length >
+            had
+        ) {
+          try {
+            if (Notification.permission === "granted")
+              new Notification("Novo pagamento informado", {
+                body: "Há um pedido aguardando confirmação.",
+              });
+            else if (Notification.permission === "default")
+              Notification.requestPermission();
+          } catch (e) {}
+        }
+      }
+      function renderAdminDeposits(deposits) {
+        adminDepositsCache = deposits;
+        renderAdminDashboard();
+      }
+      function renderAdminDashboard() {
+        const orders = adminOrdersCache,
+          deposits = adminDepositsCache;
+        const pendingOrders = orders.filter((o) =>
+          ["payment_reported", "pending_payment"].includes(o.status),
+        );
+        const pendingDeposits = deposits.filter((d) =>
+          ["payment_reported", "pending_payment"].includes(d.status),
+        );
+        const allOrders = orders.filter(
+          (o) => !["payment_reported", "pending_payment"].includes(o.status),
+        );
+        const el = document.getElementById("admin-content");
+        if (!el) return;
+        el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
+      }
+      function adminDepositCard(d) {
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small></div><strong>${money(d.amount)}</strong></div><span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}')">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}')">❌ Recusar</button>` : ""}</div></div>`;
+      }
+      function adminOrderCard(o) {
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>` : ""}</div></div>`;
+      }
+      async function confirmOrderPayment(id) {
+        if (!isAdmin()) return;
+        const ref = db.collection("orders").doc(id);
+        const snap = await ref.get();
+        const o = snap.data();
+        if (!o) return;
+        await ref.set(
+          {
+            status: "paid",
+            paymentConfirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            confirmedBy: currentUser.email,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+        alert("Pagamento confirmado. Pedido liberado.");
+      }
+      async function cancelOrder(id) {
+        if (!isAdmin()) return;
+        if (!confirm("Recusar este pedido?")) return;
+        await db.collection("orders").doc(id).set(
+          {
+            status: "cancelled",
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
+      async function setOrderStatus(id, status) {
+        if (!isAdmin()) return;
+        await db.collection("orders").doc(id).set(
+          {
+            status,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
 
       // Depósitos: o proprietário confirma e o valor é somado ao saldo uma única vez.
-      function openAdminDeposits(){ if(!isAdmin())return; }
-      async function confirmDepositPayment(id){
-        if(!isAdmin())return; const ref=db.collection('deposits').doc(id); const snap=await ref.get(); const dep=snap.data(); if(!dep||dep.status==='paid')return;
-        await db.runTransaction(async tx=>{const userRef=db.collection('users').doc(dep.userId);const us=await tx.get(userRef);const balance=Number((us.data()||{}).balance||0);tx.update(userRef,{balance:balance+Number(dep.amount||0),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(ref,{status:'paid',paymentConfirmedAt:firebase.firestore.FieldValue.serverTimestamp(),confirmedBy:currentUser.email,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});});
+      function openAdminDeposits() {
+        if (!isAdmin()) return;
       }
-      async function cancelDeposit(id){if(!isAdmin())return;if(!confirm('Recusar este depósito?'))return;await db.collection('deposits').doc(id).set({status:'cancelled',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}
-
-
-      function switchPanelTab(tab,btn){document.querySelectorAll('.panel-tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('panel-add-form').style.display=tab==='add'?'block':'none';document.getElementById('panel-orders-list').style.display=tab==='orders'?'block':'none';}
-      function setQty(v){document.getElementById('order-qty').value=v;calculateOrderPrice();}
-      async function pasteLink(){try{document.getElementById('order-link').value=await navigator.clipboard.readText();}catch(e){alert('Cole o link manualmente.');}}
-      function filterServices(q){q=q.toLowerCase();if(!q)return;for(const cat in smmServicesData){if(smmServicesData[cat].some(s=>s.name.toLowerCase().includes(q))){document.getElementById('category-select').value=cat;updateServicesOptions();break;}}}
-      function updateServicesOptions(){const cat=document.getElementById('category-select').value;const services=smmServicesData[cat]||[];document.getElementById('service-select').innerHTML=services.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');updateServiceDetails();}
-      function getSelectedService(){const cat=document.getElementById('category-select').value;const id=parseInt(document.getElementById('service-select').value);return (smmServicesData[cat]||[]).find(s=>s.id===id)||(smmServicesData[cat]||[])[0];}
-      function updateServiceDetails(){const s=getSelectedService();if(!s)return;document.getElementById('service-description').innerHTML=`<p>📌 <strong>Qualidade:</strong> Qualidade boa</p><p>⏱️ <strong>Hora de inicio:</strong> 0-1 hora</p><p>🚀 <strong>Velocidade por dia:</strong> ${s.max.toLocaleString('pt-BR')}</p><p>📉 <strong>Pedido mínimo:</strong> ${s.min}</p><p>📈 <strong>Pedido máximo:</strong> ${s.max.toLocaleString('pt-BR')}</p>`;calculateOrderPrice();}
-      function calculateOrderPrice(){const qty=Number(document.getElementById('order-qty').value||0),s=getSelectedService();if(!s)return;const total=qty/1000*s.pricePerThousand;document.getElementById('total-price-display').textContent=money(total);}
-      async function submitOrder(){
-        if(!requireLogin())return; const s=getSelectedService(); const link=document.getElementById('order-link').value.trim(); const qty=Number(document.getElementById('order-qty').value||0); if(!s||!link){alert('Informe o link e o serviço.');return;} if(qty<s.min||qty>s.max){alert(`A quantidade deve ficar entre ${s.min} e ${s.max}.`);return;}
-        if(!firebaseReady){alert('Configure o Firebase antes de criar pedidos.');return;}
-        const amount=Number((qty/1000*s.pricePerThousand).toFixed(2)); const order={userId:currentUser.uid,userName:currentUser.displayName||'',userEmail:currentUser.email||'',service:s.name,platform:document.getElementById('category-select').value,quantity:qty,link,amount,status:'pending_payment',createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};const ref=await db.collection('orders').add(order);currentOrderId=ref.id;const payload=buildPixPayload(amount,APP_CONFIG.pix.key,APP_CONFIG.pix.merchantName,APP_CONFIG.pix.merchantCity,'PED'+ref.id.slice(0,20));await ref.update({pixPayload:payload,pixKey:APP_CONFIG.pix.key});showPixForOrder(amount,payload,'pixModal');
+      async function confirmDepositPayment(id) {
+        if (!isAdmin()) return;
+        const ref = db.collection("deposits").doc(id);
+        const snap = await ref.get();
+        const dep = snap.data();
+        if (!dep || dep.status === "paid") return;
+        await db.runTransaction(async (tx) => {
+          const userRef = db.collection("users").doc(dep.userId);
+          const us = await tx.get(userRef);
+          const balance = Number((us.data() || {}).balance || 0);
+          tx.update(userRef, {
+            balance: balance + Number(dep.amount || 0),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          tx.update(ref, {
+            status: "paid",
+            paymentConfirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            confirmedBy: currentUser.email,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+        });
       }
-      function openPixWhatsApp(itemText){window.open(`https://wa.me/${APP_CONFIG.whatsappNumber}?text=${encodeURIComponent(itemText?`Olá! Tenho interesse em ${itemText}.`:'Olá! Preciso de suporte com meu pedido.')}`,'_blank');}
+      async function cancelDeposit(id) {
+        if (!isAdmin()) return;
+        if (!confirm("Recusar este depósito?")) return;
+        await db.collection("deposits").doc(id).set(
+          {
+            status: "cancelled",
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
+      }
 
-      function switchPlatform(platform,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const container=document.getElementById('plans-container');const plans=platformData[platform]||[];container.innerHTML=plans.map(p=>`<div class="plan-card ${p.featured?'featured':''}">${p.badge?`<div class="featured-badge">${p.badge}</div>`:''}<div class="plan-header"><h3>${p.title}</h3><p style="color:var(--text-muted);font-size:.85rem">${p.subtitle}</p><div class="plan-price">${p.price} <span>/ único</span></div></div><ul class="plan-features"><li><i class="fa-solid fa-circle-check"></i> Sem necessidade de senha</li><li><i class="fa-solid fa-circle-check"></i> Início Instantâneo (5-15 min)</li><li><i class="fa-solid fa-circle-check"></i> Garantia de Reposição</li><li><i class="fa-solid fa-circle-check"></i> ${p.bonus}</li><li><i class="fa-solid fa-circle-check"></i> Suporte WhatsApp VIP</li></ul><a href="javascript:void(0)" onclick="openPlanCheckout('${p.title} ${platform.toUpperCase()}')" class="btn-plan">Comprar via Pix</a></div>`).join('');}
+      function switchPanelTab(tab, btn) {
+        document
+          .querySelectorAll(".panel-tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("panel-add-form").style.display =
+          tab === "add" ? "block" : "none";
+        document.getElementById("panel-orders-list").style.display =
+          tab === "orders" ? "block" : "none";
+      }
+      async function pasteLink() {
+        try {
+          document.getElementById("order-link").value =
+            await navigator.clipboard.readText();
+        } catch (e) {
+          alert("Cole o link manualmente.");
+        }
+      }
+      function filterServices(q) {
+        q = (q || "").toLowerCase();
+        if (!q) return;
+        for (const [platform, data] of Object.entries(catalog)) {
+          for (const [groupKey, group] of Object.entries(data.groups)) {
+            if ((data.label + " " + group.label).toLowerCase().includes(q)) {
+              document.getElementById("category-select").value =
+                `${platform}|${groupKey}`;
+              updateServicesOptions();
+              return;
+            }
+          }
+        }
+      }
+      function updateServicesOptions() {
+        const [platform, groupKey] = (
+          document.getElementById("category-select").value || ""
+        ).split("|");
+        const group = catalog[platform] && catalog[platform].groups[groupKey];
+        const tiers = group ? group.tiers : [];
+        document.getElementById("service-select").innerHTML = tiers
+          .map(
+            (t, i) =>
+              `<option value="${i}">${formatQty(t.qty)} ${esc(group.label)} — ${money(t.price)}</option>`,
+          )
+          .join("");
+        updateServiceDetails();
+      }
+      function getSelectedTier() {
+        const [platform, groupKey] = (
+          document.getElementById("category-select").value || ""
+        ).split("|");
+        const data = catalog[platform];
+        const group = data && data.groups[groupKey];
+        const idx = parseInt(
+          document.getElementById("service-select").value || "0",
+          10,
+        );
+        return {
+          platform,
+          data,
+          groupKey,
+          group,
+          tier: group ? group.tiers[idx] : null,
+        };
+      }
+      function updateServiceDetails() {
+        const { data, group, tier } = getSelectedTier();
+        if (!tier || !group) {
+          document.getElementById("service-description").innerHTML =
+            "<p>Selecione um pacote.</p>";
+          return;
+        }
+        document.getElementById("service-description").innerHTML =
+          `<p>📦 <strong>Pacote:</strong> ${formatQty(tier.qty)} ${esc(group.label)} (${esc(data.label)})</p><p>💰 <strong>Valor:</strong> ${money(tier.price)}</p><p>⏱️ <strong>Início:</strong> 0-1 hora após confirmação do pagamento</p><p>🛡️ <strong>Garantia:</strong> Reposição em até 30 dias</p><p style="color: #ef4444; font-weight: bold; margin-top: 8px;">🚫 Não é possível ocultar curtidas/comentários no momento da compra.</p>`;
+        document.getElementById("total-price-display").textContent = money(
+          tier.price,
+        );
+      }
+      async function submitOrder() {
+        if (!requireLogin()) return;
+        const { data, group, tier } = getSelectedTier();
+        const link = document.getElementById("order-link").value.trim();
+        if (!tier || !group || !link) {
+          alert("Informe o link e selecione o pacote.");
+          return;
+        }
+        if (!firebaseReady) {
+          alert("Configure o Firebase antes de criar pedidos.");
+          return;
+        }
+        const amount = Number(tier.price.toFixed(2));
+        const order = {
+          userId: currentUser.uid,
+          userName: currentUser.displayName || "",
+          userEmail: currentUser.email || "",
+          service: `${formatQty(tier.qty)} ${group.label}`,
+          platform: data.label,
+          quantity: tier.qty,
+          link,
+          amount,
+          status: "pending_payment",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        const ref = await db.collection("orders").add(order);
+        currentOrderId = ref.id;
+        const payload = buildPixPayload(
+          amount,
+          APP_CONFIG.pix.key,
+          APP_CONFIG.pix.merchantName,
+          APP_CONFIG.pix.merchantCity,
+          "PED" + ref.id.slice(0, 20),
+        );
+        await ref.update({ pixPayload: payload, pixKey: APP_CONFIG.pix.key });
+        showPixForOrder(amount, payload, "pixModal");
+      }
+      function openPixWhatsApp(itemText) {
+        window.open(
+          `https://wa.me/${APP_CONFIG.whatsappNumber}?text=${encodeURIComponent(itemText ? `Olá! Tenho interesse em ${itemText}.` : "Olá! Preciso de suporte com meu pedido.")}`,
+          "_blank",
+        );
+      }
 
       // Integra o botão Google do modal existente ao Firebase.
-      document.addEventListener('DOMContentLoaded',()=>{
+      document.addEventListener("DOMContentLoaded", () => {
         updateServicesOptions();
+        renderPlatformPlans("instagram");
 
         /* Menu mobile: abre/fecha e fecha ao selecionar um link. */
-        const mobileToggle=document.getElementById('mobile-menu-toggle');
-        const mainNavigation=document.getElementById('main-navigation');
+        const mobileToggle = document.getElementById("mobile-menu-toggle");
+        const mainNavigation = document.getElementById("main-navigation");
 
-        function closeMobileMenu(){
-          if(!mobileToggle || !mainNavigation) return;
-          mobileToggle.classList.remove('active');
-          mainNavigation.classList.remove('open');
-          mobileToggle.setAttribute('aria-expanded','false');
-          mobileToggle.setAttribute('aria-label','Abrir menu');
+        function closeMobileMenu() {
+          if (!mobileToggle || !mainNavigation) return;
+          mobileToggle.classList.remove("active");
+          mainNavigation.classList.remove("open");
+          mobileToggle.setAttribute("aria-expanded", "false");
+          mobileToggle.setAttribute("aria-label", "Abrir menu");
         }
 
-        if(mobileToggle && mainNavigation){
-          mobileToggle.addEventListener('click',()=>{
-            const open=!mainNavigation.classList.contains('open');
-            mainNavigation.classList.toggle('open',open);
-            mobileToggle.classList.toggle('active',open);
-            mobileToggle.setAttribute('aria-expanded',String(open));
-            mobileToggle.setAttribute('aria-label',open?'Fechar menu':'Abrir menu');
+        if (mobileToggle && mainNavigation) {
+          mobileToggle.addEventListener("click", () => {
+            const open = !mainNavigation.classList.contains("open");
+            mainNavigation.classList.toggle("open", open);
+            mobileToggle.classList.toggle("active", open);
+            mobileToggle.setAttribute("aria-expanded", String(open));
+            mobileToggle.setAttribute(
+              "aria-label",
+              open ? "Fechar menu" : "Abrir menu",
+            );
           });
 
-          mainNavigation.querySelectorAll('a').forEach(link=>{
-            link.addEventListener('click',closeMobileMenu);
+          mainNavigation.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", closeMobileMenu);
           });
 
-          document.addEventListener('click',(event)=>{
-            if(!mainNavigation.contains(event.target) && !mobileToggle.contains(event.target)){
+          document.addEventListener("click", (event) => {
+            if (
+              !mainNavigation.contains(event.target) &&
+              !mobileToggle.contains(event.target)
+            ) {
               closeMobileMenu();
             }
           });
 
-          window.addEventListener('resize',()=>{
-            if(window.innerWidth > 900) closeMobileMenu();
+          window.addEventListener("resize", () => {
+            if (window.innerWidth > 900) closeMobileMenu();
           });
         }
         initFirebase();
-        const sign=document.querySelector('#loginModal .g_id_signin'); if(sign) sign.style.display='none';
-        const wrap=document.querySelector('#loginModal .modal-login-content > div:last-child'); if(wrap){wrap.innerHTML='<button class="op-btn" onclick="loginGoogle()"><i class="fa-brands fa-google"></i> Continuar com Google</button>';}
-        document.querySelectorAll('.faq-question').forEach(button=>button.addEventListener('click',()=>{const item=button.parentElement;document.querySelectorAll('.faq-item').forEach(f=>{if(f!==item)f.classList.remove('active')});item.classList.toggle('active')}));
-        // Atalho discreto: clique longo no status do usuário abre o painel admin para o e-mail autorizado.
-        const avatar=document.getElementById('user-avatar-display'); avatar?.addEventListener('dblclick',()=>{if(isAdmin())openAdmin();});
+        const sign = document.querySelector("#loginModal .g_id_signin");
+        if (sign) sign.style.display = "none";
+        const wrap = document.querySelector(
+          "#loginModal .modal-login-content > div:last-child",
+        );
+        if (wrap) {
+          wrap.innerHTML =
+            '<button class="op-btn" onclick="loginGoogle()"><i class="fa-brands fa-google"></i> Continuar com Google</button>';
+        }
+        document.querySelectorAll(".faq-question").forEach((button) =>
+          button.addEventListener("click", () => {
+            const item = button.parentElement;
+            document.querySelectorAll(".faq-item").forEach((f) => {
+              if (f !== item) f.classList.remove("active");
+            });
+            item.classList.toggle("active");
+          }),
+        );
+        // Atalho discreto: clique duplo no avatar do usuário abre o painel admin para o e-mail autorizado.
+        const avatar = document.getElementById("user-avatar-display");
+        avatar?.addEventListener("dblclick", () => {
+          if (isAdmin()) openAdmin();
+        });
         // Adiciona acesso do admin ao menu sem alterar o layout.
-        const menu=document.querySelector('.sidebar-menu'); if(menu){const li=document.createElement('li');li.innerHTML='<a href="javascript:void(0)" onclick="openAdmin()"><i class="fa-solid fa-shield-halved"></i> Painel do proprietário</a>';menu.appendChild(li);}
+        const menu = document.querySelector(".sidebar-menu");
+        if (menu) {
+          const li = document.createElement("li");
+          li.innerHTML =
+            '<a href="javascript:void(0)" onclick="openAdmin()"><i class="fa-solid fa-shield-halved"></i> Painel do proprietário</a>';
+          menu.appendChild(li);
+        }
       });
     </script>
   </body>
