@@ -2183,6 +2183,86 @@
           display: none !important;
         }
       }
+
+      /* =========================================================
+   AJUSTE FINAL DO CABEÇALHO MOBILE — TURBINE BRASIL
+   ========================================================= */
+      @media (max-width: 900px) {
+        header {
+          min-height: 60px;
+          height: 60px;
+          padding: 6px 0 !important;
+          display: flex;
+          align-items: center;
+        }
+        header .container.nav-wrapper {
+          height: 100%;
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) 44px !important;
+          align-items: center;
+          gap: 8px !important;
+        }
+        .brand-logo {
+          min-width: 0 !important;
+          max-width: 100%;
+          overflow: hidden;
+        }
+        .logo-img {
+          height: 42px !important;
+          width: auto !important;
+          max-width: 145px !important;
+          object-fit: contain;
+        }
+        .mobile-menu-toggle {
+          display: flex !important;
+          grid-column: 2;
+          grid-row: 1;
+          width: 42px !important;
+          height: 42px !important;
+          margin: 0 !important;
+          order: initial !important;
+          justify-self: end;
+        }
+        .nav-links {
+          top: 60px !important;
+          left: 8px !important;
+          right: 8px !important;
+          max-height: calc(100vh - 72px);
+          overflow-y: auto;
+          z-index: 1100;
+        }
+        .header-actions {
+          display: none !important;
+        }
+        .top-marquee {
+          margin-top: 60px !important;
+        }
+      }
+      @media (max-width: 380px) {
+        header .container.nav-wrapper {
+          padding-left: 10px !important;
+          padding-right: 10px !important;
+        }
+        .logo-img {
+          height: 39px !important;
+          max-width: 132px !important;
+        }
+        .mobile-menu-toggle {
+          width: 40px !important;
+          height: 40px !important;
+        }
+        .nav-links {
+          left: 6px !important;
+          right: 6px !important;
+        }
+      }
+      @media (min-width: 901px) {
+        .mobile-menu-toggle {
+          display: none !important;
+        }
+      }
     </style>
 
     <!-- Firebase: Google Auth + Firestore (preparado para operação real) -->
@@ -2243,8 +2323,8 @@
     <!-- Top Marquee Banner do Vídeo -->
     <div class="top-marquee">
       <div class="marquee-content">
-        🚀 VIRE REVENDEDOR DE SERVIÇOS E GANHE UMA RENDA EXTRA SEM SAIR DE CASA
-        🔥 SERVIÇOS ATUALIZADOS TODOS OS DIAS! ⚡ ENTREGA RÁPIDA E GARANTIDA ⚡
+        🚀 SERVIÇOS ATUALIZADOS TODOS OS DIAS! ⚡ ENTREGA RÁPIDA E GARANTIDA ⚡
+        SUPORTE VIA WHATSAPP
       </div>
     </div>
 
@@ -2340,9 +2420,6 @@
               >
             </li>
             <li>
-              <a href="#painel"><i class="fa-solid fa-code"></i> API</a>
-            </li>
-            <li>
               <a href="#painel"
                 ><i class="fa-solid fa-headset"></i> Suporte
                 <span class="badge-menu">1</span></a
@@ -2351,12 +2428,6 @@
             <li>
               <a href="https://chat.whatsapp.com/demo" target="_blank"
                 ><i class="fa-solid fa-users"></i> Grupo com suportes</a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-bullhorn"></i> Banners para
-                revendedores</a
               >
             </li>
             <li>
@@ -2437,7 +2508,7 @@
                 onchange="updateServicesOptions()"
               >
                 <option value="best">
-                  🎯 Os Melhores Serviços para Revenda ou uso Proprio TOP
+                  🎯 Os Melhores Serviços para Crescimento no Instagram e TikTok
                 </option>
                 <option value="likes">📸 Curtidas Instagram 🟢</option>
                 <option value="views">
@@ -2454,7 +2525,8 @@
                   💬 Comentários a likes do Instagram 🟢
                 </option>
                 <option value="top_services">
-                  🏆 Categoria com os Serviços + Rápidos e Vendidos no Site TOP
+                  🏆 Categoria com os Serviços + Rápidos e Procurados no Site
+                  TOP
                 </option>
               </select>
             </div>
@@ -2578,14 +2650,11 @@
         <!-- Painel Lateral Direita (Ajuda e Suporte do Vídeo) -->
         <div class="panel-right">
           <div class="widget-box">
-            <h5 class="widget-title">
-              Trabalhe revendendo seguidores no site baratosocials.com
-            </h5>
+            <h5 class="widget-title">Cresça suas redes sociais com rapidez</h5>
             <div class="widget-content">
               <p style="margin-bottom: 10px">
-                Resolvi fazer esse site para ajudar todos, seja você cliente ou
-                revendedor de seguidores. Da uma força aí e solicite a
-                agradecer!
+                Tenha acesso a serviços para aumentar sua presença nas redes
+                sociais com praticidade, rapidez e segurança.
               </p>
               <p
                 style="
@@ -2610,8 +2679,8 @@
             <h5 class="widget-title">Como funciona:</h5>
             <div class="widget-content">
               <p>
-                📺 Assista nosso tutorial de uso no YouTube para aprender a
-                comprar e revender facilmente.
+                📺 Acesse seus serviços de forma simples e acompanhe seus
+                pedidos pelo painel.
               </p>
             </div>
           </div>
@@ -3284,7 +3353,7 @@
         best: [
           {
             id: 101,
-            name: "Os Melhores Serviços para Revenda ou uso Próprio TOP",
+            name: "Os Melhores Serviços para Crescimento no Instagram e TikTok",
             pricePerThousand: 0.79,
             min: 10,
             max: 10000,
@@ -3389,7 +3458,7 @@
         top_services: [
           {
             id: 801,
-            name: "Categoria com os Serviços + Rápidos e Vendidos no Site TOP",
+            name: "Categoria com os Serviços + Rápidos e Procurados no Site TOP",
             pricePerThousand: 1.36,
             min: 100,
             max: 100000,
