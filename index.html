@@ -2188,76 +2188,116 @@
    AJUSTE FINAL DO CABEÇALHO MOBILE — TURBINE BRASIL
    ========================================================= */
       @media (max-width: 900px) {
+        /* Cabeçalho mobile: botão fixado dentro da viewport para nunca ser cortado. */
         header {
-          min-height: 60px;
-          height: 60px;
+          min-height: 60px !important;
+          height: 60px !important;
           padding: 6px 0 !important;
-          display: flex;
-          align-items: center;
+          display: flex !important;
+          align-items: center !important;
+          overflow: visible !important;
         }
+
         header .container.nav-wrapper {
-          height: 100%;
-          padding-left: 12px !important;
-          padding-right: 12px !important;
-          display: grid !important;
-          grid-template-columns: minmax(0, 1fr) 44px !important;
-          align-items: center;
-          gap: 8px !important;
+          position: relative !important;
+          width: 100% !important;
+          max-width: none !important;
+          height: 48px !important;
+          margin: 0 !important;
+          padding: 0 62px 0 12px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 0 !important;
+          overflow: visible !important;
         }
+
         .brand-logo {
           min-width: 0 !important;
-          max-width: 100%;
-          overflow: hidden;
-        }
-        .logo-img {
-          height: 42px !important;
-          width: auto !important;
-          max-width: 145px !important;
-          object-fit: contain;
-        }
-        .mobile-menu-toggle {
+          max-width: calc(100% - 4px) !important;
+          overflow: hidden !important;
           display: flex !important;
-          grid-column: 2;
-          grid-row: 1;
+          align-items: center !important;
+        }
+
+        .logo-img {
+          display: block !important;
+          width: auto !important;
+          height: 42px !important;
+          max-width: 145px !important;
+          object-fit: contain !important;
+        }
+
+        /* Posicionamento absoluto elimina qualquer conflito de flex/grid no Android. */
+        .mobile-menu-toggle {
+          position: absolute !important;
+          top: 50% !important;
+          right: 10px !important;
+          transform: translateY(-50%) !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          flex-direction: column !important;
           width: 42px !important;
           height: 42px !important;
+          min-width: 42px !important;
+          min-height: 42px !important;
           margin: 0 !important;
-          order: initial !important;
-          justify-self: end;
+          padding: 0 !important;
+          z-index: 1200 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
         }
+
+        .mobile-menu-toggle span {
+          width: 21px !important;
+          height: 2px !important;
+          display: block !important;
+          flex: 0 0 2px !important;
+        }
+
         .nav-links {
+          position: absolute !important;
           top: 60px !important;
           left: 8px !important;
           right: 8px !important;
-          max-height: calc(100vh - 72px);
-          overflow-y: auto;
-          z-index: 1100;
+          width: auto !important;
+          max-height: calc(100vh - 72px) !important;
+          overflow-y: auto !important;
+          z-index: 1100 !important;
         }
+
         .header-actions {
           display: none !important;
         }
+
         .top-marquee {
           margin-top: 60px !important;
         }
       }
+
       @media (max-width: 380px) {
         header .container.nav-wrapper {
           padding-left: 10px !important;
-          padding-right: 10px !important;
+          padding-right: 58px !important;
         }
         .logo-img {
           height: 39px !important;
           max-width: 132px !important;
         }
         .mobile-menu-toggle {
+          right: 8px !important;
           width: 40px !important;
           height: 40px !important;
+          min-width: 40px !important;
+          min-height: 40px !important;
         }
         .nav-links {
           left: 6px !important;
           right: 6px !important;
         }
       }
+
       @media (min-width: 901px) {
         .mobile-menu-toggle {
           display: none !important;
