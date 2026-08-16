@@ -45,6 +45,17 @@
         --panel-blue: #007bff;
         --panel-blue-hover: #0056b3;
         --panel-green: #28a745;
+        /* Largura real da tela visível do celular, corrigida via JS
+           (ver função syncRealViewportWidth). Alguns navegadores Android
+           calculam a largura de layout de elementos "position: fixed" (e
+           de "width:100%"/"100vw") como maior do que a tela realmente
+           visível — o que fazia o cabeçalho e o botão de menu ficarem
+           fora da área visível até a pessoa diminuir o zoom. Usamos essa
+           variável (baseada em window.visualViewport, que é sempre
+           correto) para garantir que o cabeçalho nunca ultrapasse a
+           largura real da tela. Enquanto o JS não roda, cai no 100vw
+           normal como valor padrão seguro. */
+        --real-vw: 100vw;
       }
 
       * {
@@ -2078,8 +2089,19 @@
          os links do menu E as ações de conta (Novo Pedido, Login,
          Sair, Atualizar) — no mobile, .header-actions é escondido e
          seu conteúdo equivalente vive dentro deste painel.
-         ========================================================= */
-      @media (max-width: 900px) {
+
+         IMPORTANTE: além do "max-width: 900px", também disparamos pelo
+         par "(hover: none) and (pointer: coarse)" — ou seja, QUALQUER
+         aparelho de toque (sem mouse), mesmo que o navegador reporte
+         uma largura de tela maior que 900px. Isso é essencial porque
+         em muitos Android (Samsung/Chrome) o navegador pode carregar a
+         página como "Site para computador" ou com zoom de acessibilidade
+         do sistema, fazendo o site "achar" que a tela é larga (desktop)
+         mesmo sendo um celular — e é exatamente isso que fazia o menu
+         sumir em alguns Android. Com essa segunda condição, o celular
+         sempre recebe o layout mobile, não importa o que o navegador
+         reporte de largura. */
+      @media (max-width: 900px), (hover: none) and (pointer: coarse) {
         header {
           height: 60px;
           min-height: 60px;
@@ -2087,11 +2109,16 @@
           display: flex;
           align-items: center;
           overflow: visible;
+          /* Usa a largura real (corrigida via JS), não 100%/100vw puro
+             — ver comentário na variável --real-vw em :root. */
+          width: var(--real-vw);
+          max-width: 100vw;
         }
 
         header .nav-wrapper {
+          position: relative;
           height: 60px;
-          padding: 0 58px 0 12px;
+          padding: 0 12px;
           margin: 0;
           width: 100%;
         }
@@ -2100,7 +2127,7 @@
           display: flex;
           align-items: center;
           min-width: 0;
-          max-width: calc(100vw - 70px);
+          max-width: calc(var(--real-vw) - 90px);
           overflow: hidden;
         }
 
@@ -2116,13 +2143,20 @@
           margin-top: 60px;
         }
 
-        /* Botão hambúrguer: fixo na viewport do celular. */
+        /* Botão hambúrguer: item normal do flex do header (nav-wrapper),
+           empurrado para a ponta direita com margin-left:auto — NÃO usa
+           position:fixed. Isso evita um bug conhecido do Chrome Android
+           em que elementos position:fixed com "right: Npx" podem ser
+           posicionados fora da tela visível quando o "layout viewport"
+           e o "visual viewport" do celular ficam dessincronizados (zoom
+           de acessibilidade, "Site para computador", etc.) — era esse
+           bug que fazia o botão sumir até a pessoa diminuir o zoom. */
         #mobile-menu-toggle.mobile-menu-toggle {
           display: flex !important;
-          position: fixed;
-          top: 9px;
-          right: 9px;
-          z-index: 2147483647;
+          position: static;
+          margin-left: auto;
+          order: 2;
+          flex: 0 0 auto;
           visibility: visible;
           opacity: 1;
           pointer-events: auto;
@@ -2130,7 +2164,6 @@
           height: 42px;
           min-width: 42px;
           min-height: 42px;
-          margin: 0;
           padding: 0;
           border: 2px solid rgba(255, 255, 255, 0.75);
           border-radius: 11px;
@@ -2157,21 +2190,24 @@
           border-radius: 3px;
         }
 
-        /* Painel de navegação: preso à viewport, não ao header. */
+        /* Painel de navegação: position:absolute ancorado no <header>
+           (que é position:fixed e width:100%, então é sempre igual à
+           largura real da tela) — não position:fixed direto no
+           viewport, pelo mesmo motivo explicado acima no botão. */
         #main-navigation.nav-links {
-          position: fixed;
-          top: 60px;
+          position: absolute;
+          top: 100%;
           left: 8px;
           right: 8px;
           width: auto;
           max-height: calc(100vh - 70px);
           overflow-y: auto;
-          z-index: 2147483646;
+          z-index: 1001;
           display: none;
           flex-direction: column;
           align-items: stretch;
           gap: 4px;
-          margin: 0;
+          margin: 8px 0 0;
           padding: 10px;
           background: rgba(10, 5, 24, 0.99);
           border: 1px solid rgba(139, 92, 246, 0.45);
@@ -2248,18 +2284,12 @@
       }
 
       @media (max-width: 380px) {
-        header .nav-wrapper {
-          padding-right: 56px;
-        }
-
         .logo-img {
           height: 40px;
           max-width: 132px;
         }
 
         #mobile-menu-toggle.mobile-menu-toggle {
-          top: 8px;
-          right: 7px;
           width: 40px;
           height: 40px;
           min-width: 40px;
@@ -2272,7 +2302,12 @@
         }
       }
 
-      @media (min-width: 901px) {
+      /* Só esconde o hambúrguer e mostra a barra .header-actions quando
+         for realmente um desktop: tela larga E com mouse (hover: hover
+         / pointer: fine). Um celular em modo "Site para computador" tem
+         tela larga reportada mas continua sendo tela de toque, então
+         continua recebendo o menu mobile — ver comentário acima. */
+      @media (min-width: 901px) and (hover: hover) and (pointer: fine) {
         #mobile-menu-toggle.mobile-menu-toggle {
           display: none !important;
         }
@@ -2326,6 +2361,25 @@
         <a href="#" class="brand-logo" aria-label="Turbine Brasil">
           <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img" />
         </a>
+        <!-- Botão de menu mobile: fica DENTRO do header, como item do
+             flexbox (nav-wrapper), em vez de position:fixed. Isso evita
+             um bug conhecido do Chrome Android: quando o "layout
+             viewport" e o "visual viewport" do celular ficam
+             dessincronizados (zoom de acessibilidade, "Site para
+             computador", troca de barra de endereço), elementos com
+             position:fixed + right:Npx podem ser posicionados fora da
+             tela visível. Como filho do próprio header (que já é
+             width:100%), o botão nunca fica desalinhado. -->
+        <button
+          class="mobile-menu-toggle"
+          id="mobile-menu-toggle"
+          type="button"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+          aria-controls="main-navigation"
+        >
+          <span></span><span></span><span></span>
+        </button>
         <ul class="nav-links" id="main-navigation">
           <li><a href="#painel">Painel de Pedidos</a></li>
           <li><a href="#servicos">Serviços</a></li>
@@ -2402,18 +2456,14 @@
       </div>
     </header>
 
-    <!-- Botão de menu mobile: fora do cabeçalho para não ser cortado -->
-    <button
-      class="mobile-menu-toggle"
-      id="mobile-menu-toggle"
-      type="button"
-      aria-label="Abrir menu"
-      aria-expanded="false"
-      aria-controls="main-navigation"
-    >
-      <span></span><span></span><span></span>
-    </button>
     <br />
+    <!-- Top Marquee Banner do Vídeo -->
+    <div class="top-marquee">
+      <div class="marquee-content">
+        🚀 SEGUIDORES, CURTIDAS E COMENTÁRIOS PARA INSTAGRAM E TIKTOK ⚡ ENTREGA
+        RÁPIDA E GARANTIDA ⚡ SUPORTE VIA WHATSAPP
+      </div>
+    </div>
 
     <!-- Hero Section (PÁGINA PRINCIPAL - INÍCIO) -->
     <section class="hero">
@@ -3321,6 +3371,42 @@
          4) Publique também as regras Firestore do arquivo firestore.rules
             junto deste HTML no Console do Firebase.
          ========================================================= */
+
+      /* =========================================================
+         CORREÇÃO DE VIEWPORT MOBILE (Android/Samsung)
+         ---------------------------------------------------------
+         Em alguns navegadores Android, elementos com "position: fixed"
+         e "width: 100%"/"100vw" (como nosso <header>) podem ser
+         calculados contra uma largura de layout maior do que a tela
+         realmente visível (isso acontece com zoom de acessibilidade do
+         sistema, "Site para computador", ou certas configurações do
+         Chrome/Samsung Internet). O resultado: o cabeçalho e o botão de
+         menu ficam desenhados parcialmente fora da tela, e só aparecem
+         se a pessoa diminuir o zoom manualmente.
+         window.visualViewport.width, por outro lado, sempre reflete a
+         largura REAL e visível da tela. Por isso guardamos esse valor
+         numa variável CSS (--real-vw) e usamos ela no lugar de 100vw
+         no cabeçalho — assim ele nunca fica maior que a tela de
+         verdade, em nenhum Android, iPhone ou navegador.
+         ========================================================= */
+      function syncRealViewportWidth() {
+        try {
+          const w =
+            (window.visualViewport && window.visualViewport.width) ||
+            document.documentElement.clientWidth ||
+            window.innerWidth;
+          document.documentElement.style.setProperty("--real-vw", w + "px");
+        } catch (e) {
+          // Se algo falhar aqui, o CSS já tem 100vw como valor padrão seguro.
+        }
+      }
+      syncRealViewportWidth();
+      document.addEventListener("DOMContentLoaded", syncRealViewportWidth);
+      window.addEventListener("resize", syncRealViewportWidth);
+      window.addEventListener("orientationchange", syncRealViewportWidth);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", syncRealViewportWidth);
+      }
 
       const APP_CONFIG = {
         firebase: {
