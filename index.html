@@ -2649,7 +2649,6 @@
                 <span class="badge-menu">PIX</span></a
               >
             </li>
-
           </ul>
         </div>
 
@@ -3453,6 +3452,49 @@
       function formatQty(n) {
         return Number(n || 0).toLocaleString("pt-BR");
       }
+      // Formata um Timestamp do Firestore (createdAt) como data e hora no padrão
+      // brasileiro (ex: "16/08/2026 14:32"). Retorna "—" enquanto o timestamp
+      // ainda não chegou do servidor (logo após a criação do pedido).
+      function formatDateTime(ts) {
+        try {
+          const d = ts && typeof ts.toDate === "function" ? ts.toDate() : null;
+          if (!d) return "—";
+          return d.toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        } catch (e) {
+          return "—";
+        }
+      }
+      // Chave "AAAA-MM-DD" (fuso local) usada para agrupar pedidos/depósitos por dia no relatório.
+      function dateKey(ts) {
+        try {
+          const d = ts && typeof ts.toDate === "function" ? ts.toDate() : null;
+          if (!d) return null;
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        } catch (e) {
+          return null;
+        }
+      }
+      // Chave "AAAA-MM" (fuso local) usada para agrupar pedidos/depósitos por mês no relatório.
+      function monthKey(ts) {
+        try {
+          const d = ts && typeof ts.toDate === "function" ? ts.toDate() : null;
+          if (!d) return null;
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          return `${y}-${m}`;
+        } catch (e) {
+          return null;
+        }
+      }
       // Traduz erros comuns do Firebase para mensagens que ajudam a diagnosticar o problema.
       function friendlyError(e) {
         const code = (e && e.code) || "";
@@ -3517,7 +3559,10 @@
             "&apikey=" +
             encodeURIComponent(cfg.apikey);
           fetch(url, { mode: "no-cors" }).catch((e) =>
-            console.warn("Não foi possível enviar notificação por WhatsApp:", e),
+            console.warn(
+              "Não foi possível enviar notificação por WhatsApp:",
+              e,
+            ),
           );
         } catch (e) {
           console.warn("Não foi possível enviar notificação por WhatsApp:", e);
@@ -4120,7 +4165,7 @@
         box.innerHTML = orders
           .map(
             (o) =>
-              `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>ID: ${esc(o.id)}</small></div>`,
+              `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>📅 ${formatDateTime(o.createdAt)} · ID: ${esc(o.id)}</small></div>`,
           )
           .join("");
       }
@@ -4167,17 +4212,19 @@
         renderAdminLoading();
         if (unsubscribeAdminOrders) unsubscribeAdminOrders();
         if (unsubscribeAdminDeposits) unsubscribeAdminDeposits();
+        // Limite maior que antes (era 50) porque agora esses mesmos dados também
+        // alimentam o relatório de faturamento por dia/mês logo abaixo.
         unsubscribeAdminOrders = db
           .collection("orders")
           .orderBy("createdAt", "desc")
-          .limit(50)
+          .limit(400)
           .onSnapshot((s) =>
             renderAdminOrders(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
           );
         unsubscribeAdminDeposits = db
           .collection("deposits")
           .orderBy("createdAt", "desc")
-          .limit(50)
+          .limit(400)
           .onSnapshot((s) =>
             renderAdminDeposits(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
           );
@@ -4211,6 +4258,91 @@
         adminDepositsCache = deposits;
         renderAdminDashboard();
       }
+      // Monta o relatório de faturamento (hoje, este mês, e por dia) a partir
+      // dos pedidos e depósitos já carregados no painel admin. Só conta como
+      // faturamento o que já foi CONFIRMADO por você (não pendente/informado).
+      function buildReport(orders, deposits) {
+        const now = { toDate: () => new Date() };
+        const todayKey = dateKey(now);
+        const thisMonthKey = monthKey(now);
+
+        const confirmedOrders = orders.filter((o) =>
+          ["paid", "processing", "completed"].includes(o.status),
+        );
+        const confirmedDeposits = deposits.filter((d) => d.status === "paid");
+
+        const sumBy = (list, keyFn) => {
+          const map = {};
+          list.forEach((item) => {
+            const k = keyFn(item.createdAt);
+            if (!k) return;
+            if (!map[k]) map[k] = { count: 0, total: 0 };
+            map[k].count += 1;
+            map[k].total += Number(item.amount || 0);
+          });
+          return map;
+        };
+
+        const ordersByDay = sumBy(confirmedOrders, dateKey);
+        const depositsByDay = sumBy(confirmedDeposits, dateKey);
+        const ordersByMonth = sumBy(confirmedOrders, monthKey);
+        const depositsByMonth = sumBy(confirmedDeposits, monthKey);
+
+        const todayOrders = ordersByDay[todayKey] || { count: 0, total: 0 };
+        const todayDeposits = depositsByDay[todayKey] || { count: 0, total: 0 };
+        const monthOrders = ordersByMonth[thisMonthKey] || {
+          count: 0,
+          total: 0,
+        };
+        const monthDeposits = depositsByMonth[thisMonthKey] || {
+          count: 0,
+          total: 0,
+        };
+
+        const allDayKeys = new Set([
+          ...Object.keys(ordersByDay),
+          ...Object.keys(depositsByDay),
+        ]);
+        const days = Array.from(allDayKeys)
+          .sort((a, b) => (a < b ? 1 : -1))
+          .slice(0, 14)
+          .map((k) => {
+            const o = ordersByDay[k] || { count: 0, total: 0 };
+            const d = depositsByDay[k] || { count: 0, total: 0 };
+            const [y, m, day] = k.split("-");
+            return {
+              label: `${day}/${m}/${y}`,
+              orders: o,
+              deposits: d,
+              total: o.total + d.total,
+            };
+          });
+
+        return {
+          today: {
+            count: todayOrders.count + todayDeposits.count,
+            total: todayOrders.total + todayDeposits.total,
+          },
+          month: {
+            count: monthOrders.count + monthDeposits.count,
+            total: monthOrders.total + monthDeposits.total,
+          },
+          days,
+        };
+      }
+      function renderReportSection(report) {
+        const rows = report.days
+          .map(
+            (d) =>
+              `<tr><td style="padding:6px">${d.label}</td><td style="padding:6px">${d.orders.count}</td><td style="padding:6px">${money(d.orders.total)}</td><td style="padding:6px">${d.deposits.count}</td><td style="padding:6px">${money(d.deposits.total)}</td><td style="padding:6px"><strong>${money(d.total)}</strong></td></tr>`,
+          )
+          .join("");
+        return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Faturamento hoje</small><br><strong style="font-size:1.4rem">${money(report.today.total)}</strong><br><small>${report.today.count} confirmação(ões)</small></div><div class="op-summary" style="margin:0;display:block"><small>Faturamento este mês</small><br><strong style="font-size:1.4rem">${money(report.month.total)}</strong><br><small>${report.month.count} confirmação(ões)</small></div></div><h4 style="margin:10px 0;color:#fff">📊 Relatório por dia (últimos 14 dias com movimento)</h4>${
+          report.days.length
+            ? `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.82rem;color:#cbd5e1"><thead><tr style="text-align:left;color:#94a3b8"><th style="padding:6px">Data</th><th style="padding:6px">Pedidos</th><th style="padding:6px">Valor pedidos</th><th style="padding:6px">Depósitos</th><th style="padding:6px">Valor depósitos</th><th style="padding:6px">Total</th></tr></thead><tbody>${rows}</tbody></table></div>`
+            : '<div class="empty-state">Ainda não há pedidos ou depósitos confirmados.</div>'
+        }<p style="font-size:.72rem;color:#64748b;margin-top:8px">Conta aqui só o que você já confirmou (pago/processando/concluído). Pendentes aparecem nas listas abaixo.</p>`;
+      }
       function renderAdminDashboard() {
         const orders = adminOrdersCache,
           deposits = adminDepositsCache;
@@ -4225,13 +4357,14 @@
         );
         const el = document.getElementById("admin-content");
         if (!el) return;
-        el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
+        const report = buildReport(orders, deposits);
+        el.innerHTML = `${renderReportSection(report)}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
       }
       function adminDepositCard(d) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small></div><strong>${money(d.amount)}</strong></div><span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}')">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}')">❌ Recusar</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div><span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}')">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}')">❌ Recusar</button>` : ""}</div></div>`;
       }
       function adminOrderCard(o) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>` : ""}</div></div>`;
       }
       async function confirmOrderPayment(id) {
         if (!isAdmin()) return;
