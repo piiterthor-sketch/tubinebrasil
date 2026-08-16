@@ -2460,6 +2460,27 @@
           display: none !important;
         }
       }
+
+      /* ===== Painel mais largo no desktop + botão "Colar" sem cortar ===== */
+      @media (min-width: 1101px) {
+        .container.smm-container {
+          max-width: 1440px;
+        }
+        .smm-container {
+          grid-template-columns: 260px 1fr 380px;
+          gap: 24px;
+        }
+      }
+
+      .form-group > div[style*="display: flex"] > input {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .form-group > div[style*="display: flex"] > button {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
     </style>
 
     <!-- Firebase: Google Auth + Firestore (preparado para operação real) -->
@@ -2835,19 +2856,33 @@
             <div class="whatsapp-support-card">
               <i class="fa-brands fa-whatsapp"></i>
               <div>
-                <div class="num">1199769-4937</div>
+                <div class="num">88 99547-0571</div>
                 <div class="desc">Ajuda com pedidos</div>
               </div>
             </div>
 
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99698-2321</div>
+                <div class="desc">Ajuda com pedidos ou dúvidas</div>
+              </div>
+            </div>
+
+            <div class="whatsapp-support-card">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <div class="num">88 99677-4237</div>
+                <div class="desc">Ajuda com site, dúvidas e outros</div>
+              </div>
+            </div>
+
             <div class="notice-alert-box">
-              ⚠️ <strong>Avisos Importantes:</strong> Antes de fazer qualquer
+              ⚠️ <strong>Aviso Importante:</strong> Antes de fazer qualquer
               pedido certifique-se que a conta esta correta. Observação: Não
               faça o pedido para a mesma conta ao mesmo tempo. Você tem que
               esperar a conclusão do primeiro pedido para poder fazer o pedido
-              novamente. E a conta nao pode esta privada, caso esteja privada o
-              pedido nao sera concluido. Caso tenha algum problema ou dúvida
-              entre em contato com nosso suporte via WhatsApp.
+              novamente.
             </div>
           </div>
         </div>
@@ -3081,9 +3116,14 @@
         >
           Não perca tempo e impulsione suas redes com quem entende do assunto.
         </p>
-        <a href="#painel" class="btn-main"
-          ><i class="fa-solid fa-rocket"></i> TURBINAR MEU PERFIL AGORA</a
+        <a
+          href="https://www.instagram.com/turbinebrasiloficial/"
+          class="btn-main"
+          target="_blank"
+          rel="noopener noreferrer"
         >
+          <i class="fa-solid fa-rocket"></i> TURBINAR NOSSO INSTAGRAM
+        </a>
       </div>
     </section>
 
