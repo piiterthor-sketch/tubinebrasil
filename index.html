@@ -3358,11 +3358,20 @@
         <div id="admin-content"></div>
       </div>
     </div>
-
     <!-- Footer -->
     <footer>
       <div class="container">
-        <div class="footer-grid">
+        <!-- Conteúdo principal do rodapé -->
+        <div
+          class="footer-grid"
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            padding: 45px 0 35px;
+          "
+        >
           <!-- Empresa -->
           <div class="footer-col">
             <a href="#" class="brand-logo" aria-label="Turbine Brasil">
@@ -3370,6 +3379,7 @@
                 src="./images/logo.png"
                 alt="Turbine Brasil"
                 class="logo-img"
+                style="max-width: 70px"
               />
             </a>
 
@@ -3378,6 +3388,8 @@
                 color: var(--text-muted);
                 font-size: 0.9rem;
                 line-height: 1.6;
+                max-width: 560px;
+                margin-top: 12px;
               "
             >
               Empresa líder em marketing digital, engajamento e crescimento para
@@ -3386,15 +3398,15 @@
           </div>
 
           <!-- Pagamento -->
-          <div class="footer-col">
-            <h4>Pagamento Seguro</h4>
+          <div class="footer-col" style="text-align: left">
+            <h4 style="margin: 0 0 12px; font-size: 1rem">Pagamento Seguro</h4>
 
             <p
               style="
                 color: var(--text-muted);
                 font-size: 0.85rem;
                 line-height: 1.5;
-                margin-bottom: 12px;
+                margin: 0 0 14px;
               "
             >
               Pagamento via Pix com confirmação manual do proprietário.
@@ -3407,7 +3419,16 @@
           </div>
         </div>
 
-        <!-- Rodapé inferior -->
+        <!-- Linha divisória -->
+        <div
+          style="
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+          "
+        ></div>
+
+        <!-- Copyright -->
         <div
           class="footer-bottom"
           style="
@@ -3415,13 +3436,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             text-align: center;
-            padding: 20px 0;
+            gap: 7px;
+            padding: 22px 0;
           "
         >
           <div style="color: var(--text-muted); font-size: 0.85rem">
-            &copy; 2026 Turbine Brasil ® - Todos os direitos reservados.
+            © 2026 Turbine Brasil ® - Todos os direitos reservados.
           </div>
 
           <div style="color: var(--text-muted); font-size: 0.8rem">
@@ -3430,7 +3451,7 @@
               href="https://devduo.tec.br/"
               target="_blank"
               rel="noopener noreferrer"
-              style="color: inherit; text-decoration: none; font-weight: 600"
+              style="color: #ffffff; text-decoration: none; font-weight: 600"
             >
               DevDuo
             </a>
@@ -3438,6 +3459,26 @@
         </div>
       </div>
     </footer>
+
+    <!-- Responsivo -->
+    <style>
+      @media (max-width: 768px) {
+        .footer-grid {
+          grid-template-columns: 1fr !important;
+          gap: 30px !important;
+          padding: 35px 20px 30px !important;
+        }
+
+        .footer-col {
+          text-align: center !important;
+        }
+
+        .footer-col p {
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+      }
+    </style>
 
     <!-- Floating WhatsApp Button -->
     <a
