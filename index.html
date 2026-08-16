@@ -2487,6 +2487,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+    <!-- Bibliotecas para exportar o relatório do painel admin em PDF (grátis, via CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   </head>
   <body>
     <!-- Ambient Background Lighting -->
@@ -2708,22 +2712,7 @@
                 id="category-select"
                 onchange="updateServicesOptions()"
               >
-                <option value="instagram|seguidores">
-                  📸 Instagram — Seguidores
-                </option>
-                <option value="instagram|curtidas">
-                  ❤️ Instagram — Curtidas
-                </option>
-                <option value="instagram|comentarios">
-                  💬 Instagram — Comentários
-                </option>
-                <option value="instagram|visualizacoes">
-                  👁️ Instagram — Visualizações
-                </option>
-                <option value="tiktok|seguidores">
-                  🎵 TikTok — Seguidores
-                </option>
-                <option value="tiktok|curtidas">🎵 TikTok — Curtidas</option>
+                <!-- Preenchido via JavaScript a partir de `catalog` (populateCategorySelect) -->
               </select>
             </div>
 
@@ -2768,6 +2757,31 @@
                   Colar
                 </button>
               </div>
+            </div>
+
+            <!-- Só aparece quando a categoria escolhida é de Comentários -->
+            <div
+              class="form-group"
+              id="order-comments-group"
+              style="display: none"
+            >
+              <label>Comentários que devem ser postados (um por linha)</label>
+              <textarea
+                class="form-control-simple"
+                id="order-comments"
+                rows="4"
+                placeholder="Digite um comentário por linha. Ex:&#10;Muito bom esse conteúdo! 🔥&#10;Adorei, top demais!&#10;Sensacional 👏"
+                oninput="updateCommentsCounter('order')"
+              ></textarea>
+              <small
+                id="order-comments-counter"
+                style="
+                  display: block;
+                  margin-top: 4px;
+                  color: #94a3b8;
+                  font-size: 0.75rem;
+                "
+              ></small>
             </div>
 
             <div class="price-calc-box">
@@ -3159,6 +3173,27 @@
           readonly
           placeholder="Faça login com Google"
         />
+        <div id="checkout-comments-group" style="display: none">
+          <label class="op-label"
+            >Comentários que devem ser postados (um por linha)</label
+          >
+          <textarea
+            class="op-input"
+            id="checkout-comments"
+            rows="4"
+            placeholder="Digite um comentário por linha."
+            oninput="updateCommentsCounter('checkout')"
+          ></textarea>
+          <small
+            id="checkout-comments-counter"
+            style="
+              display: block;
+              margin-top: 4px;
+              color: #94a3b8;
+              font-size: 0.75rem;
+            "
+          ></small>
+        </div>
         <button class="op-btn" onclick="createManualPixOrder(this)">
           <i class="fa-brands fa-pix"></i> Gerar Pix e criar pedido
         </button>
@@ -3257,6 +3292,75 @@
             Confirmação manual dos pagamentos e controle dos pedidos.
           </p>
         </div>
+
+        <!-- Filtros do relatório: aplicam em tudo abaixo (KPIs, tabela por dia, PDF e listas) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+          <div>
+            <label class="op-label" style="margin-top: 0">De</label>
+            <input
+              type="date"
+              class="op-input"
+              id="admin-filter-from"
+              onchange="renderAdminDashboard()"
+            />
+          </div>
+          <div>
+            <label class="op-label" style="margin-top: 0">Até</label>
+            <input
+              type="date"
+              class="op-input"
+              id="admin-filter-to"
+              onchange="renderAdminDashboard()"
+            />
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+          <div>
+            <label class="op-label" style="margin-top: 0">Status</label>
+            <select
+              class="op-input"
+              id="admin-filter-status"
+              onchange="renderAdminDashboard()"
+            >
+              <option value="">Todos os status</option>
+              <option value="pending_payment">Aguardando pagamento</option>
+              <option value="payment_reported">Pagamento informado</option>
+              <option value="paid">Pagamento confirmado</option>
+              <option value="processing">Em processamento</option>
+              <option value="completed">Concluído</option>
+              <option value="cancelled">Cancelado</option>
+            </select>
+          </div>
+          <div>
+            <label class="op-label" style="margin-top: 0"
+              >Buscar (cliente, e-mail ou serviço)</label
+            >
+            <input
+              type="text"
+              class="op-input"
+              id="admin-filter-search"
+              placeholder="Ex: joao@gmail.com"
+              oninput="renderAdminDashboard()"
+            />
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin: 14px 0">
+          <button
+            class="op-btn secondary"
+            style="margin-top: 0"
+            onclick="clearAdminFilters()"
+          >
+            Limpar filtros
+          </button>
+          <button
+            class="op-btn"
+            style="margin-top: 0"
+            onclick="exportReportPDF()"
+          >
+            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+          </button>
+        </div>
+
         <div id="admin-content"></div>
       </div>
     </div>
@@ -3387,35 +3491,163 @@
         instagram: {
           label: "Instagram",
           groups: {
-            seguidores: {
-              label: "Seguidores",
+            seguidores_br_baixa: {
+              label: "🇧🇷 Seguidores BR — Baixa Qualidade",
               tiers: [
-                { qty: 3000, price: 10.0 },
-                { qty: 5000, price: 15.0 },
-                { qty: 15000, price: 29.0 },
+                { qty: 100, price: 2.99 },
+                { qty: 300, price: 4.99 },
+                { qty: 500, price: 7.99 },
+                { qty: 1000, price: 12.99 },
               ],
             },
-            curtidas: {
-              label: "Curtidas",
+            seguidores_br_alta: {
+              label: "🇧🇷 Seguidores BR — Alta Qualidade / Orgânicos",
               tiers: [
-                { qty: 500, price: 9.0 },
-                { qty: 1000, price: 12.0 },
-                { qty: 3000, price: 15.0 },
+                { qty: 100, price: 19.99 },
+                { qty: 300, price: 29.99 },
+                { qty: 500, price: 79.99 },
+                { qty: 1000, price: 149.99 },
               ],
             },
-            comentarios: {
-              label: "Comentários",
+            curtidas_mundiais: {
+              label: "❤️ Curtidas Mundiais",
               tiers: [
-                { qty: 10, price: 9.0 },
-                { qty: 25, price: 19.0 },
-                { qty: 50, price: 34.0 },
+                { qty: 100, price: 0.99 },
+                { qty: 200, price: 1.99 },
+                { qty: 300, price: 2.99 },
+                { qty: 500, price: 4.99 },
+                { qty: 1000, price: 9.99 },
               ],
             },
-            visualizacoes: {
-              label: "Visualizações",
+            seguidores_mundiais: {
+              label: "Seguidores Mundiais",
               tiers: [
-                { qty: 5000, price: 4.0 },
-                { qty: 10000, price: 6.0 },
+                { qty: 100, price: 0.99 },
+                { qty: 200, price: 1.99 },
+                { qty: 300, price: 2.99 },
+                { qty: 500, price: 4.99 },
+                { qty: 1000, price: 9.99 },
+                { qty: 2000, price: 19.99 },
+                { qty: 5000, price: 49.99 },
+                { qty: 10000, price: 99.99 },
+              ],
+            },
+            curtidas_br_baixa: {
+              label: "🇧🇷 Curtidas BR — Baixa Qualidade",
+              tiers: [
+                { qty: 100, price: 2.99 },
+                { qty: 300, price: 4.99 },
+                { qty: 500, price: 7.99 },
+                { qty: 1000, price: 12.99 },
+              ],
+            },
+            curtidas_br_alta: {
+              label: "🇧🇷 Curtidas BR — Alta Qualidade",
+              tiers: [
+                { qty: 100, price: 4.99 },
+                { qty: 300, price: 7.99 },
+                { qty: 500, price: 11.99 },
+              ],
+            },
+            curtidas_mulheres_br: {
+              label: "🙋‍♀️ Curtidas Mulheres BR — Baixa Qualidade",
+              tiers: [
+                { qty: 100, price: 2.99 },
+                { qty: 300, price: 4.99 },
+                { qty: 500, price: 7.99 },
+                { qty: 1000, price: 12.99 },
+              ],
+            },
+            curtidas_homens_br: {
+              label: "🙋‍♂️ Curtidas Homens BR — Baixa Qualidade",
+              tiers: [
+                { qty: 100, price: 2.99 },
+                { qty: 300, price: 4.99 },
+                { qty: 500, price: 7.99 },
+                { qty: 1000, price: 12.99 },
+              ],
+            },
+            comentarios_unissex: {
+              label: "💬 Comentários Unissex",
+              commentsInput: true,
+              tiers: [
+                { qty: 10, price: 9.99 },
+                { qty: 20, price: 14.99 },
+                { qty: 30, price: 19.99 },
+                { qty: 40, price: 24.99 },
+                { qty: 50, price: 29.99 },
+              ],
+            },
+            comentarios_mulheres: {
+              label: "💬 Comentários — Mulheres",
+              commentsInput: true,
+              tiers: [
+                { qty: 10, price: 15.99 },
+                { qty: 20, price: 24.99 },
+                { qty: 30, price: 34.99 },
+                { qty: 40, price: 44.99 },
+                { qty: 50, price: 54.99 },
+              ],
+            },
+            comentarios_homens: {
+              label: "💬 Comentários — Homens",
+              commentsInput: true,
+              tiers: [
+                { qty: 10, price: 15.99 },
+                { qty: 20, price: 24.99 },
+                { qty: 30, price: 34.99 },
+                { qty: 40, price: 44.99 },
+                { qty: 50, price: 54.99 },
+              ],
+            },
+            visualizacoes_reels_bonus: {
+              label: "🎬 Visualizações no Reels — +300% de Bônus",
+              tiers: [
+                { qty: 1000, price: 1.49, bonusQty: 4000 },
+                { qty: 2000, price: 2.99, bonusQty: 8000 },
+                { qty: 3000, price: 4.49, bonusQty: 12000 },
+                { qty: 5000, price: 7.49, bonusQty: 20000 },
+                { qty: 10000, price: 14.99, bonusQty: 40000 },
+              ],
+            },
+            visualizacoes_story: {
+              label: "👁️ Visualizações no Story",
+              tiers: [
+                { qty: 1000, price: 4.99 },
+                { qty: 2000, price: 7.99 },
+                { qty: 3000, price: 10.99 },
+                { qty: 5000, price: 14.99 },
+                { qty: 10000, price: 24.99 },
+              ],
+            },
+            visualizacoes_reels_alcance: {
+              label: "🎬 Visualizações Reels — Mais Alcance + Impressões",
+              tiers: [
+                { qty: 1000, price: 1.99 },
+                { qty: 2000, price: 3.49 },
+                { qty: 3000, price: 4.99 },
+                { qty: 5000, price: 7.99 },
+                { qty: 10000, price: 14.99 },
+              ],
+            },
+            impressoes_alcance_visitas: {
+              label: "📈 Impressões + Alcance + Visitas no Perfil",
+              tiers: [
+                { qty: 1000, price: 1.99 },
+                { qty: 2000, price: 3.49 },
+                { qty: 3000, price: 4.99 },
+                { qty: 5000, price: 7.99 },
+                { qty: 10000, price: 14.99 },
+              ],
+            },
+            compartilhamentos: {
+              label: "🔄 Compartilhamentos da Postagem",
+              tiers: [
+                { qty: 1000, price: 1.99 },
+                { qty: 2000, price: 3.49 },
+                { qty: 3000, price: 4.99 },
+                { qty: 5000, price: 7.99 },
+                { qty: 10000, price: 14.99 },
               ],
             },
           },
@@ -3424,24 +3656,73 @@
           label: "TikTok",
           groups: {
             seguidores: {
-              label: "Seguidores",
+              label: "🎵 Seguidores TikTok",
               tiers: [
-                { qty: 5000, price: 12.0 },
-                { qty: 10000, price: 34.0 },
-                { qty: 50000, price: 100.0 },
+                { qty: 100, price: 4.99 },
+                { qty: 300, price: 9.99 },
+                { qty: 500, price: 14.99 },
+                { qty: 1000, price: 24.99 },
+                { qty: 2000, price: 39.99 },
+                { qty: 5000, price: 79.99 },
+                { qty: 10000, price: 129.99 },
+              ],
+            },
+            seguidores_br: {
+              label: "🇧🇷 Seguidores BR — TikTok",
+              tiers: [
+                { qty: 100, price: 9.99 },
+                { qty: 300, price: 19.99 },
+                { qty: 500, price: 29.99 },
+                { qty: 1000, price: 49.99 },
+                { qty: 2000, price: 69.99 },
+                { qty: 3000, price: 89.99 },
+                { qty: 5000, price: 129.99 },
+                { qty: 10000, price: 199.99 },
               ],
             },
             curtidas: {
-              label: "Curtidas",
+              label: "🎵 Curtidas TikTok",
               tiers: [
-                { qty: 500, price: 9.0 },
-                { qty: 1000, price: 17.0 },
-                { qty: 5000, price: 24.0 },
+                { qty: 100, price: 1.99 },
+                { qty: 300, price: 3.99 },
+                { qty: 500, price: 5.99 },
+                { qty: 1000, price: 9.99 },
+                { qty: 2000, price: 14.99 },
+                { qty: 5000, price: 29.99 },
+                { qty: 10000, price: 49.99 },
+              ],
+            },
+            visualizacoes: {
+              label: "🎵 Visualizações TikTok",
+              tiers: [
+                { qty: 1000, price: 1.99 },
+                { qty: 2000, price: 3.99 },
+                { qty: 3000, price: 5.99 },
+                { qty: 5000, price: 9.99 },
+                { qty: 10000, price: 19.99 },
+              ],
+            },
+            compartilhamentos: {
+              label: "🎵 Compartilhamentos TikTok",
+              tiers: [
+                { qty: 1000, price: 1.99 },
+                { qty: 2000, price: 3.99 },
+                { qty: 3000, price: 5.99 },
+                { qty: 5000, price: 9.99 },
+                { qty: 10000, price: 19.99 },
               ],
             },
           },
         },
       };
+      // Formata a quantidade de um pacote para exibição, mostrando o bônus de
+      // entrega quando o pacote tiver (ex: Visualizações Reels +300%).
+      function tierLabel(tier) {
+        if (tier && tier.bonusQty) {
+          return `${formatQty(tier.qty)} (+300% bônus = ${formatQty(tier.bonusQty)} entregues)`;
+        }
+        return formatQty(tier ? tier.qty : 0);
+      }
 
       function money(v) {
         return Number(v || 0).toLocaleString("pt-BR", {
@@ -3567,6 +3848,15 @@
         } catch (e) {
           console.warn("Não foi possível enviar notificação por WhatsApp:", e);
         }
+      }
+      // Formata a lista de comentários (quando o pedido é de Comentários) para
+      // anexar no fim da mensagem de WhatsApp, já numerados para copiar e colar.
+      function commentsForWhatsapp(comments) {
+        if (!comments || !comments.length) return "";
+        return (
+          "\n📝 Comentários para postar:\n" +
+          comments.map((c, i) => `${i + 1}. ${c}`).join("\n")
+        );
       }
       function esc(v) {
         return String(v ?? "").replace(
@@ -3838,7 +4128,7 @@
             html += `<div class="plan-card ${featured ? "featured" : ""}">
               ${featured ? '<div class="featured-badge">Mais Vendido 🔥</div>' : ""}
               <div class="plan-header">
-                <h3>${formatQty(tier.qty)} ${esc(group.label)}</h3>
+                <h3>${tierLabel(tier)} ${esc(group.label)}</h3>
                 <p style="color: var(--text-muted); font-size: 0.85rem">${esc(data.label)}</p>
                 <div class="plan-price">${money(tier.price)} <span>/ único</span></div>
               </div>
@@ -3873,7 +4163,7 @@
           alert("Pacote não encontrado.");
           return;
         }
-        const title = `${formatQty(tier.qty)} ${group.label} ${data.label}`;
+        const title = `${tierLabel(tier)} ${group.label} ${data.label}`;
         document.getElementById("checkout-title").textContent = title;
         document.getElementById("checkout-platform").textContent =
           data.label.toUpperCase();
@@ -3887,8 +4177,18 @@
           platform: data.label,
           value: tier.price,
           quantity: tier.qty,
+          commentsInput: !!group.commentsInput,
         });
         document.getElementById("checkout-link").value = "";
+        const commentsGroup = document.getElementById(
+          "checkout-comments-group",
+        );
+        const commentsTextarea = document.getElementById("checkout-comments");
+        if (commentsGroup) {
+          commentsGroup.style.display = group.commentsInput ? "block" : "none";
+        }
+        if (commentsTextarea) commentsTextarea.value = "";
+        updateCommentsCounter("checkout");
         showModal("checkoutModal");
       }
 
@@ -3908,6 +4208,19 @@
             "Configure sua chave Pix no APP_CONFIG.pix.key antes de receber pagamentos.",
           );
           return;
+        }
+        const plan0 = JSON.parse(
+          document.getElementById("checkoutModal").dataset.plan || "{}",
+        );
+        let comments = [];
+        if (plan0.commentsInput) {
+          comments = getCommentsLines("checkout");
+          if (!comments.length) {
+            alert(
+              "Informe os comentários que devem ser postados (um por linha).",
+            );
+            return;
+          }
         }
         await withBusyButton(
           btn,
@@ -3929,6 +4242,7 @@
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
+            if (comments.length) order.comments = comments;
             const ref = await db.collection("orders").add(order);
             currentOrderId = ref.id;
             const payload = buildPixPayload(
@@ -3948,7 +4262,8 @@
                 `Serviço: ${order.service} — ${order.platform}\n` +
                 `Valor: ${money(order.amount)}\n` +
                 `Link: ${order.link}\n` +
-                "Status: aguardando pagamento",
+                "Status: aguardando pagamento" +
+                commentsForWhatsapp(order.comments),
             );
             showPixForOrder(order.amount, payload, "pixModal");
             closeOperationModal("checkoutModal");
@@ -4343,9 +4658,142 @@
             : '<div class="empty-state">Ainda não há pedidos ou depósitos confirmados.</div>'
         }<p style="font-size:.72rem;color:#64748b;margin-top:8px">Conta aqui só o que você já confirmou (pago/processando/concluído). Pendentes aparecem nas listas abaixo.</p>`;
       }
+      // ---- Filtros do painel admin (data, status, busca) ----
+      // Os campos de filtro ficam FORA do #admin-content (que é reescrito a
+      // cada atualização), pra não perder o que a pessoa digitou a cada
+      // pedido novo que chega em tempo real.
+      function getAdminFilters() {
+        return {
+          from: document.getElementById("admin-filter-from")?.value || "",
+          to: document.getElementById("admin-filter-to")?.value || "",
+          status: document.getElementById("admin-filter-status")?.value || "",
+          search: (document.getElementById("admin-filter-search")?.value || "")
+            .trim()
+            .toLowerCase(),
+        };
+      }
+      function clearAdminFilters() {
+        [
+          "admin-filter-from",
+          "admin-filter-to",
+          "admin-filter-status",
+          "admin-filter-search",
+        ].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+        renderAdminDashboard();
+      }
+      function matchesAdminFilters(item, filters, extraText) {
+        const k = dateKey(item.createdAt);
+        if (filters.from && (!k || k < filters.from)) return false;
+        if (filters.to && (!k || k > filters.to)) return false;
+        if (filters.status && item.status !== filters.status) return false;
+        if (filters.search) {
+          const hay =
+            `${item.userName || ""} ${item.userEmail || ""} ${extraText || ""}`.toLowerCase();
+          if (!hay.includes(filters.search)) return false;
+        }
+        return true;
+      }
+      function filteredAdminData() {
+        const filters = getAdminFilters();
+        const orders = adminOrdersCache.filter((o) =>
+          matchesAdminFilters(o, filters, `${o.service} ${o.platform}`),
+        );
+        const deposits = adminDepositsCache.filter((d) =>
+          matchesAdminFilters(d, filters, "depósito de saldo"),
+        );
+        const hasFilters = !!(
+          filters.from ||
+          filters.to ||
+          filters.status ||
+          filters.search
+        );
+        return { filters, orders, deposits, hasFilters };
+      }
+      // KPIs extras: faturamento total carregado, ticket médio, clientes
+      // únicos e os serviços mais vendidos — tudo calculado a partir dos
+      // pedidos/depósitos já carregados (até 400 mais recentes de cada).
+      function buildExtraKpis(orders, deposits) {
+        const confirmedOrders = orders.filter((o) =>
+          ["paid", "processing", "completed"].includes(o.status),
+        );
+        const confirmedDeposits = deposits.filter((d) => d.status === "paid");
+        const totalRevenue =
+          confirmedOrders.reduce((s, o) => s + Number(o.amount || 0), 0) +
+          confirmedDeposits.reduce((s, d) => s + Number(d.amount || 0), 0);
+        const totalConfirmed =
+          confirmedOrders.length + confirmedDeposits.length;
+        const ticketMedio = totalConfirmed ? totalRevenue / totalConfirmed : 0;
+        const clientEmails = new Set();
+        orders.forEach((o) => {
+          if (o.userEmail) clientEmails.add(o.userEmail.toLowerCase());
+        });
+        deposits.forEach((d) => {
+          if (d.userEmail) clientEmails.add(d.userEmail.toLowerCase());
+        });
+        const serviceCounts = {};
+        confirmedOrders.forEach((o) => {
+          const key = o.service || "—";
+          serviceCounts[key] = (serviceCounts[key] || 0) + 1;
+        });
+        const topServices = Object.entries(serviceCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+        return {
+          totalRevenue,
+          totalConfirmed,
+          ticketMedio,
+          clientCount: clientEmails.size,
+          topServices,
+        };
+      }
+      function renderExtraKpis(k) {
+        const topRows =
+          k.topServices
+            .map(([name, count]) => `<li>${esc(name)} — ${count}x</li>`)
+            .join("") ||
+          '<li style="color:#64748b">Sem vendas confirmadas ainda.</li>';
+        return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Faturamento total (carregado)</small><br><strong style="font-size:1.3rem">${money(k.totalRevenue)}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Ticket médio</small><br><strong style="font-size:1.3rem">${money(k.ticketMedio)}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Clientes únicos</small><br><strong style="font-size:1.3rem">${k.clientCount}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Vendas confirmadas</small><br><strong style="font-size:1.3rem">${k.totalConfirmed}</strong></div></div><h4 style="margin:10px 0;color:#fff">🏆 Serviços mais vendidos</h4><ul style="color:#cbd5e1;font-size:.85rem;padding-left:18px;margin-bottom:16px">${topRows}</ul>`;
+      }
       function renderAdminDashboard() {
-        const orders = adminOrdersCache,
-          deposits = adminDepositsCache;
+        const { orders, deposits, hasFilters } = filteredAdminData();
+        const el = document.getElementById("admin-content");
+        if (!el) return;
+        const report = buildReport(orders, deposits);
+        const kpis = buildExtraKpis(orders, deposits);
+        const head = renderReportSection(report) + renderExtraKpis(kpis);
+
+        if (hasFilters) {
+          // Com filtro ativo, mostra uma lista única (pedidos + depósitos)
+          // combinada e ordenada por data — a divisão "pendentes/últimos"
+          // deixa de fazer sentido quando a pessoa já escolheu o que ver.
+          const combined = [
+            ...orders.map((o) => ({ ...o, __type: "order" })),
+            ...deposits.map((d) => ({ ...d, __type: "deposit" })),
+          ].sort(
+            (a, b) =>
+              (b.createdAt && b.createdAt.toMillis
+                ? b.createdAt.toMillis()
+                : 0) -
+              (a.createdAt && a.createdAt.toMillis
+                ? a.createdAt.toMillis()
+                : 0),
+          );
+          el.innerHTML = `${head}<h4 style="margin:10px 0;color:#fff">🔎 Resultados filtrados (${combined.length})</h4>${
+            combined
+              .map((item) =>
+                item.__type === "order"
+                  ? adminOrderCard(item)
+                  : adminDepositCard(item),
+              )
+              .join("") ||
+            '<div class="empty-state">Nada encontrado com esses filtros.</div>'
+          }`;
+          return;
+        }
+
         const pendingOrders = orders.filter((o) =>
           ["payment_reported", "pending_payment"].includes(o.status),
         );
@@ -4355,16 +4803,113 @@
         const allOrders = orders.filter(
           (o) => !["payment_reported", "pending_payment"].includes(o.status),
         );
-        const el = document.getElementById("admin-content");
-        if (!el) return;
-        const report = buildReport(orders, deposits);
-        el.innerHTML = `${renderReportSection(report)}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
+        el.innerHTML = `${head}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
       }
       function adminDepositCard(d) {
         return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div><span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}')">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}')">❌ Recusar</button>` : ""}</div></div>`;
       }
       function adminOrderCard(o) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>` : ""}</div></div>`;
+        const commentsBlock =
+          o.comments && o.comments.length
+            ? `<div style="margin-top:8px;background:#0b1220;border:1px dashed #334155;border-radius:8px;padding:8px;color:#94a3b8;font-size:.78rem">📝 <strong>Comentários (${o.comments.length}):</strong><br>${o.comments.map((c) => esc(c)).join("<br>")}</div>`
+            : "";
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>` : ""}</div></div>`;
+      }
+      // Gera o relatório em PDF (grátis, direto no navegador, via jsPDF) já
+      // respeitando os filtros aplicados na tela do painel admin.
+      function exportReportPDF() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          alert(
+            "Não foi possível carregar a biblioteca de PDF. Confira sua internet e tente novamente.",
+          );
+          return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const { filters, orders, deposits } = filteredAdminData();
+        const report = buildReport(orders, deposits);
+        const kpis = buildExtraKpis(orders, deposits);
+
+        doc.setFontSize(16);
+        doc.text("Turbine Brasil — Relatório de Faturamento", 14, 16);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        const periodo =
+          filters.from || filters.to
+            ? `Período: ${filters.from || "início"} até ${filters.to || "hoje"}`
+            : "Período: todos os registros carregados (até 400 mais recentes de pedidos e depósitos)";
+        doc.text(periodo, 14, 23);
+        doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 28);
+
+        doc.setFontSize(11);
+        doc.setTextColor(0);
+        doc.text(
+          `Faturamento hoje: ${money(report.today.total)}   |   Este mês: ${money(report.month.total)}`,
+          14,
+          38,
+        );
+        doc.text(
+          `Faturamento total (carregado): ${money(kpis.totalRevenue)}   |   Ticket médio: ${money(kpis.ticketMedio)}`,
+          14,
+          44,
+        );
+        doc.text(
+          `Clientes únicos: ${kpis.clientCount}   |   Vendas confirmadas: ${kpis.totalConfirmed}`,
+          14,
+          50,
+        );
+
+        doc.autoTable({
+          startY: 58,
+          head: [
+            [
+              "Data",
+              "Pedidos",
+              "Valor pedidos",
+              "Depósitos",
+              "Valor depósitos",
+              "Total",
+            ],
+          ],
+          body: report.days.map((d) => [
+            d.label,
+            d.orders.count,
+            money(d.orders.total),
+            d.deposits.count,
+            money(d.deposits.total),
+            money(d.total),
+          ]),
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [124, 58, 237] },
+        });
+
+        const combined = [...orders, ...deposits].sort(
+          (a, b) =>
+            (b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0) -
+            (a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0),
+        );
+        const nextY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 100;
+        doc.setFontSize(11);
+        doc.text("Detalhamento (pedidos e depósitos filtrados)", 14, nextY);
+        doc.autoTable({
+          startY: nextY + 4,
+          head: [["Data/hora", "Cliente", "Descrição", "Valor", "Status"]],
+          body: combined.map((item) => [
+            formatDateTime(item.createdAt),
+            item.userName || item.userEmail || "—",
+            item.service
+              ? `${item.service} — ${item.platform || ""}`
+              : "Depósito de saldo",
+            money(item.amount),
+            statusLabel(item.status),
+          ]),
+          styles: { fontSize: 7 },
+          headStyles: { fillColor: [2, 132, 199] },
+        });
+
+        doc.save(
+          `turbine-brasil-relatorio-${dateKey({ toDate: () => new Date() })}.pdf`,
+        );
       }
       async function confirmOrderPayment(id) {
         if (!isAdmin()) return;
@@ -4475,6 +5020,22 @@
           }
         }
       }
+      // Preenche o dropdown "Categoria" com TODOS os grupos do catálogo,
+      // agrupados por rede social. Única fonte de verdade é o objeto `catalog`
+      // lá em cima — pra adicionar/remover pacotes, basta editar o catálogo.
+      function populateCategorySelect() {
+        const sel = document.getElementById("category-select");
+        if (!sel) return;
+        let html = "";
+        Object.entries(catalog).forEach(([platformKey, data]) => {
+          html += `<optgroup label="${esc(data.label)}">`;
+          Object.entries(data.groups).forEach(([groupKey, group]) => {
+            html += `<option value="${platformKey}|${groupKey}">${esc(group.label)}</option>`;
+          });
+          html += `</optgroup>`;
+        });
+        sel.innerHTML = html;
+      }
       function updateServicesOptions() {
         const [platform, groupKey] = (
           document.getElementById("category-select").value || ""
@@ -4484,10 +5045,63 @@
         document.getElementById("service-select").innerHTML = tiers
           .map(
             (t, i) =>
-              `<option value="${i}">${formatQty(t.qty)} ${esc(group.label)} — ${money(t.price)}</option>`,
+              `<option value="${i}">${tierLabel(t)} ${esc(group.label)} — ${money(t.price)}</option>`,
           )
           .join("");
+        // Mostra o campo de comentários só quando a categoria escolhida for de Comentários.
+        const commentsGroupEl = document.getElementById("order-comments-group");
+        const commentsTextarea = document.getElementById("order-comments");
+        if (commentsGroupEl) {
+          commentsGroupEl.style.display =
+            group && group.commentsInput ? "block" : "none";
+        }
+        if (commentsTextarea && (!group || !group.commentsInput)) {
+          commentsTextarea.value = "";
+        }
         updateServiceDetails();
+      }
+      // Lê o textarea de comentários (painel "Novo Pedido" ou modal de checkout
+      // da vitrine) e retorna um array só com as linhas não vazias, já sem
+      // espaços extras nas pontas.
+      function getCommentsLines(scope) {
+        const textarea = document.getElementById(
+          scope === "checkout" ? "checkout-comments" : "order-comments",
+        );
+        if (!textarea) return [];
+        return textarea.value
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean);
+      }
+      // Atualiza o contador "X de Y comentários preenchidos" embaixo do
+      // textarea, comparando com a quantidade do pacote escolhido.
+      function updateCommentsCounter(scope) {
+        const counter = document.getElementById(
+          scope === "checkout"
+            ? "checkout-comments-counter"
+            : "order-comments-counter",
+        );
+        if (!counter) return;
+        const lines = getCommentsLines(scope);
+        let expected = 0;
+        if (scope === "checkout") {
+          const plan = JSON.parse(
+            document.getElementById("checkoutModal")?.dataset.plan || "{}",
+          );
+          expected = Number(plan.quantity || 0);
+        } else {
+          const { tier } = getSelectedTier();
+          expected = tier ? tier.qty : 0;
+        }
+        counter.textContent = expected
+          ? `${lines.length} de ${expected} comentários preenchidos`
+          : `${lines.length} comentário(s) preenchido(s)`;
+        counter.style.color =
+          expected && lines.length === expected
+            ? "#28a745"
+            : expected && lines.length > expected
+              ? "#ef4444"
+              : "#94a3b8";
       }
       function getSelectedTier() {
         const [platform, groupKey] = (
@@ -4515,10 +5129,11 @@
           return;
         }
         document.getElementById("service-description").innerHTML =
-          `<p>📦 <strong>Pacote:</strong> ${formatQty(tier.qty)} ${esc(group.label)} (${esc(data.label)})</p><p>💰 <strong>Valor:</strong> ${money(tier.price)}</p><p>⏱️ <strong>Início:</strong> 0-1 hora após confirmação do pagamento</p><p>🛡️ <strong>Garantia:</strong> Reposição em até 30 dias</p><p style="color: #ef4444; font-weight: bold; margin-top: 8px;">🚫 Não é possível ocultar curtidas/comentários no momento da compra.</p>`;
+          `<p>📦 <strong>Pacote:</strong> ${tierLabel(tier)} ${esc(group.label)} (${esc(data.label)})</p><p>💰 <strong>Valor:</strong> ${money(tier.price)}</p><p>⏱️ <strong>Início:</strong> 0-1 hora após confirmação do pagamento</p><p>🛡️ <strong>Garantia:</strong> Reposição em até 30 dias</p><p style="color: #ef4444; font-weight: bold; margin-top: 8px;">🚫 Não é possível ocultar curtidas/comentários no momento da compra.</p>${group.commentsInput ? '<p style="color:#38bdf8;font-weight:bold;margin-top:8px;">📝 Este pacote exige que você digite os comentários desejados no campo abaixo.</p>' : ""}`;
         document.getElementById("total-price-display").textContent = money(
           tier.price,
         );
+        if (group.commentsInput) updateCommentsCounter("order");
       }
       async function submitOrder(btn) {
         if (!requireLogin()) return;
@@ -4538,6 +5153,16 @@
           );
           return;
         }
+        let comments = [];
+        if (group.commentsInput) {
+          comments = getCommentsLines("order");
+          if (!comments.length) {
+            alert(
+              "Informe os comentários que devem ser postados (um por linha).",
+            );
+            return;
+          }
+        }
         await withBusyButton(
           btn,
           '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
@@ -4547,7 +5172,7 @@
               userId: currentUser.uid,
               userName: currentUser.displayName || "",
               userEmail: currentUser.email || "",
-              service: `${formatQty(tier.qty)} ${group.label}`,
+              service: `${tierLabel(tier)} ${group.label}`,
               platform: data.label,
               quantity: tier.qty,
               link,
@@ -4556,6 +5181,7 @@
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
+            if (comments.length) order.comments = comments;
             const ref = await db.collection("orders").add(order);
             currentOrderId = ref.id;
             const payload = buildPixPayload(
@@ -4575,7 +5201,8 @@
                 `Serviço: ${order.service} — ${order.platform}\n` +
                 `Valor: ${money(order.amount)}\n` +
                 `Link: ${order.link}\n` +
-                "Status: aguardando pagamento",
+                "Status: aguardando pagamento" +
+                commentsForWhatsapp(order.comments),
             );
             showPixForOrder(amount, payload, "pixModal");
           },
@@ -4590,6 +5217,7 @@
 
       // Integra o botão Google do modal existente ao Firebase.
       document.addEventListener("DOMContentLoaded", () => {
+        populateCategorySelect();
         updateServicesOptions();
         renderPlatformPlans("instagram");
 
