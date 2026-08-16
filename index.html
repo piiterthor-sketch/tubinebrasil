@@ -806,65 +806,6 @@
         gap: 25px;
       }
 
-      /* Versão desktop: 4 cards de planos lado a lado numa linha só,
-         com cards mais compactos para caberem confortavelmente. */
-      @media (min-width: 901px) {
-        .plans-grid {
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-        }
-
-        .plan-card {
-          padding: 22px 16px;
-          border-radius: 18px;
-        }
-
-        .plan-header h3 {
-          font-size: 1.05rem;
-          line-height: 1.3;
-          margin-bottom: 6px;
-        }
-
-        .plan-header p {
-          font-size: 0.78rem !important;
-        }
-
-        .plan-price {
-          font-size: 1.7rem;
-          margin: 10px 0;
-        }
-
-        .plan-price span {
-          font-size: 0.82rem;
-        }
-
-        .plan-features {
-          margin: 14px 0;
-        }
-
-        .plan-features li {
-          padding: 7px 0;
-          font-size: 0.8rem;
-          gap: 7px;
-        }
-
-        .plan-features li i {
-          font-size: 0.95rem;
-        }
-
-        .btn-plan {
-          padding: 11px;
-          border-radius: 12px;
-          font-size: 0.85rem;
-        }
-
-        .featured-badge {
-          top: -12px;
-          font-size: 0.65rem;
-          padding: 5px 12px;
-        }
-      }
-
       .service-group-title {
         font-size: 1.3rem;
         font-weight: 800;
@@ -2396,6 +2337,72 @@
       .form-group > div[style*="display: flex"] > button {
         flex: 0 0 auto;
         white-space: nowrap;
+      }
+
+      /* =========================================================
+         CARDS DE PLANOS — VERSÃO DESKTOP COMPACTA
+         Fica no fim do <style> de propósito: garante que essas regras
+         vençam a cascata mesmo com outras declarações de .plan-card /
+         .plan-header h3 / .plan-price mais acima no arquivo (mesma
+         especificidade, então quem vem depois vence). 4 cards por
+         linha, bem menores/menos "gordos" que o padrão.
+         ========================================================= */
+      @media (min-width: 901px) {
+        .plans-grid {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+        }
+
+        .plan-card {
+          padding: 13px 12px;
+          border-radius: 12px;
+        }
+
+        .plan-header h3 {
+          font-size: 0.82rem;
+          line-height: 1.25;
+          margin-bottom: 3px;
+        }
+
+        .plan-header p {
+          font-size: 0.62rem !important;
+        }
+
+        .plan-price {
+          font-size: 1.1rem;
+          margin: 5px 0;
+          gap: 3px;
+        }
+
+        .plan-price span {
+          font-size: 0.6rem;
+        }
+
+        .plan-features {
+          margin: 7px 0;
+        }
+
+        .plan-features li {
+          padding: 3px 0;
+          font-size: 0.62rem;
+          gap: 5px;
+        }
+
+        .plan-features li i {
+          font-size: 0.72rem;
+        }
+
+        .btn-plan {
+          padding: 7px;
+          border-radius: 8px;
+          font-size: 0.68rem;
+        }
+
+        .featured-badge {
+          top: -9px;
+          font-size: 0.5rem;
+          padding: 3px 8px;
+        }
       }
     </style>
 
@@ -4171,13 +4178,25 @@
           return;
         }
         let html = "";
-        // Pacotes mais baratos primeiro: ordena os grupos de cada rede social
-        // pelo preço do menor pacote de cada um (do mais barato pro mais caro).
-        const sortedGroups = Object.entries(data.groups).sort(
-          (a, b) =>
+        // Ordem dos cards: primeiro todos os grupos de Seguidores, depois
+        // todos os de Curtidas, depois o restante (comentários, visualizações
+        // etc.) — dentro de cada um desses blocos, do pacote mais barato pro
+        // mais caro. Essa mesma sequência vale tanto para Instagram quanto
+        // para TikTok (cada aba usa sua própria chamada a esta função).
+        function groupCategoryRank(groupKey) {
+          const k = groupKey.toLowerCase();
+          if (k.includes("seguidores")) return 0;
+          if (k.includes("curtidas")) return 1;
+          return 2;
+        }
+        const sortedGroups = Object.entries(data.groups).sort((a, b) => {
+          const rankDiff = groupCategoryRank(a[0]) - groupCategoryRank(b[0]);
+          if (rankDiff !== 0) return rankDiff;
+          return (
             Math.min(...a[1].tiers.map((t) => t.price)) -
-            Math.min(...b[1].tiers.map((t) => t.price)),
-        );
+            Math.min(...b[1].tiers.map((t) => t.price))
+          );
+        });
         sortedGroups.forEach(([groupKey, group], gi) => {
           html += `<h3 class="service-group-title"${gi === 0 ? ' style="margin-top:0"' : ""}>${esc(group.label)} ${esc(data.label)}</h3>`;
           html += `<div class="plans-grid">`;
