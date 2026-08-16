@@ -3356,6 +3356,15 @@
         },
         adminEmail: "piiterthor@gmail.com",
         whatsappNumber: "5511997694937",
+        // Notificação automática grátis via WhatsApp (CallMeBot) toda vez que um
+        // cliente finaliza um pedido ou depósito. Veja o passo a passo para ativar
+        // no arquivo GUIA-NOTIFICACAO-WHATSAPP.md. Enquanto "enabled" estiver
+        // false, o site funciona normalmente e simplesmente não envia nada.
+        notifyWhatsapp: {
+          enabled: false,
+          phone: "COLOQUE_SEU_NUMERO_AQUI", // ex: 5511999998888 (DDI+DDD+número, só números)
+          apikey: "COLOQUE_SUA_APIKEY_AQUI", // apikey que o CallMeBot te envia no WhatsApp
+        },
       };
 
       let firebaseReady = false;
@@ -3480,6 +3489,40 @@
             btn.disabled = false;
             btn.innerHTML = original;
           }
+        }
+      }
+      // Manda uma notificação grátis para o WhatsApp do proprietário via CallMeBot
+      // (serviço gratuito, sem custo). Se não estiver configurado (enabled:false ou
+      // faltando telefone/apikey), simplesmente não faz nada — nunca trava o site
+      // nem impede o pedido de ser criado, mesmo se o envio falhar.
+      function notifyOwnerWhatsapp(message) {
+        try {
+          const cfg = APP_CONFIG.notifyWhatsapp;
+          if (
+            !cfg ||
+            !cfg.enabled ||
+            !cfg.phone ||
+            cfg.phone.startsWith("COLOQUE_") ||
+            !cfg.apikey ||
+            cfg.apikey.startsWith("COLOQUE_")
+          ) {
+            return;
+          }
+          const url =
+            "https://api.callmebot.com/whatsapp.php?phone=" +
+            encodeURIComponent(cfg.phone) +
+            "&text=" +
+            encodeURIComponent(message) +
+            "&apikey=" +
+            encodeURIComponent(cfg.apikey);
+          fetch(url, { mode: "no-cors" }).catch((e) =>
+            console.warn(
+              "Não foi possível enviar notificação por WhatsApp:",
+              e,
+            ),
+          );
+        } catch (e) {
+          console.warn("Não foi possível enviar notificação por WhatsApp:", e);
         }
       }
       function esc(v) {
@@ -3856,6 +3899,14 @@
               pixPayload: payload,
               pixKey: APP_CONFIG.pix.key,
             });
+            notifyOwnerWhatsapp(
+              "🛒 Novo pedido — Turbine Brasil\n" +
+                `Cliente: ${order.userName} (${order.userEmail})\n` +
+                `Serviço: ${order.service} — ${order.platform}\n` +
+                `Valor: ${money(order.amount)}\n` +
+                `Link: ${order.link}\n` +
+                "Status: aguardando pagamento",
+            );
             showPixForOrder(order.amount, payload, "pixModal");
             closeOperationModal("checkoutModal");
           },
@@ -3962,6 +4013,11 @@
             "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
           document.getElementById("pix-status").className =
             "status-pill status-pending";
+          notifyOwnerWhatsapp(
+            "💰 Cliente informou pagamento — Turbine Brasil\n" +
+              `Pedido #${currentOrderId}\n` +
+              "Confira o Pix recebido e confirme no Painel do proprietário.",
+          );
           alert(
             "Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.",
           );
@@ -4014,6 +4070,12 @@
               pixPayload: payload,
               pixKey: APP_CONFIG.pix.key,
             });
+            notifyOwnerWhatsapp(
+              "💵 Novo depósito — Turbine Brasil\n" +
+                `Cliente: ${currentUser.displayName || ""} (${currentUser.email || ""})\n` +
+                `Valor: ${money(amount)}\n` +
+                "Status: aguardando pagamento",
+            );
             document.getElementById("deposit-pix-area").innerHTML =
               `<div class="pix-card"><strong>${money(amount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(payload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
             setQrImage(document.getElementById("deposit-qr-img"), payload);
@@ -4036,6 +4098,11 @@
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             },
             { merge: true },
+          );
+          notifyOwnerWhatsapp(
+            "💰 Cliente informou pagamento de depósito — Turbine Brasil\n" +
+              `Depósito #${currentDepositId}\n` +
+              "Confira o Pix recebido e confirme no Painel do proprietário.",
           );
           alert("Pagamento informado. Aguarde a confirmação do proprietário.");
         } catch (e) {
@@ -4371,6 +4438,14 @@
               pixPayload: payload,
               pixKey: APP_CONFIG.pix.key,
             });
+            notifyOwnerWhatsapp(
+              "🛒 Novo pedido — Turbine Brasil\n" +
+                `Cliente: ${order.userName} (${order.userEmail})\n` +
+                `Serviço: ${order.service} — ${order.platform}\n` +
+                `Valor: ${money(order.amount)}\n` +
+                `Link: ${order.link}\n` +
+                "Status: aguardando pagamento",
+            );
             showPixForOrder(amount, payload, "pixModal");
           },
         );
