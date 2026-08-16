@@ -2649,6 +2649,7 @@
                 <span class="badge-menu">PIX</span></a
               >
             </li>
+
           </ul>
         </div>
 
@@ -3361,9 +3362,9 @@
         // no arquivo GUIA-NOTIFICACAO-WHATSAPP.md. Enquanto "enabled" estiver
         // false, o site funciona normalmente e simplesmente não envia nada.
         notifyWhatsapp: {
-          enabled: false,
-          phone: "COLOQUE_SEU_NUMERO_AQUI", // ex: 5511999998888 (DDI+DDD+número, só números)
-          apikey: "COLOQUE_SUA_APIKEY_AQUI", // apikey que o CallMeBot te envia no WhatsApp
+          enabled: true,
+          phone: "5511997694937",
+          apikey: "2372160",
         },
       };
 
@@ -3516,10 +3517,7 @@
             "&apikey=" +
             encodeURIComponent(cfg.apikey);
           fetch(url, { mode: "no-cors" }).catch((e) =>
-            console.warn(
-              "Não foi possível enviar notificação por WhatsApp:",
-              e,
-            ),
+            console.warn("Não foi possível enviar notificação por WhatsApp:", e),
           );
         } catch (e) {
           console.warn("Não foi possível enviar notificação por WhatsApp:", e);
