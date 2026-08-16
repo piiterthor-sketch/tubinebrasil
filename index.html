@@ -806,6 +806,65 @@
         gap: 25px;
       }
 
+      /* Versão desktop: 4 cards de planos lado a lado numa linha só,
+         com cards mais compactos para caberem confortavelmente. */
+      @media (min-width: 901px) {
+        .plans-grid {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+
+        .plan-card {
+          padding: 22px 16px;
+          border-radius: 18px;
+        }
+
+        .plan-header h3 {
+          font-size: 1.05rem;
+          line-height: 1.3;
+          margin-bottom: 6px;
+        }
+
+        .plan-header p {
+          font-size: 0.78rem !important;
+        }
+
+        .plan-price {
+          font-size: 1.7rem;
+          margin: 10px 0;
+        }
+
+        .plan-price span {
+          font-size: 0.82rem;
+        }
+
+        .plan-features {
+          margin: 14px 0;
+        }
+
+        .plan-features li {
+          padding: 7px 0;
+          font-size: 0.8rem;
+          gap: 7px;
+        }
+
+        .plan-features li i {
+          font-size: 0.95rem;
+        }
+
+        .btn-plan {
+          padding: 11px;
+          border-radius: 12px;
+          font-size: 0.85rem;
+        }
+
+        .featured-badge {
+          top: -12px;
+          font-size: 0.65rem;
+          padding: 5px 12px;
+        }
+      }
+
       .service-group-title {
         font-size: 1.3rem;
         font-weight: 800;
@@ -4112,7 +4171,14 @@
           return;
         }
         let html = "";
-        Object.entries(data.groups).forEach(([groupKey, group], gi) => {
+        // Pacotes mais baratos primeiro: ordena os grupos de cada rede social
+        // pelo preço do menor pacote de cada um (do mais barato pro mais caro).
+        const sortedGroups = Object.entries(data.groups).sort(
+          (a, b) =>
+            Math.min(...a[1].tiers.map((t) => t.price)) -
+            Math.min(...b[1].tiers.map((t) => t.price)),
+        );
+        sortedGroups.forEach(([groupKey, group], gi) => {
           html += `<h3 class="service-group-title"${gi === 0 ? ' style="margin-top:0"' : ""}>${esc(group.label)} ${esc(data.label)}</h3>`;
           html += `<div class="plans-grid">`;
           group.tiers.forEach((tier, ti) => {
