@@ -20,9 +20,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <!-- Google Sign-In SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <style>
       :root {
         --bg-dark: #0a0518;
@@ -2469,7 +2466,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script
+      src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"
+      onerror="
+        this.onerror = null;
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+        document.head.appendChild(s);
+      "
+    ></script>
   </head>
   <body>
     <!-- Ambient Background Lighting -->
@@ -3124,14 +3129,10 @@
           saldo no painel.
         </p>
 
-        <div style="display: flex; justify-content: center">
-          <div
-            id="g_id_onload"
-            data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-            data-callback="handleCredentialResponse"
-          ></div>
-          <div class="g_id_signin" data-type="standard"></div>
-        </div>
+        <div
+          style="display: flex; justify-content: center"
+          id="login-google-btn-wrap"
+        ></div>
       </div>
     </div>
 
@@ -3638,22 +3639,39 @@
         unsubscribeUser = db
           .collection("users")
           .doc(uid)
-          .onSnapshot((s) => {
-            const d = s.data() || {};
-            document.getElementById("user-balance").textContent = money(
-              d.balance || 0,
-            );
-            renderAccount(d);
-          });
+          .onSnapshot(
+            (s) => {
+              const d = s.data() || {};
+              document.getElementById("user-balance").textContent = money(
+                d.balance || 0,
+              );
+              renderAccount(d);
+            },
+            (e) => {
+              console.warn("Saldo/conta:", e);
+            },
+          );
         if (unsubscribeOrders) unsubscribeOrders();
+        // Sem orderBy aqui de propósito: combinar where + orderBy em campos diferentes exige um índice
+        // composto no Firestore. Em vez de depender disso, buscamos só por userId e ordenamos na hora
+        // de exibir (função renderOrders/sort abaixo) — mais simples para quem está começando.
         unsubscribeOrders = db
           .collection("orders")
           .where("userId", "==", uid)
-          .orderBy("createdAt", "desc")
           .limit(20)
           .onSnapshot(
             (s) => {
-              renderOrders(s.docs.map((x) => ({ id: x.id, ...x.data() })));
+              const list = s.docs.map((x) => ({ id: x.id, ...x.data() }));
+              list.sort(
+                (a, b) =>
+                  (b.createdAt && b.createdAt.toMillis
+                    ? b.createdAt.toMillis()
+                    : 0) -
+                  (a.createdAt && a.createdAt.toMillis
+                    ? a.createdAt.toMillis()
+                    : 0),
+              );
+              renderOrders(list);
             },
             (e) => {
               console.warn("Pedidos:", e);
@@ -4391,11 +4409,7 @@
           });
         }
         initFirebase();
-        const sign = document.querySelector("#loginModal .g_id_signin");
-        if (sign) sign.style.display = "none";
-        const wrap = document.querySelector(
-          "#loginModal .modal-login-content > div:last-child",
-        );
+        const wrap = document.getElementById("login-google-btn-wrap");
         if (wrap) {
           wrap.innerHTML =
             '<button class="op-btn" onclick="loginGoogle()"><i class="fa-brands fa-google"></i> Continuar com Google</button>';
