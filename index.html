@@ -2515,6 +2515,24 @@
           <div class="account-chip" id="account-chip"></div>
           <button
             class="btn-header"
+            id="header-refresh-btn"
+            onclick="location.reload()"
+            title="Atualizar a tela"
+            style="display: none; background: #1e293b"
+          >
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button
+            class="btn-header"
+            id="header-logout-btn"
+            onclick="logoutGoogle()"
+            title="Sair da conta"
+            style="display: none; background: #7f1d1d"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i> Sair
+          </button>
+          <button
+            class="btn-header"
             id="header-login-btn"
             onclick="openLoginModal()"
           >
@@ -2651,6 +2669,20 @@
                 onclick="sidebarGoTo('saldo', this)"
                 ><i class="fa-solid fa-wallet"></i> Adicionar saldo
                 <span class="badge-menu">PIX</span></a
+              >
+            </li>
+            <li>
+              <a href="javascript:void(0)" onclick="location.reload()"
+                ><i class="fa-solid fa-arrows-rotate"></i> Atualizar página</a
+              >
+            </li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                id="menu-logout"
+                onclick="logoutGoogle()"
+                style="display: none"
+                ><i class="fa-solid fa-right-from-bracket"></i> Sair da conta</a
               >
             </li>
           </ul>
@@ -3941,6 +3973,20 @@
         }
       }
 
+      // Mostra/esconde os botões de "Sair" e "Atualizar" (cabeçalho e menu
+      // lateral) conforme o cliente está ou não logado com Google.
+      function updateAuthButtonsVisibility(isLoggedIn) {
+        const show = isLoggedIn ? "inline-flex" : "none";
+        const headerRefresh = document.getElementById("header-refresh-btn");
+        const headerLogout = document.getElementById("header-logout-btn");
+        const headerLogin = document.getElementById("header-login-btn");
+        const menuLogout = document.getElementById("menu-logout");
+        if (headerRefresh) headerRefresh.style.display = show;
+        if (headerLogout) headerLogout.style.display = show;
+        if (headerLogin)
+          headerLogin.style.display = isLoggedIn ? "none" : "inline-flex";
+        if (menuLogout) menuLogout.style.display = isLoggedIn ? "flex" : "none";
+      }
       async function handleAuthState(user) {
         currentUser = user || null;
         if (!user) {
@@ -3951,6 +3997,7 @@
           document.getElementById("user-avatar-display").innerHTML =
             '<i class="fa-solid fa-user"></i>';
           document.getElementById("account-chip")?.classList.remove("active");
+          updateAuthButtonsVisibility(false);
           if (unsubscribeUser) unsubscribeUser();
           if (unsubscribeOrders) unsubscribeOrders();
           return;
@@ -3969,6 +4016,7 @@
           chip.innerHTML = `${user.photoURL ? `<img src="${esc(user.photoURL)}">` : ""}<span>${esc(user.displayName || "Conta")}</span>`;
           chip.onclick = () => openAccount();
         }
+        updateAuthButtonsVisibility(true);
         await ensureUserDocument(user);
         subscribeUserData(user.uid);
       }
