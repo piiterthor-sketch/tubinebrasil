@@ -2616,58 +2616,37 @@
 
           <ul class="sidebar-menu">
             <li>
-              <a href="#painel" class="active"
+              <a
+                href="javascript:void(0)"
+                class="active"
+                id="menu-novo-pedido"
+                onclick="sidebarGoTo('novo-pedido', this)"
                 ><i class="fa-solid fa-cart-plus"></i> Novo Pedido</a
               >
             </li>
             <li>
-              <a href="#painel"
+              <a
+                href="javascript:void(0)"
+                id="menu-servicos"
+                onclick="sidebarGoTo('servicos', this)"
                 ><i class="fa-solid fa-list-check"></i> Serviços</a
               >
             </li>
             <li>
-              <a href="#painel"><i class="fa-solid fa-box"></i> Pedidos</a>
+              <a
+                href="javascript:void(0)"
+                id="menu-pedidos"
+                onclick="sidebarGoTo('pedidos', this)"
+                ><i class="fa-solid fa-box"></i> Pedidos</a
+              >
             </li>
             <li>
-              <a href="javascript:void(0)" onclick="openBalanceModal()"
+              <a
+                href="javascript:void(0)"
+                id="menu-saldo"
+                onclick="sidebarGoTo('saldo', this)"
                 ><i class="fa-solid fa-wallet"></i> Adicionar saldo
                 <span class="badge-menu">PIX</span></a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-gift"></i> Indique e ganhe 5%</a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-headset"></i> Suporte
-                <span class="badge-menu">1</span></a
-              >
-            </li>
-            <li>
-              <a href="https://chat.whatsapp.com/demo" target="_blank"
-                ><i class="fa-solid fa-users"></i> Grupo com suportes</a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-layer-group"></i> Ordem em massa</a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-coins"></i> Saldo grátis</a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-rotate"></i> Atualizações</a
-              >
-            </li>
-            <li>
-              <a href="#painel"
-                ><i class="fa-solid fa-mobile-screen"></i> App do site</a
               >
             </li>
           </ul>
@@ -2694,12 +2673,14 @@
           <div class="panel-tabs">
             <button
               class="panel-tab-btn active"
+              id="tab-btn-add"
               onclick="switchPanelTab('add', this)"
             >
               Adicionar Saldo
             </button>
             <button
               class="panel-tab-btn"
+              id="tab-btn-orders"
               onclick="switchPanelTab('orders', this)"
             >
               Pedidos
@@ -3714,6 +3695,41 @@
           return false;
         }
         return true;
+      }
+
+      /* =========================================================
+         NAVEGAÇÃO DO MENU LATERAL (Novo Pedido / Serviços / Pedidos / Saldo)
+         Cada link do menu abre exatamente o que o nome dele diz:
+         "Novo Pedido" mostra o formulário de pedido, "Serviços" leva até
+         a vitrine de planos, "Pedidos" mostra a lista de pedidos do
+         cliente e "Adicionar saldo" abre o modal de depósito via Pix.
+         ========================================================= */
+      function sidebarGoTo(target, linkEl) {
+        // Marca visualmente qual item do menu lateral está ativo.
+        document
+          .querySelectorAll(".sidebar-menu > li > a")
+          .forEach((a) => a.classList.remove("active"));
+        if (linkEl) linkEl.classList.add("active");
+
+        if (target === "novo-pedido") {
+          const addTabBtn = document.getElementById("tab-btn-add");
+          if (addTabBtn) switchPanelTab("add", addTabBtn);
+          document
+            .getElementById("painel")
+            ?.scrollIntoView({ behavior: "smooth" });
+        } else if (target === "servicos") {
+          document
+            .getElementById("servicos")
+            ?.scrollIntoView({ behavior: "smooth" });
+        } else if (target === "pedidos") {
+          const ordersTabBtn = document.getElementById("tab-btn-orders");
+          if (ordersTabBtn) switchPanelTab("orders", ordersTabBtn);
+          document
+            .getElementById("painel")
+            ?.scrollIntoView({ behavior: "smooth" });
+        } else if (target === "saldo") {
+          openBalanceModal();
+        }
       }
 
       /* =========================================================
