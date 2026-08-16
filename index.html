@@ -1222,9 +1222,6 @@
         .hero p {
           font-size: 1rem;
         }
-        .nav-links {
-          display: none;
-        }
         .stats-grid {
           grid-template-columns: 1fr 1fr;
         }
@@ -1377,85 +1374,6 @@
       }
 
       @media (max-width: 900px) {
-        header {
-          padding: 10px 0;
-        }
-
-        .nav-wrapper {
-          gap: 10px;
-        }
-
-        .logo-img {
-          height: 54px;
-          max-width: 190px;
-        }
-
-        .mobile-menu-toggle {
-          display: flex;
-          margin-left: auto;
-          order: 2;
-        }
-
-        .nav-links {
-          position: absolute;
-          top: calc(100% + 8px);
-          left: 12px;
-          right: 12px;
-          display: none;
-          flex-direction: column;
-          align-items: stretch;
-          gap: 4px;
-          padding: 10px;
-          background: rgba(10, 5, 24, 0.98);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(18px);
-          -webkit-backdrop-filter: blur(18px);
-        }
-
-        .nav-links.open {
-          display: flex;
-        }
-
-        .nav-links li {
-          width: 100%;
-        }
-
-        .nav-links a {
-          display: flex;
-          align-items: center;
-          min-height: 46px;
-          width: 100%;
-          padding: 10px 12px;
-          border-radius: 10px;
-        }
-
-        .nav-links a:hover,
-        .nav-links a:focus {
-          background: rgba(139, 92, 246, 0.14);
-        }
-
-        .header-actions {
-          order: 3;
-          margin-left: 0;
-        }
-
-        .header-actions .btn-header {
-          white-space: nowrap;
-        }
-
-        .account-chip {
-          max-width: 150px;
-          overflow: hidden;
-        }
-
-        .account-chip span {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
         .smm-container {
           grid-template-columns: 1fr;
         }
@@ -1489,32 +1407,6 @@
         .logo-img {
           height: 48px;
           max-width: 160px;
-        }
-
-        .header-actions {
-          gap: 6px;
-        }
-
-        .header-actions .account-chip {
-          display: none !important;
-        }
-
-        .header-actions .btn-header {
-          padding: 9px 11px;
-          min-height: 42px;
-          font-size: 0.76rem;
-          gap: 5px;
-        }
-
-        .header-actions .btn-header:first-of-type {
-          font-size: 0;
-          width: 42px;
-          justify-content: center;
-          padding: 0;
-        }
-
-        .header-actions .btn-header:first-of-type i {
-          font-size: 1rem;
         }
 
         .top-marquee {
@@ -1907,17 +1799,6 @@
           max-width: 135px;
         }
 
-        .header-actions .btn-header:last-child {
-          font-size: 0;
-          width: 42px;
-          justify-content: center;
-          padding: 0;
-        }
-
-        .header-actions .btn-header:last-child i {
-          font-size: 1rem;
-        }
-
         .stats-grid {
           padding: 12px 7px;
         }
@@ -2189,274 +2070,215 @@
       }
 
       /* =========================================================
-   AJUSTE FINAL DO CABEÇALHO MOBILE — TURBINE BRASIL
-   ========================================================= */
-      @media (max-width: 900px) {
-        /* Cabeçalho mobile: botão fixado dentro da viewport para nunca ser cortado. */
-        header {
-          min-height: 60px !important;
-          height: 60px !important;
-          padding: 6px 0 !important;
-          display: flex !important;
-          align-items: center !important;
-          overflow: visible !important;
-        }
-
-        header .container.nav-wrapper {
-          position: relative !important;
-          width: 100% !important;
-          max-width: none !important;
-          height: 48px !important;
-          margin: 0 !important;
-          padding: 0 62px 0 12px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: flex-start !important;
-          gap: 0 !important;
-          overflow: visible !important;
-        }
-
-        .brand-logo {
-          min-width: 0 !important;
-          max-width: calc(100% - 4px) !important;
-          overflow: hidden !important;
-          display: flex !important;
-          align-items: center !important;
-        }
-
-        .logo-img {
-          display: block !important;
-          width: auto !important;
-          height: 42px !important;
-          max-width: 145px !important;
-          object-fit: contain !important;
-        }
-
-        /* Posicionamento absoluto elimina qualquer conflito de flex/grid no Android. */
-        .mobile-menu-toggle {
-          position: absolute !important;
-          top: 50% !important;
-          right: 10px !important;
-          transform: translateY(-50%) !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          flex-direction: column !important;
-          width: 42px !important;
-          height: 42px !important;
-          min-width: 42px !important;
-          min-height: 42px !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          z-index: 1200 !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-        }
-
-        .mobile-menu-toggle span {
-          width: 21px !important;
-          height: 2px !important;
-          display: block !important;
-          flex: 0 0 2px !important;
-        }
-
-        .nav-links {
-          position: absolute !important;
-          top: 60px !important;
-          left: 8px !important;
-          right: 8px !important;
-          width: auto !important;
-          max-height: calc(100vh - 72px) !important;
-          overflow-y: auto !important;
-          z-index: 1100 !important;
-        }
-
-        .header-actions {
-          display: none !important;
-        }
-
-        .top-marquee {
-          margin-top: 60px !important;
-        }
-      }
-
-      @media (max-width: 380px) {
-        header .container.nav-wrapper {
-          padding-left: 10px !important;
-          padding-right: 58px !important;
-        }
-        .logo-img {
-          height: 39px !important;
-          max-width: 132px !important;
-        }
-        .mobile-menu-toggle {
-          right: 8px !important;
-          width: 40px !important;
-          height: 40px !important;
-          min-width: 40px !important;
-          min-height: 40px !important;
-        }
-        .nav-links {
-          left: 6px !important;
-          right: 6px !important;
-        }
-      }
-
-      @media (min-width: 901px) {
-        .mobile-menu-toggle {
-          display: none !important;
-        }
-      }
-
-      /* =========================================================
-   CORREÇÃO DEFINITIVA DO MENU MOBILE
-   Botão independente do header para garantir visibilidade
-   em Android, iPhone e telas pequenas.
-   ========================================================= */
+         MENU MOBILE — TURBINE BRASIL (bloco único, sem duplicidade)
+         O botão hambúrguer e o painel de navegação ficam presos à
+         viewport (position: fixed), não ao <header>, para nunca
+         serem cortados por overflow/transform em nenhum Android,
+         iPhone ou navegador. O painel único (#main-navigation) reúne
+         os links do menu E as ações de conta (Novo Pedido, Login,
+         Sair, Atualizar) — no mobile, .header-actions é escondido e
+         seu conteúdo equivalente vive dentro deste painel.
+         ========================================================= */
       @media (max-width: 900px) {
         header {
-          height: 60px !important;
-          min-height: 60px !important;
-          padding: 0 !important;
-          overflow: visible !important;
+          height: 60px;
+          min-height: 60px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          overflow: visible;
         }
 
         header .nav-wrapper {
-          height: 60px !important;
-          padding: 0 58px 0 10px !important;
-          margin: 0 !important;
-          width: 100% !important;
+          height: 60px;
+          padding: 0 58px 0 12px;
+          margin: 0;
+          width: 100%;
         }
 
         .brand-logo {
-          display: flex !important;
-          align-items: center !important;
-          max-width: calc(100vw - 70px) !important;
-          overflow: hidden !important;
+          display: flex;
+          align-items: center;
+          min-width: 0;
+          max-width: calc(100vw - 70px);
+          overflow: hidden;
         }
 
         .logo-img {
-          width: auto !important;
-          height: 44px !important;
-          max-width: 145px !important;
-          display: block !important;
+          display: block;
+          width: auto;
+          height: 44px;
+          max-width: 145px;
+          object-fit: contain;
         }
 
-        /* O botão fica preso diretamente à viewport do celular. */
+        .top-marquee {
+          margin-top: 60px;
+        }
+
+        /* Botão hambúrguer: fixo na viewport do celular. */
         #mobile-menu-toggle.mobile-menu-toggle {
-          position: fixed !important;
-          top: 9px !important;
-          right: 9px !important;
-          left: auto !important;
-          bottom: auto !important;
-          z-index: 2147483647 !important;
           display: flex !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          pointer-events: auto !important;
-          width: 42px !important;
-          height: 42px !important;
-          min-width: 42px !important;
-          min-height: 42px !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          border: 2px solid rgba(255, 255, 255, 0.75) !important;
-          border-radius: 11px !important;
-          background: rgba(10, 5, 24, 0.96) !important;
+          position: fixed;
+          top: 9px;
+          right: 9px;
+          z-index: 2147483647;
+          visibility: visible;
+          opacity: 1;
+          pointer-events: auto;
+          width: 42px;
+          height: 42px;
+          min-width: 42px;
+          min-height: 42px;
+          margin: 0;
+          padding: 0;
+          border: 2px solid rgba(255, 255, 255, 0.75);
+          border-radius: 11px;
+          background: rgba(10, 5, 24, 0.96);
           box-shadow:
             0 4px 18px rgba(0, 0, 0, 0.55),
-            0 0 12px rgba(139, 92, 246, 0.45) !important;
-          color: #fff !important;
-          transform: none !important;
-          flex-direction: column !important;
-          align-items: center !important;
-          justify-content: center !important;
-          gap: 5px !important;
-          -webkit-appearance: none !important;
-          appearance: none !important;
+            0 0 12px rgba(139, 92, 246, 0.45);
+          color: #fff;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          -webkit-appearance: none;
+          appearance: none;
         }
 
         #mobile-menu-toggle.mobile-menu-toggle span {
-          display: block !important;
-          width: 22px !important;
-          height: 3px !important;
-          min-height: 3px !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: #fff !important;
-          border-radius: 3px !important;
-          flex: 0 0 3px !important;
+          display: block;
+          width: 22px;
+          height: 3px;
+          margin: 0;
+          padding: 0;
+          background: #fff;
+          border-radius: 3px;
         }
 
-        /* Menu aberto também fica preso à viewport. */
+        /* Painel de navegação: preso à viewport, não ao header. */
         #main-navigation.nav-links {
-          position: fixed !important;
-          top: 60px !important;
-          left: 8px !important;
-          right: 8px !important;
-          width: auto !important;
-          max-height: calc(100vh - 70px) !important;
-          overflow-y: auto !important;
-          z-index: 2147483646 !important;
-          display: none !important;
-          padding: 10px !important;
-          margin: 0 !important;
-          flex-direction: column !important;
-          align-items: stretch !important;
-          gap: 4px !important;
-          background: rgba(10, 5, 24, 0.99) !important;
-          border: 1px solid rgba(139, 92, 246, 0.45) !important;
-          border-radius: 14px !important;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65) !important;
-          -webkit-backdrop-filter: blur(18px) !important;
-          backdrop-filter: blur(18px) !important;
+          position: fixed;
+          top: 60px;
+          left: 8px;
+          right: 8px;
+          width: auto;
+          max-height: calc(100vh - 70px);
+          overflow-y: auto;
+          z-index: 2147483646;
+          display: none;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 4px;
+          margin: 0;
+          padding: 10px;
+          background: rgba(10, 5, 24, 0.99);
+          border: 1px solid rgba(139, 92, 246, 0.45);
+          border-radius: 14px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+          -webkit-backdrop-filter: blur(18px);
+          backdrop-filter: blur(18px);
         }
 
         #main-navigation.nav-links.open {
           display: flex !important;
         }
 
-        #main-navigation.nav-links li,
-        #main-navigation.nav-links a {
-          width: 100% !important;
+        #main-navigation.nav-links li {
+          width: 100%;
         }
 
         #main-navigation.nav-links a {
-          min-height: 48px !important;
-          display: flex !important;
-          align-items: center !important;
-          padding: 11px 14px !important;
-          color: #fff !important;
-          font-size: 15px !important;
+          min-height: 48px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+          padding: 11px 14px;
+          border-radius: 10px;
+          color: #fff;
+          font-size: 15px;
+          font-weight: 600;
+          text-decoration: none;
         }
 
+        #main-navigation.nav-links a:hover,
+        #main-navigation.nav-links a:focus {
+          background: rgba(139, 92, 246, 0.14);
+        }
+
+        /* Divisor entre os links do menu e as ações da conta. */
+        .nav-links-divider {
+          display: block;
+          height: 1px;
+          margin: 6px 4px;
+          background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Itens que só existem no menu mobile (equivalentes ao
+           .header-actions do desktop: Novo Pedido / Login / Sair /
+           Atualizar). Visibilidade de login x sair é controlada via
+           JS em updateAuthButtonsVisibility(). */
+        .mobile-only-action {
+          display: block;
+        }
+
+        .mobile-only-action a {
+          background: var(--gradient-orange);
+        }
+
+        #mobile-login-item a {
+          background: var(--gradient-btn);
+        }
+
+        #mobile-refresh-item a {
+          background: #1e293b;
+        }
+
+        #mobile-logout-item a {
+          background: #7f1d1d;
+        }
+
+        /* A barra de ações do desktop some: seu conteúdo equivalente
+           passa a viver dentro do painel do hambúrguer, acima. */
         .header-actions {
-          display: none !important;
-        }
-
-        .top-marquee {
-          margin-top: 60px !important;
+          display: none;
         }
       }
 
       @media (max-width: 380px) {
-        #mobile-menu-toggle.mobile-menu-toggle {
-          top: 8px !important;
-          right: 7px !important;
-          width: 40px !important;
-          height: 40px !important;
-          min-width: 40px !important;
-          min-height: 40px !important;
+        header .nav-wrapper {
+          padding-right: 56px;
         }
 
         .logo-img {
-          height: 40px !important;
-          max-width: 132px !important;
+          height: 40px;
+          max-width: 132px;
+        }
+
+        #mobile-menu-toggle.mobile-menu-toggle {
+          top: 8px;
+          right: 7px;
+          width: 40px;
+          height: 40px;
+          min-width: 40px;
+          min-height: 40px;
+        }
+
+        #main-navigation.nav-links {
+          left: 6px;
+          right: 6px;
         }
       }
 
       @media (min-width: 901px) {
         #mobile-menu-toggle.mobile-menu-toggle {
+          display: none !important;
+        }
+
+        .mobile-only-action,
+        .nav-links-divider {
           display: none !important;
         }
       }
@@ -2510,6 +2332,37 @@
           <li><a href="#vantagens">Vantagens</a></li>
           <li><a href="#depoimentos">Feedbacks</a></li>
           <li><a href="#faq">Dúvidas</a></li>
+          <!-- A partir daqui: só aparecem no menu mobile (hambúrguer).
+               No desktop essas mesmas ações ficam em .header-actions. -->
+          <li class="nav-links-divider" aria-hidden="true"></li>
+          <li class="mobile-only-action">
+            <a href="#painel"
+              ><i class="fa-solid fa-plus-circle"></i> Novo Pedido</a
+            >
+          </li>
+          <li class="mobile-only-action" id="mobile-login-item">
+            <a href="javascript:void(0)" onclick="openLoginModal()">
+              <i class="fa-brands fa-google"></i> Login Google
+            </a>
+          </li>
+          <li
+            class="mobile-only-action"
+            id="mobile-refresh-item"
+            style="display: none"
+          >
+            <a href="javascript:void(0)" onclick="location.reload()">
+              <i class="fa-solid fa-arrows-rotate"></i> Atualizar página
+            </a>
+          </li>
+          <li
+            class="mobile-only-action"
+            id="mobile-logout-item"
+            style="display: none"
+          >
+            <a href="javascript:void(0)" onclick="logoutGoogle()">
+              <i class="fa-solid fa-right-from-bracket"></i> Sair da conta
+            </a>
+          </li>
         </ul>
         <div class="header-actions">
           <div class="account-chip" id="account-chip"></div>
@@ -3986,6 +3839,18 @@
         if (headerLogin)
           headerLogin.style.display = isLoggedIn ? "none" : "inline-flex";
         if (menuLogout) menuLogout.style.display = isLoggedIn ? "flex" : "none";
+        // Itens equivalentes dentro do menu mobile (hambúrguer).
+        const mobileLoginItem = document.getElementById("mobile-login-item");
+        const mobileRefreshItem = document.getElementById(
+          "mobile-refresh-item",
+        );
+        const mobileLogoutItem = document.getElementById("mobile-logout-item");
+        if (mobileLoginItem)
+          mobileLoginItem.style.display = isLoggedIn ? "none" : "block";
+        if (mobileRefreshItem)
+          mobileRefreshItem.style.display = isLoggedIn ? "block" : "none";
+        if (mobileLogoutItem)
+          mobileLogoutItem.style.display = isLoggedIn ? "block" : "none";
       }
       async function handleAuthState(user) {
         currentUser = user || null;
