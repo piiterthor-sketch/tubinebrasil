@@ -2466,15 +2466,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-    <script
-      src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"
-      onerror="
-        this.onerror = null;
-        var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
-        document.head.appendChild(s);
-      "
-    ></script>
   </head>
   <body>
     <!-- Ambient Background Lighting -->
@@ -3886,14 +3877,15 @@
         }
         return crc.toString(16).toUpperCase().padStart(4, "0");
       }
+      // Gera a imagem do QR Code direto por uma API pública de QR (sem depender de nenhuma biblioteca JS
+      // externa que possa falhar ao carregar) — o "payload" do Pix já é um texto público, o mesmo que
+      // aparece no campo "copia e cola", então não há nenhum dado sigiloso sendo enviado aqui.
       function setQrImage(img, payload) {
-        if (window.QRCode) {
-          QRCode.toDataURL(payload, { width: 420, margin: 1 }, (err, url) => {
-            if (!err && img) img.src = url;
-          });
-        } else if (img) {
-          img.alt = "QR Code Pix — carregando biblioteca QR";
-        }
+        if (!img) return;
+        img.alt = "QR Code Pix";
+        img.src =
+          "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=" +
+          encodeURIComponent(payload);
       }
       function showPixForOrder(amount, payload, modalId) {
         document.getElementById("pix-amount").textContent = money(amount);
