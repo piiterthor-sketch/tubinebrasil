@@ -3378,10 +3378,27 @@
     <!-- Footer -->
     <footer>
       <div class="container">
-        <div class="footer-grid">
-          <!-- Turbine Brasil -->
-          <div class="footer-col">
-            <a href="#" class="logo" style="margin-bottom: 15px">
+        <div
+          class="footer-grid"
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+          "
+        >
+          <!-- TURBINE BRASIL -->
+          <div class="footer-col" style="margin: 0; padding: 0">
+            <a
+              href="#"
+              class="logo"
+              style="
+                display: flex;
+                align-items: center;
+                margin: 0 0 15px 0;
+                padding: 0;
+              "
+            >
               <div class="logo-icon">
                 <i class="fa-solid fa-rocket"></i>
               </div>
@@ -3389,39 +3406,67 @@
               <div class="logo-text">TURBINE <span>BRASIL</span></div>
             </a>
 
-            <p style="color: var(--text-muted); font-size: 0.9rem">
+            <p
+              style="
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                margin: 0;
+                padding: 0;
+                line-height: 1.5;
+              "
+            >
               Empresa líder em marketing digital, engajamento e redes sociais no
               Brasil.
             </p>
           </div>
 
-          <!-- Pagamento Seguro -->
-          <div class="footer-col">
-            <h4>Pagamento Seguro</h4>
+          <!-- PAGAMENTO SEGURO -->
+          <div class="footer-col" style="margin: 0; padding: 0">
+            <h4 style="margin: 0 0 18px 0; padding: 0; line-height: 1.2">
+              Pagamento Seguro
+            </h4>
 
             <p
               style="
                 color: var(--text-muted);
                 font-size: 0.85rem;
-                margin-bottom: 10px;
+                margin: 0 0 12px 0;
+                padding: 0;
+                line-height: 1.5;
               "
             >
               Pagamento via Pix com confirmação manual do proprietário.
             </p>
 
-            <i
-              class="fa-brands fa-pix"
-              style="font-size: 1.8rem; color: #32bcad; margin-right: 10px"
-            ></i>
+            <div style="display: flex; align-items: center; height: 32px">
+              <i
+                class="fa-brands fa-pix"
+                style="font-size: 1.8rem; color: #32bcad; margin: 0"
+              ></i>
+            </div>
           </div>
         </div>
 
-        <!-- Copyright -->
-        <div class="footer-bottom">
+        <!-- COPYRIGHT -->
+        <div class="footer-bottom" style="margin-top: 35px; text-align: center">
           &copy; 2026 Turbine Brasil ® - Todos os direitos reservados.
         </div>
       </div>
     </footer>
+
+    <!-- RESPONSIVIDADE -->
+    <style>
+      @media (max-width: 768px) {
+        .footer-grid {
+          grid-template-columns: 1fr !important;
+          gap: 30px !important;
+        }
+
+        .footer-col {
+          width: 100%;
+        }
+      }
+    </style>
 
     <!-- Floating WhatsApp Button -->
     <a
