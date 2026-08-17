@@ -2406,14 +2406,29 @@
       }
     </style>
 
-    <!-- Firebase: Google Auth + Firestore (preparado para operação real) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <!-- Firebase: Google Auth + Firestore (preparado para operação real).
+         "defer" faz o navegador baixar em paralelo com o resto da página em
+         vez de travar a exibição — eles só são realmente usados dentro do
+         DOMContentLoaded lá embaixo, então isso é seguro e deixa o primeiro
+         carregamento da página mais rápido pra quem só está navegando. -->
+    <script
+      defer
+      src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"
+    ></script>
+    <script
+      defer
+      src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"
+    ></script>
+    <script
+      defer
+      src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"
+    ></script>
 
-    <!-- Bibliotecas para exportar o relatório do painel admin em PDF (grátis, via CDN) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- As bibliotecas de PDF (jsPDF/autotable) NÃO carregam mais aqui —
+         só são baixadas sob demanda quando o proprietário clica em
+         "Exportar PDF" no painel admin (ver loadPdfLibraries/exportReportPDF).
+         Isso evita que todo visitante comum baixe uma biblioteca que só o
+         admin usa. -->
   </head>
   <body>
     <!-- Ambient Background Lighting -->
@@ -2876,8 +2891,9 @@
         <div class="section-header">
           <h2 class="section-title">Escolha Sua Rede Social</h2>
           <p class="section-subtitle">
-            Selecione a plataforma desejada e escolha o pacote ideal para
-            alavancar seu perfil hoje mesmo.
+            Selecione a plataforma desejada. Aqui embaixo mostramos o pacote
+            mais vendido de cada categoria — todos os tamanhos e valores ficam
+            disponíveis no painel "Novo Pedido" acima.
           </p>
         </div>
 
@@ -3349,7 +3365,7 @@
           <button
             class="op-btn"
             style="margin-top: 0"
-            onclick="exportReportPDF()"
+            onclick="exportReportPDF(this)"
           >
             <i class="fa-solid fa-file-pdf"></i> Exportar PDF
           </button>
@@ -3358,163 +3374,63 @@
         <div id="admin-content"></div>
       </div>
     </div>
+
     <!-- Footer -->
     <footer>
       <div class="container">
-        <!-- Conteúdo principal -->
-        <div
-          class="footer-grid"
-          style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: center;
-            padding: 40px 0 35px;
-          "
-        >
-          <!-- Empresa -->
-          <div
-            class="footer-col"
-            style="display: flex; align-items: center; gap: 18px"
-          >
-            <a
-              href="#"
-              class="brand-logo"
-              aria-label="Turbine Brasil"
-              style="display: flex; flex-shrink: 0"
-            >
-              <img
-                src="./images/logo.png"
-                alt="Turbine Brasil"
-                class="logo-img"
-                style="width: 65px; height: 65px; object-fit: contain"
-              />
+        <div class="footer-grid">
+          <div class="footer-col">
+            <a href="#" class="logo" style="margin-bottom: 15px">
+              <div class="logo-icon"><i class="fa-solid fa-rocket"></i></div>
+              <div class="logo-text">TURBINE <span>BRASIL</span></div>
             </a>
-
+            <p style="color: var(--text-muted); font-size: 0.9rem">
+              Empresa líder em marketing digital, engajamento e crescimento para
+              redes sociais no Brasil.
+            </p>
+          </div>
+          <div class="footer-col">
+            <h4>Links Rápidos</h4>
+            <ul class="footer-links">
+              <li><a href="#painel">Novo Pedido</a></li>
+              <li><a href="#servicos">Instagram</a></li>
+              <li><a href="#servicos">TikTok</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Suporte</h4>
+            <ul class="footer-links">
+              <li><a href="#faq">Central de Ajuda</a></li>
+              <li><a href="#vantagens">Garantia e Segurança</a></li>
+              <li><a href="#depoimentos">Feedbacks</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Pagamento Seguro</h4>
             <p
               style="
                 color: var(--text-muted);
-                font-size: 0.9rem;
-                line-height: 1.5;
-                margin: 0;
-                max-width: 500px;
+                font-size: 0.85rem;
+                margin-bottom: 10px;
               "
             >
-              Empresa líder em marketing digital e engajamento.
+              Pagamento via Pix com confirmação manual do proprietário.
             </p>
-          </div>
-
-          <!-- Pagamento -->
-          <div
-            class="footer-col"
-            style="display: flex; align-items: center; gap: 18px"
-          >
-            <div>
-              <h4 style="margin: 0 0 6px; font-size: 1rem">Pagamento Seguro</h4>
-
-              <p
-                style="
-                  color: var(--text-muted);
-                  font-size: 0.85rem;
-                  line-height: 1.5;
-                  margin: 0;
-                "
-              >
-                Pagamento via Pix com confirmação manual do proprietário.
-              </p>
-            </div>
-
             <i
               class="fa-brands fa-pix"
-              style="font-size: 1.8rem; color: #32bcad; flex-shrink: 0"
+              style="font-size: 1.8rem; color: #32bcad; margin-right: 10px"
+            ></i>
+            <i
+              class="fa-solid fa-credit-card"
+              style="font-size: 1.8rem; color: var(--accent-magenta)"
             ></i>
           </div>
         </div>
-
-        <!-- Linha divisória -->
-        <div
-          style="
-            width: 100%;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.08);
-          "
-        ></div>
-
-        <!-- Copyright -->
-        <div
-          class="footer-bottom"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 25px;
-            text-align: center;
-            padding: 20px 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-          "
-        >
-          <span> © 2026 Turbine Brasil ® - Todos os direitos reservados. </span>
-
-          <span>
-            Desenvolvido por
-            <a
-              href="https://devduo.tec.br/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style="color: #ffffff; text-decoration: none; font-weight: 600"
-            >
-              DevDuo
-            </a>
-          </span>
+        <div class="footer-bottom">
+          &copy; 2026 Turbine Brasil ® - Todos os direitos reservados.
         </div>
       </div>
     </footer>
-
-    <!-- Responsivo -->
-    <style>
-      @media (max-width: 768px) {
-        .footer-grid {
-          grid-template-columns: 1fr !important;
-          gap: 30px !important;
-          padding: 30px 20px !important;
-        }
-
-        .footer-grid .footer-col {
-          justify-content: center;
-          text-align: center;
-        }
-
-        .footer-grid .footer-col p {
-          max-width: 100% !important;
-        }
-
-        .footer-bottom {
-          flex-direction: column !important;
-          gap: 8px !important;
-          padding: 20px !important;
-        }
-      }
-    </style>
-    <!-- Responsivo -->
-    <style>
-      @media (max-width: 768px) {
-        .footer-grid {
-          grid-template-columns: 1fr !important;
-          gap: 30px !important;
-          padding: 35px 20px 30px !important;
-        }
-
-        .footer-col {
-          text-align: center !important;
-        }
-
-        .footer-col p {
-          margin-left: auto !important;
-          margin-right: auto !important;
-        }
-      }
-    </style>
 
     <!-- Floating WhatsApp Button -->
     <a
@@ -4006,6 +3922,9 @@
       }
       function closeOperationModal(id) {
         document.getElementById(id)?.classList.remove("active");
+        // Fechou o painel admin: para de "escutar" pedidos/depósitos em
+        // tempo real até a próxima vez que ele for aberto.
+        if (id === "adminModal") stopAdminListeners();
       }
 
       function firebaseConfigured() {
@@ -4127,8 +4046,19 @@
           chip.onclick = () => openAccount();
         }
         updateAuthButtonsVisibility(true);
-        await ensureUserDocument(user);
-        subscribeUserData(user.uid);
+        // Se isso falhar (ex: e-mail de admin diferente entre index.html e
+        // firestore.rules), sem o try/catch o cliente ficaria "logado" na
+        // tela mas com saldo/pedidos que nunca carregam, sem nenhum aviso.
+        try {
+          await ensureUserDocument(user);
+          subscribeUserData(user.uid);
+        } catch (e) {
+          console.error(e);
+          alert(
+            "Você entrou com sua conta Google, mas não foi possível carregar seu saldo e pedidos: " +
+              friendlyError(e),
+          );
+        }
       }
 
       async function ensureUserDocument(user) {
@@ -4297,13 +4227,17 @@
             Math.min(...b[1].tiers.map((t) => t.price))
           );
         });
-        sortedGroups.forEach(([groupKey, group], gi) => {
-          html += `<h3 class="service-group-title"${gi === 0 ? ' style="margin-top:0"' : ""}>${esc(group.label)} ${esc(data.label)}</h3>`;
-          html += `<div class="plans-grid">`;
-          group.tiers.forEach((tier, ti) => {
-            const featured = group.tiers.length >= 2 && ti === 1;
-            html += `<div class="plan-card ${featured ? "featured" : ""}">
-              ${featured ? '<div class="featured-badge">Mais Vendido 🔥</div>' : ""}
+        // A seção "Escolha Sua Rede Social" mostra só o pacote MAIS VENDIDO
+        // de cada categoria (um card por categoria) — um mostruário rápido,
+        // não o catálogo completo. Todos os pacotes/tamanhos continuam
+        // disponíveis normalmente dentro do painel "Novo Pedido" (o select
+        // de Categoria/Pacote), que não foi alterado.
+        html += `<div class="plans-grid">`;
+        sortedGroups.forEach(([groupKey, group]) => {
+          const ti = group.tiers.length >= 2 ? 1 : 0;
+          const tier = group.tiers[ti];
+          html += `<div class="plan-card featured">
+              <div class="featured-badge">Mais Vendido 🔥</div>
               <div class="plan-header">
                 <h3>${tierLabel(tier)} ${esc(group.label)}</h3>
                 <p style="color: var(--text-muted); font-size: 0.85rem">${esc(data.label)}</p>
@@ -4317,9 +4251,8 @@
               </ul>
               <a href="javascript:void(0)" onclick="openPlanCheckout('${platform}','${groupKey}',${ti})" class="btn-plan">Comprar via Pix</a>
             </div>`;
-          });
-          html += `</div>`;
         });
+        html += `</div>`;
         container.innerHTML = html;
       }
 
@@ -4497,6 +4430,41 @@
         }
         return crc.toString(16).toUpperCase().padStart(4, "0");
       }
+      // Lê de volta o valor (tag "54") de dentro de um payload Pix já gerado.
+      // Usado só no painel admin, pra comparar com o campo "amount" salvo no
+      // pedido/depósito e avisar visualmente se alguém alterou um dos dois
+      // depois que o Pix já tinha sido gerado (ver auditoria de segurança).
+      function decodePixAmount(payload) {
+        try {
+          let i = 0;
+          const str = String(payload || "");
+          while (i + 4 <= str.length) {
+            const id = str.substr(i, 2);
+            const len = parseInt(str.substr(i + 2, 2), 10);
+            if (!Number.isFinite(len) || len < 0) return null;
+            const value = str.substr(i + 4, len);
+            if (id === "54") {
+              const n = parseFloat(value);
+              return Number.isFinite(n) ? n : null;
+            }
+            i += 4 + len;
+          }
+        } catch (e) {
+          // payload ausente/corrompido — simplesmente não mostra o comparativo.
+        }
+        return null;
+      }
+      // Monta o aviso visual (texto em vermelho) quando o valor salvo no
+      // documento (amount) não bate com o valor codificado dentro do Pix
+      // gerado — sinal de que algo foi alterado manualmente via console.
+      function pixAmountMismatchWarning(item) {
+        if (!item || !item.pixPayload) return "";
+        const decoded = decodePixAmount(item.pixPayload);
+        if (decoded == null) return "";
+        const saved = Number(item.amount || 0);
+        if (Math.abs(decoded - saved) < 0.01) return "";
+        return `<div style="margin-top:6px;background:#450a0a;border:1px solid #7f1d1d;border-radius:8px;padding:8px;color:#fecaca;font-size:.76rem">⚠️ <strong>Valor divergente:</strong> o pedido está salvo como ${esc(money(saved))}, mas o Pix gerado foi de ${esc(money(decoded))}. Confira com atenção antes de confirmar.</div>`;
+      }
       // Gera a imagem do QR Code direto por uma API pública de QR (sem depender de nenhuma biblioteca JS
       // externa que possa falhar ao carregar) — o "payload" do Pix já é um texto público, o mesmo que
       // aparece no campo "copia e cola", então não há nenhum dado sigiloso sendo enviado aqui.
@@ -4646,7 +4614,9 @@
         }
       }
 
+      let myOrdersCache = [];
       function renderOrders(orders) {
+        myOrdersCache = orders;
         const box = document.getElementById("panel-orders-list");
         if (!box) return;
         if (!orders.length) {
@@ -4655,11 +4625,41 @@
           return;
         }
         box.innerHTML = orders
-          .map(
-            (o) =>
-              `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>📅 ${formatDateTime(o.createdAt)} · ID: ${esc(o.id)}</small></div>`,
-          )
+          .map((o) => {
+            // Se ainda está aguardando pagamento (ou você já avisou que
+            // pagou mas o proprietário ainda não confirmou), deixa um
+            // botão pra reabrir o Pix daquele pedido — evita ficar "preso"
+            // sem conseguir pagar de novo caso tenha fechado a tela antes.
+            const canReopenPix =
+              o.pixPayload &&
+              ["pending_payment", "payment_reported"].includes(o.status);
+            return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>📅 ${formatDateTime(o.createdAt)} · ID: ${esc(o.id)}</small>${
+              canReopenPix
+                ? `<br><button class="op-btn secondary" style="margin-top:8px" onclick="reopenOrderPix('${esc(o.id)}')"><i class="fa-brands fa-pix"></i> Ver Pix / Já fiz o pagamento</button>`
+                : ""
+            }</div>`;
+          })
           .join("");
+      }
+      // Reabre o QR Code/copia-e-cola de um pedido já criado, pra quem
+      // fechou a tela ou perdeu a conexão antes de terminar o pagamento.
+      function reopenOrderPix(orderId) {
+        const order = myOrdersCache.find((o) => o.id === orderId);
+        if (!order || !order.pixPayload) {
+          alert(
+            "Não foi possível localizar o Pix deste pedido. Fale com o suporte pelo WhatsApp.",
+          );
+          return;
+        }
+        currentOrderId = order.id;
+        showPixForOrder(order.amount, order.pixPayload, "pixModal");
+        if (order.status === "payment_reported") {
+          const pill = document.getElementById("pix-status");
+          if (pill) {
+            pill.textContent = "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
+            pill.className = "status-pill status-pending";
+          }
+        }
       }
       function statusClass(s) {
         return (
@@ -4710,16 +4710,40 @@
           .collection("orders")
           .orderBy("createdAt", "desc")
           .limit(400)
-          .onSnapshot((s) =>
-            renderAdminOrders(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
+          .onSnapshot(
+            (s) =>
+              renderAdminOrders(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
+            (e) => {
+              console.warn("Painel admin (pedidos):", e);
+              document.getElementById("admin-content").innerHTML =
+                `<div class="empty-state">Não foi possível carregar os pedidos: ${esc(friendlyError(e))}</div>`;
+            },
           );
         unsubscribeAdminDeposits = db
           .collection("deposits")
           .orderBy("createdAt", "desc")
           .limit(400)
-          .onSnapshot((s) =>
-            renderAdminDeposits(s.docs.map((x) => ({ id: x.id, ...x.data() }))),
+          .onSnapshot(
+            (s) =>
+              renderAdminDeposits(
+                s.docs.map((x) => ({ id: x.id, ...x.data() })),
+              ),
+            (e) => console.warn("Painel admin (depósitos):", e),
           );
+      }
+      // Encerra os "ouvintes" em tempo real do painel admin — evita ficar
+      // baixando dados de até 800 pedidos/depósitos em segundo plano depois
+      // que o painel foi fechado (gasta dados/bateria e conta como leitura
+      // no Firebase à toa).
+      function stopAdminListeners() {
+        if (unsubscribeAdminOrders) {
+          unsubscribeAdminOrders();
+          unsubscribeAdminOrders = null;
+        }
+        if (unsubscribeAdminDeposits) {
+          unsubscribeAdminDeposits();
+          unsubscribeAdminDeposits = null;
+        }
       }
       function renderAdminLoading() {
         document.getElementById("admin-content").innerHTML =
@@ -4983,24 +5007,55 @@
         el.innerHTML = `${head}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
       }
       function adminDepositCard(d) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div><span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}')">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}')">❌ Recusar</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
       }
       function adminOrderCard(o) {
         const commentsBlock =
           o.comments && o.comments.length
             ? `<div style="margin-top:8px;background:#0b1220;border:1px dashed #334155;border-radius:8px;padding:8px;color:#94a3b8;font-size:.78rem">📝 <strong>Comentários (${o.comments.length}):</strong><br>${o.comments.map((c) => esc(c)).join("<br>")}</div>`
             : "";
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}')">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}')">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing')">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed')">✅ Concluir pedido</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}</div></div>`;
+      }
+      // Baixa um <script> externo sob demanda e só resolve quando ele
+      // terminar de carregar (ou rejeita se falhar) — usado pra só baixar
+      // o jsPDF/autotable quando o proprietário realmente clica em
+      // "Exportar PDF", em vez de todo visitante do site baixar isso à toa.
+      function loadScriptOnce(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+          }
+          const s = document.createElement("script");
+          s.src = src;
+          s.onload = () => resolve();
+          s.onerror = () =>
+            reject(new Error("Não foi possível carregar " + src));
+          document.head.appendChild(s);
+        });
+      }
+      async function loadPdfLibraries() {
+        if (window.jspdf && window.jspdf.jsPDF) return;
+        await loadScriptOnce(
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+        );
+        await loadScriptOnce(
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js",
+        );
       }
       // Gera o relatório em PDF (grátis, direto no navegador, via jsPDF) já
       // respeitando os filtros aplicados na tela do painel admin.
-      function exportReportPDF() {
-        if (!window.jspdf || !window.jspdf.jsPDF) {
-          alert(
-            "Não foi possível carregar a biblioteca de PDF. Confira sua internet e tente novamente.",
-          );
-          return;
-        }
+      async function exportReportPDF(btn) {
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Gerando PDF...',
+          async () => {
+            await loadPdfLibraries();
+            buildAndSaveReportPDF();
+          },
+        );
+      }
+      function buildAndSaveReportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const { filters, orders, deposits } = filteredAdminData();
@@ -5088,42 +5143,65 @@
           `turbine-brasil-relatorio-${dateKey({ toDate: () => new Date() })}.pdf`,
         );
       }
-      async function confirmOrderPayment(id) {
+      // Todas as ações do painel admin abaixo passam pelo mesmo
+      // withBusyButton usado nas ações do cliente: trava o botão enquanto
+      // processa (evita clique duplo) e mostra um alerta se algo falhar —
+      // antes essas ações falhavam completamente em silêncio.
+      async function confirmOrderPayment(id, btn) {
         if (!isAdmin()) return;
-        const ref = db.collection("orders").doc(id);
-        const snap = await ref.get();
-        const o = snap.data();
-        if (!o) return;
-        await ref.set(
-          {
-            status: "paid",
-            paymentConfirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            confirmedBy: currentUser.email,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Confirmando...',
+          async () => {
+            const ref = db.collection("orders").doc(id);
+            const snap = await ref.get();
+            const o = snap.data();
+            if (!o) throw new Error("Pedido não encontrado.");
+            await ref.set(
+              {
+                status: "paid",
+                paymentConfirmedAt:
+                  firebase.firestore.FieldValue.serverTimestamp(),
+                confirmedBy: currentUser.email,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            );
+            alert("Pagamento confirmado. Pedido liberado.");
           },
-          { merge: true },
         );
-        alert("Pagamento confirmado. Pedido liberado.");
       }
-      async function cancelOrder(id) {
+      async function cancelOrder(id, btn) {
         if (!isAdmin()) return;
         if (!confirm("Recusar este pedido?")) return;
-        await db.collection("orders").doc(id).set(
-          {
-            status: "cancelled",
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Recusando...',
+          async () => {
+            await db.collection("orders").doc(id).set(
+              {
+                status: "cancelled",
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            );
           },
-          { merge: true },
         );
       }
-      async function setOrderStatus(id, status) {
+      async function setOrderStatus(id, status, btn) {
         if (!isAdmin()) return;
-        await db.collection("orders").doc(id).set(
-          {
-            status,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...',
+          async () => {
+            await db.collection("orders").doc(id).set(
+              {
+                status,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            );
           },
-          { merge: true },
         );
       }
 
@@ -5131,37 +5209,55 @@
       function openAdminDeposits() {
         if (!isAdmin()) return;
       }
-      async function confirmDepositPayment(id) {
+      async function confirmDepositPayment(id, btn) {
         if (!isAdmin()) return;
-        const ref = db.collection("deposits").doc(id);
-        const snap = await ref.get();
-        const dep = snap.data();
-        if (!dep || dep.status === "paid") return;
-        await db.runTransaction(async (tx) => {
-          const userRef = db.collection("users").doc(dep.userId);
-          const us = await tx.get(userRef);
-          const balance = Number((us.data() || {}).balance || 0);
-          tx.update(userRef, {
-            balance: balance + Number(dep.amount || 0),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          });
-          tx.update(ref, {
-            status: "paid",
-            paymentConfirmedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            confirmedBy: currentUser.email,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          });
-        });
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Confirmando...',
+          async () => {
+            const ref = db.collection("deposits").doc(id);
+            // IMPORTANTE: a checagem de "já foi pago?" acontece DENTRO da
+            // transação (não antes) — isso evita creditar o saldo em dobro
+            // se o botão for clicado duas vezes rápido ou se houver duas
+            // abas do painel admin abertas ao mesmo tempo.
+            await db.runTransaction(async (tx) => {
+              const depSnap = await tx.get(ref);
+              const dep = depSnap.data();
+              if (!dep) throw new Error("Depósito não encontrado.");
+              if (dep.status === "paid") return; // já confirmado — não credita de novo.
+              const userRef = db.collection("users").doc(dep.userId);
+              const us = await tx.get(userRef);
+              const balance = Number((us.data() || {}).balance || 0);
+              tx.update(userRef, {
+                balance: balance + Number(dep.amount || 0),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+              tx.update(ref, {
+                status: "paid",
+                paymentConfirmedAt:
+                  firebase.firestore.FieldValue.serverTimestamp(),
+                confirmedBy: currentUser.email,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+            });
+          },
+        );
       }
-      async function cancelDeposit(id) {
+      async function cancelDeposit(id, btn) {
         if (!isAdmin()) return;
         if (!confirm("Recusar este depósito?")) return;
-        await db.collection("deposits").doc(id).set(
-          {
-            status: "cancelled",
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Recusando...',
+          async () => {
+            await db.collection("deposits").doc(id).set(
+              {
+                status: "cancelled",
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            );
           },
-          { merge: true },
         );
       }
 
