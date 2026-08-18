@@ -41,7 +41,7 @@
       property="og:image"
       content="https://www.turbinebrasil.com.br/images/compartilhamento.jpg"
     />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:type" content="image/jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
@@ -2525,19 +2525,29 @@
                No desktop essas mesmas ações ficam em .header-actions. -->
           <li class="nav-links-divider" aria-hidden="true"></li>
           <li class="mobile-only-action">
-            <a href="#painel"><i class="fa-solid fa-plus-circle"></i> Novo Pedido</a>
+            <a href="#painel"
+              ><i class="fa-solid fa-plus-circle"></i> Novo Pedido</a
+            >
           </li>
           <li class="mobile-only-action" id="mobile-login-item">
             <a href="javascript:void(0)" onclick="openLoginModal()">
               <i class="fa-brands fa-google"></i> Login Google
             </a>
           </li>
-          <li class="mobile-only-action" id="mobile-refresh-item" style="display: none">
+          <li
+            class="mobile-only-action"
+            id="mobile-refresh-item"
+            style="display: none"
+          >
             <a href="javascript:void(0)" onclick="location.reload()">
               <i class="fa-solid fa-arrows-rotate"></i> Atualizar página
             </a>
           </li>
-          <li class="mobile-only-action" id="mobile-logout-item" style="display: none">
+          <li
+            class="mobile-only-action"
+            id="mobile-logout-item"
+            style="display: none"
+          >
             <a href="javascript:void(0)" onclick="logoutGoogle()">
               <i class="fa-solid fa-right-from-bracket"></i> Sair da conta
             </a>
@@ -2703,11 +2713,9 @@
                 id="menu-logout"
                 onclick="logoutGoogle()"
                 style="display: none"
-                ><i class="fa-solid fa-right-from-bracket"></i> Sair da
-                conta</a
+                ><i class="fa-solid fa-right-from-bracket"></i> Sair da conta</a
               >
             </li>
-
           </ul>
         </div>
 
@@ -2815,7 +2823,11 @@
             </div>
 
             <!-- Só aparece quando a categoria escolhida é de Comentários -->
-            <div class="form-group" id="order-comments-group" style="display: none">
+            <div
+              class="form-group"
+              id="order-comments-group"
+              style="display: none"
+            >
               <label>Comentários que devem ser postados (um por linha)</label>
               <textarea
                 class="form-control-simple"
@@ -2826,7 +2838,12 @@
               ></textarea>
               <small
                 id="order-comments-counter"
-                style="display: block; margin-top: 4px; color: #94a3b8; font-size: 0.75rem"
+                style="
+                  display: block;
+                  margin-top: 4px;
+                  color: #94a3b8;
+                  font-size: 0.75rem;
+                "
               ></small>
             </div>
 
@@ -2929,8 +2946,8 @@
           <h2 class="section-title">Escolha Sua Rede Social</h2>
           <p class="section-subtitle">
             Selecione a plataforma desejada. Aqui embaixo mostramos o pacote
-            mais vendido de cada categoria — todos os tamanhos e valores
-            ficam disponíveis no painel "Novo Pedido" acima.
+            mais vendido de cada categoria — todos os tamanhos e valores ficam
+            disponíveis no painel "Novo Pedido" acima.
           </p>
         </div>
 
@@ -3221,7 +3238,9 @@
           placeholder="Faça login com Google"
         />
         <div id="checkout-comments-group" style="display: none">
-          <label class="op-label">Comentários que devem ser postados (um por linha)</label>
+          <label class="op-label"
+            >Comentários que devem ser postados (um por linha)</label
+          >
           <textarea
             class="op-input"
             id="checkout-comments"
@@ -3231,7 +3250,12 @@
           ></textarea>
           <small
             id="checkout-comments-counter"
-            style="display: block; margin-top: 4px; color: #94a3b8; font-size: 0.75rem"
+            style="
+              display: block;
+              margin-top: 4px;
+              color: #94a3b8;
+              font-size: 0.75rem;
+            "
           ></small>
         </div>
         <button class="op-btn" onclick="createManualPixOrder(this)">
@@ -3900,7 +3924,10 @@
             "&apikey=" +
             encodeURIComponent(cfg.apikey);
           fetch(url, { mode: "no-cors" }).catch((e) =>
-            console.warn("Não foi possível enviar notificação por WhatsApp:", e),
+            console.warn(
+              "Não foi possível enviar notificação por WhatsApp:",
+              e,
+            ),
           );
         } catch (e) {
           console.warn("Não foi possível enviar notificação por WhatsApp:", e);
@@ -4011,15 +4038,21 @@
         const menuLogout = document.getElementById("menu-logout");
         if (headerRefresh) headerRefresh.style.display = show;
         if (headerLogout) headerLogout.style.display = show;
-        if (headerLogin) headerLogin.style.display = isLoggedIn ? "none" : "inline-flex";
+        if (headerLogin)
+          headerLogin.style.display = isLoggedIn ? "none" : "inline-flex";
         if (menuLogout) menuLogout.style.display = isLoggedIn ? "flex" : "none";
         // Itens equivalentes dentro do menu mobile (hambúrguer).
         const mobileLoginItem = document.getElementById("mobile-login-item");
-        const mobileRefreshItem = document.getElementById("mobile-refresh-item");
+        const mobileRefreshItem = document.getElementById(
+          "mobile-refresh-item",
+        );
         const mobileLogoutItem = document.getElementById("mobile-logout-item");
-        if (mobileLoginItem) mobileLoginItem.style.display = isLoggedIn ? "none" : "block";
-        if (mobileRefreshItem) mobileRefreshItem.style.display = isLoggedIn ? "block" : "none";
-        if (mobileLogoutItem) mobileLogoutItem.style.display = isLoggedIn ? "block" : "none";
+        if (mobileLoginItem)
+          mobileLoginItem.style.display = isLoggedIn ? "none" : "block";
+        if (mobileRefreshItem)
+          mobileRefreshItem.style.display = isLoggedIn ? "block" : "none";
+        if (mobileLogoutItem)
+          mobileLogoutItem.style.display = isLoggedIn ? "block" : "none";
       }
       async function handleAuthState(user) {
         currentUser = user || null;
@@ -4295,7 +4328,9 @@
           commentsInput: !!group.commentsInput,
         });
         document.getElementById("checkout-link").value = "";
-        const commentsGroup = document.getElementById("checkout-comments-group");
+        const commentsGroup = document.getElementById(
+          "checkout-comments-group",
+        );
         const commentsTextarea = document.getElementById("checkout-comments");
         if (commentsGroup) {
           commentsGroup.style.display = group.commentsInput ? "block" : "none";
@@ -4809,7 +4844,10 @@
 
         const todayOrders = ordersByDay[todayKey] || { count: 0, total: 0 };
         const todayDeposits = depositsByDay[todayKey] || { count: 0, total: 0 };
-        const monthOrders = ordersByMonth[thisMonthKey] || { count: 0, total: 0 };
+        const monthOrders = ordersByMonth[thisMonthKey] || {
+          count: 0,
+          total: 0,
+        };
         const monthDeposits = depositsByMonth[thisMonthKey] || {
           count: 0,
           total: 0,
@@ -4868,9 +4906,7 @@
           from: document.getElementById("admin-filter-from")?.value || "",
           to: document.getElementById("admin-filter-to")?.value || "",
           status: document.getElementById("admin-filter-status")?.value || "",
-          search: (
-            document.getElementById("admin-filter-search")?.value || ""
-          )
+          search: (document.getElementById("admin-filter-search")?.value || "")
             .trim()
             .toLowerCase(),
         };
@@ -4893,7 +4929,8 @@
         if (filters.to && (!k || k > filters.to)) return false;
         if (filters.status && item.status !== filters.status) return false;
         if (filters.search) {
-          const hay = `${item.userName || ""} ${item.userEmail || ""} ${extraText || ""}`.toLowerCase();
+          const hay =
+            `${item.userName || ""} ${item.userEmail || ""} ${extraText || ""}`.toLowerCase();
           if (!hay.includes(filters.search)) return false;
         }
         return true;
@@ -4925,7 +4962,8 @@
         const totalRevenue =
           confirmedOrders.reduce((s, o) => s + Number(o.amount || 0), 0) +
           confirmedDeposits.reduce((s, d) => s + Number(d.amount || 0), 0);
-        const totalConfirmed = confirmedOrders.length + confirmedDeposits.length;
+        const totalConfirmed =
+          confirmedOrders.length + confirmedDeposits.length;
         const ticketMedio = totalConfirmed ? totalRevenue / totalConfirmed : 0;
         const clientEmails = new Set();
         orders.forEach((o) => {
@@ -5117,9 +5155,7 @@
 
         const combined = [...orders, ...deposits].sort(
           (a, b) =>
-            (b.createdAt && b.createdAt.toMillis
-              ? b.createdAt.toMillis()
-              : 0) -
+            (b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0) -
             (a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0),
         );
         const nextY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 100;
@@ -5352,7 +5388,9 @@
       // textarea, comparando com a quantidade do pacote escolhido.
       function updateCommentsCounter(scope) {
         const counter = document.getElementById(
-          scope === "checkout" ? "checkout-comments-counter" : "order-comments-counter",
+          scope === "checkout"
+            ? "checkout-comments-counter"
+            : "order-comments-counter",
         );
         if (!counter) return;
         const lines = getCommentsLines(scope);
