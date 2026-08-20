@@ -5474,14 +5474,27 @@
               pixPayload,
             } = result.data;
             currentOrderId = orderId;
-            if (remainingAmount > 0) {
+            const amt = Number(amount || 0);
+            const balUsed = Number(balanceUsed || 0);
+            // Se a Cloud Function que respondeu ainda for uma versão antiga
+            // (publicada antes do recurso de saldo), ela não manda
+            // "remainingAmount" nem "balanceUsed" — nesse caso, NÃO podemos
+            // supor que o pedido já foi pago; tratamos como se faltasse
+            // pagar o valor cheio via Pix (mais seguro do que mostrar
+            // "R$0,00 descontado, já pago" sem ter sido descontado nada).
+            const hasRemainingInfo =
+              remainingAmount !== undefined && remainingAmount !== null;
+            const remaining = hasRemainingInfo
+              ? Number(remainingAmount)
+              : Math.max(0, amt - balUsed);
+            if (remaining > 0.004 && pixPayload) {
               // Sobrou parte (ou tudo) para pagar via Pix.
               const instructionHtml =
-                balanceUsed > 0
-                  ? `<strong>${esc(money(balanceUsed))}</strong> já foi descontado do seu saldo. Pague o restante (<strong>${esc(money(remainingAmount))}</strong>) via Pix abaixo e depois toque em "Já fiz o pagamento".`
+                balUsed > 0
+                  ? `<strong>${esc(money(balUsed))}</strong> já foi descontado do seu saldo. Pague o restante (<strong>${esc(money(remaining))}</strong>) via Pix abaixo e depois toque em "Já fiz o pagamento".`
                   : null;
               showPixForOrder(
-                remainingAmount,
+                remaining,
                 pixPayload,
                 "pixModal",
                 instructionHtml,
@@ -5489,7 +5502,7 @@
             } else {
               // Saldo cobriu o pedido inteiro — nada de Pix, já está pago.
               alert(
-                `Pedido enviado! ${money(balanceUsed)} foram descontados do seu saldo e o pedido já está pago. Acompanhe o andamento em "Pedidos".`,
+                `Pedido enviado! Valor do pedido: ${money(amt)}.${balUsed > 0 ? ` ${money(balUsed)} foi descontado do seu saldo do site e` : ""} O pedido já está pago. Acompanhe o andamento em "Pedidos".`,
               );
               const ordersTabBtn = document.getElementById("tab-btn-orders");
               if (ordersTabBtn) switchPanelTab("orders", ordersTabBtn);
