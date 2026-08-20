@@ -2620,7 +2620,7 @@
     <div class="top-marquee">
       <div class="marquee-content">
         🚀 SEGUIDORES, CURTIDAS E COMENTÁRIOS PARA INSTAGRAM E TIKTOK ⚡ ENTREGA
-        RÁPIDA E GARANTIDA ⚡ SUPORTE VIA WHATSAPP
+        RÁPIDA E GARANTIDA ⚡ SUPORTE VIA WHATSAPP tttttt
       </div>
     </div>
 
@@ -4560,7 +4560,11 @@
             // servidor — o campo acima é só conveniência de interface.
             const createDepositFn = fx.httpsCallable("createDeposit");
             const result = await createDepositFn({ amount });
-            const { depositId, amount: confirmedAmount, pixPayload } = result.data;
+            const {
+              depositId,
+              amount: confirmedAmount,
+              pixPayload,
+            } = result.data;
             currentDepositId = depositId;
             document.getElementById("deposit-pix-area").innerHTML =
               `<div class="pix-card"><strong>${money(confirmedAmount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(pixPayload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
