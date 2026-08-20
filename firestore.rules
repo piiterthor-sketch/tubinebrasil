@@ -4,23 +4,6 @@ rules_version = '2';
 // -----------------------------------------------------------
 // Substitui o arquivo enviado anteriormente. Cole em:
 // Console do Firebase > Firestore Database > Regras > Publicar.
-//
-// O que mudou em relação à v1 que você enviou:
-//  1) create de orders/deposits agora valida tipo e faixa de
-//     amount/quantity/link (mitiga preço manipulado pelo cliente
-//     enquanto a Cloud Function createOrder/createDeposit não é
-//     usada — ver funcao/index.js).
-//  2) update de users/orders/deposits agora usa hasOnly() para
-//     limitar exatamente quais campos o dono pode alterar (fecha
-//     mass-assignment residual).
-//  3) Comentário deixando claro que, quando as Cloud Functions
-//     createOrder/createDeposit (functions/index.js) forem
-//     publicadas, o ideal é o CLIENTE PARAR de escrever
-//     diretamente em orders/deposits (usar allow create: if false
-//     e deixar só a Cloud Function, que roda com Admin SDK e
-//     ignora regras, criar os documentos). Isso é opcional: com
-//     os limites abaixo, escrita direta do cliente já fica
-//     bem mais segura mesmo sem essa migração.
 // =========================================================
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -31,9 +14,6 @@ service cloud.firestore {
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
-    // ADMIN_EMAIL_AQUI -> troque pelo mesmo e-mail de APP_CONFIG.adminEmail.
-    // Recomendação de médio prazo: migrar para custom claim
-    // (request.auth.token.admin == true) — ver scripts/setAdminClaim.js.
     function isAdmin() {
       return isSignedIn()
         && request.auth.token.email != null
@@ -69,8 +49,6 @@ service cloud.firestore {
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.status == "pending_payment"
-        // ---- validação de tipo/faixa (mitigação enquanto a Cloud Function
-        // createOrder não é a via obrigatória — ver comentário no topo) ----
         && request.resource.data.amount is number
         && request.resource.data.amount > 0
         && request.resource.data.amount <= 500
@@ -94,7 +72,6 @@ service cloud.firestore {
           && request.resource.data['service'] == resource.data['service']
           && request.resource.data.platform == resource.data.platform
           && request.resource.data.status in ["pending_payment", "payment_reported"]
-          // só pode tocar nestes campos nesta atualização feita pelo cliente:
           && request.resource.data.diff(resource.data).affectedKeys()
                .hasOnly(['status', 'pixPayload', 'pixKey', 'paymentReportedAt', 'updatedAt'])
         );
@@ -129,8 +106,6 @@ service cloud.firestore {
     }
 
     // ---- audit_logs/{logId} — opcional, ver functions/index.js ----
-    // Só a Cloud Function (Admin SDK, que ignora estas regras) escreve aqui.
-    // Do lado do cliente, só o admin pode LER a trilha de auditoria.
     match /audit_logs/{logId} {
       allow read: if isAdmin();
       allow write: if false;
