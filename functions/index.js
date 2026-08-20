@@ -22,13 +22,13 @@ const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/
 const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
-
+ 
 const { catalog } = require("./catalog");
 const { buildPixPayload } = require("./pix");
-
+ 
 admin.initializeApp();
 const db = admin.firestore();
-
+ 
 // ---------------------------------------------------------
 // CONFIGURAÇÃO
 // ---------------------------------------------------------
@@ -37,37 +37,37 @@ const db = admin.firestore();
 // scripts/setAdminClaim.js) e troque este e-mail fixo por
 // `request.auth.token.admin === true`.
 const ADMIN_EMAIL = "piiterthor@gmail.com";
-
+ 
 const PIX_CONFIG = {
   key: "+5511997694937", // mesma chave Pix do APP_CONFIG.pix.key em index.html
   merchantName: "TURBINE BRASIL",
   merchantCity: "BELO HORIZONTE",
 };
-
+ 
 const DEPOSIT_MIN = 1;
 const DEPOSIT_MAX = 5000;
-
+ 
 // Secrets do CallMeBot — NUNCA ficam no código nem no HTML. Configure com:
 //   firebase functions:secrets:set CALLMEBOT_PHONE
 //   firebase functions:secrets:set CALLMEBOT_APIKEY
 const CALLMEBOT_PHONE = defineSecret("CALLMEBOT_PHONE");
 const CALLMEBOT_APIKEY = defineSecret("CALLMEBOT_APIKEY");
-
+ 
 function money(v) {
   return Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
-
+ 
 function isAdminRequest(request) {
   const email = request.auth && request.auth.token && request.auth.token.email;
   return !!email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 }
-
+ 
 function requireAuth(request) {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Você precisa estar logado.");
   }
 }
-
+ 
 async function sendWhatsapp(message, secrets) {
   try {
     const phone = secrets.phone.value();
@@ -91,12 +91,12 @@ async function sendWhatsapp(message, secrets) {
     logger.warn("Erro ao notificar WhatsApp:", e);
   }
 }
-
+ 
 function commentsForWhatsapp(comments) {
   if (!comments || !comments.length) return "";
   return "\n📝 Comentários para postar:\n" + comments.map((c, i) => `${i + 1}. ${c}`).join("\n");
 }
-
+ 
 async function writeAuditLog(entry) {
   try {
     await db.collection("audit_logs").add({
@@ -107,7 +107,7 @@ async function writeAuditLog(entry) {
     logger.warn("Não foi possível gravar audit_log:", e);
   }
 }
-
+ 
 // ---------------------------------------------------------
 // createOrder — substitui o db.collection('orders').add(...) que
 // hoje é feito DIRETO pelo navegador em index.html. O cliente manda
@@ -116,8 +116,8 @@ async function writeAuditLog(entry) {
 // ---------------------------------------------------------
 exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] }, async (request) => {
   requireAuth(request);
-  const { platform, groupKey, tierIndex, link, comments } = request.data || {};
-
+  const { platform, groupKey, tierIndex, link, comments, useBalance } = request.data || {};
+ 
   if (typeof link !== "string" || !link.trim()) {
     throw new HttpsError("invalid-argument", "Informe o link ou @ do perfil.");
   }
@@ -127,7 +127,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] }, a
   if (!data || !group || !tier) {
     throw new HttpsError("invalid-argument", "Pacote inválido ou desatualizado. Atualize a página e tente de novo.");
   }
-
+ 
   let cleanComments = [];
   if (group.commentsInput) {
     cleanComments = Array.isArray(comments)
@@ -137,14 +137,14 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] }, a
       throw new HttpsError("invalid-argument", "Informe os comentários que devem ser postados.");
     }
   }
-
+ 
   const amount = Number(tier.price.toFixed(2)); // <-- único lugar que decide o preço
   const quantityLabel = tier.bonusQty
     ? `${tier.qty} (+300% bônus = ${tier.bonusQty} entregues)`
     : String(tier.qty);
   const serviceLabel = `${quantityLabel} ${group.label}`;
-
-  const order = {
+ 
+  const baseOrder = {
     userId: request.auth.uid,
     userName: request.auth.token.name || "",
     userEmail: request.auth.token.email || "",
@@ -153,36 +153,87 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] }, a
     quantity: tier.qty,
     link: link.trim().slice(0, 500),
     amount,
-    status: "pending_payment",
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
-  if (cleanComments.length) order.comments = cleanComments;
-
-  const ref = await db.collection("orders").add(order);
-  const payload = buildPixPayload(
-    amount,
-    PIX_CONFIG.key,
-    PIX_CONFIG.merchantName,
-    PIX_CONFIG.merchantCity,
-    "PED" + ref.id.slice(0, 20),
-  );
-  await ref.update({ pixPayload: payload, pixKey: PIX_CONFIG.key });
-
+  if (cleanComments.length) baseOrder.comments = cleanComments;
+ 
+  let orderId;
+  let balanceUsed = 0;
+  let remaining = amount;
+  let status = "pending_payment";
+ 
+  if (useBalance) {
+    // Usado só pelo painel "Novo Pedido" (submitOrder em index.html):
+    // desconta do saldo do cliente o quanto der e só cobra a diferença
+    // (se houver) via Pix. Roda em transação para nunca deixar o saldo
+    // negativo nem descontar duas vezes em caso de cliques repetidos.
+    const orderRef = db.collection("orders").doc();
+    const userRef = db.collection("users").doc(request.auth.uid);
+    await db.runTransaction(async (tx) => {
+      const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+      const balance = Number((userSnap.data() || {}).balance || 0);
+      balanceUsed = Number(Math.min(Math.max(balance, 0), amount).toFixed(2));
+      remaining = Number(Math.max(0, amount - balanceUsed).toFixed(2));
+      status = remaining > 0 ? "pending_payment" : "paid";
+ 
+      const orderData = {
+        ...baseOrder,
+        balanceUsed,
+        remainingAmount: remaining,
+        paidVia: remaining === 0 ? "balance" : balanceUsed > 0 ? "balance+pix" : "pix",
+        status,
+      };
+      if (remaining === 0) {
+        orderData.paymentConfirmedAt = admin.firestore.FieldValue.serverTimestamp();
+      }
+      tx.set(orderRef, orderData);
+      if (balanceUsed > 0) {
+        tx.update(userRef, {
+          balance: admin.firestore.FieldValue.increment(-balanceUsed),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    });
+    orderId = orderRef.id;
+  } else {
+    const ref = await db.collection("orders").add({ ...baseOrder, status: "pending_payment" });
+    orderId = ref.id;
+  }
+ 
+  let payload = null;
+  if (remaining > 0) {
+    payload = buildPixPayload(
+      remaining, // só o restante depois do saldo usado — nunca o valor cheio de novo
+      PIX_CONFIG.key,
+      PIX_CONFIG.merchantName,
+      PIX_CONFIG.merchantCity,
+      "PED" + orderId.slice(0, 20),
+    );
+    await db.collection("orders").doc(orderId).update({ pixPayload: payload, pixKey: PIX_CONFIG.key });
+  }
+ 
+  const statusLine =
+    remaining === 0
+      ? `Status: PAGO com saldo (${money(balanceUsed)})`
+      : balanceUsed > 0
+        ? `Status: aguardando pagamento do restante (${money(balanceUsed)} já descontado do saldo)`
+        : "Status: aguardando pagamento";
+ 
   await sendWhatsapp(
     "🛒 Novo pedido — Turbine Brasil\n" +
-      `Cliente: ${order.userName} (${order.userEmail})\n` +
-      `Serviço: ${order.service} — ${order.platform}\n` +
-      `Valor: ${money(order.amount)}\n` +
-      `Link: ${order.link}\n` +
-      "Status: aguardando pagamento" +
-      commentsForWhatsapp(order.comments),
+      `Cliente: ${baseOrder.userName} (${baseOrder.userEmail})\n` +
+      `Serviço: ${baseOrder.service} — ${baseOrder.platform}\n` +
+      `Valor total: ${money(amount)}\n` +
+      `Link: ${baseOrder.link}\n` +
+      statusLine +
+      commentsForWhatsapp(cleanComments),
     { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
   );
-
-  return { orderId: ref.id, amount, pixPayload: payload };
+ 
+  return { orderId, amount, balanceUsed, remainingAmount: remaining, pixPayload: payload, status };
 });
-
+ 
 // ---------------------------------------------------------
 // createDeposit — não depende de catálogo (o cliente escolhe o
 // valor de propósito), mas ainda assim valida faixa no servidor
@@ -195,7 +246,7 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
     throw new HttpsError("invalid-argument", `Informe um valor entre ${money(DEPOSIT_MIN)} e ${money(DEPOSIT_MAX)}.`);
   }
   const roundedAmount = Number(amount.toFixed(2));
-
+ 
   const deposit = {
     userId: request.auth.uid,
     userName: request.auth.token.name || "",
@@ -214,7 +265,7 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
     "DEP" + ref.id.slice(0, 20),
   );
   await ref.update({ pixPayload: payload, pixKey: PIX_CONFIG.key });
-
+ 
   await sendWhatsapp(
     "💵 Novo depósito — Turbine Brasil\n" +
       `Cliente: ${deposit.userName} (${deposit.userEmail})\n` +
@@ -222,10 +273,10 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
       "Status: aguardando pagamento",
     { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
   );
-
+ 
   return { depositId: ref.id, amount: roundedAmount, pixPayload: payload };
 });
-
+ 
 // ---------------------------------------------------------
 // confirmDepositPayment — move a transação de crédito de saldo
 // (que hoje o admin dispara pelo navegador) para o servidor.
@@ -240,18 +291,18 @@ exports.confirmDepositPayment = onCall(async (request) => {
   }
   const depositId = (request.data || {}).depositId;
   if (!depositId) throw new HttpsError("invalid-argument", "depositId é obrigatório.");
-
+ 
   await db.runTransaction(async (tx) => {
     const depRef = db.collection("deposits").doc(depositId);
     const depSnap = await tx.get(depRef);
     const dep = depSnap.data();
     if (!dep) throw new HttpsError("not-found", "Depósito não encontrado.");
     if (dep.status === "paid") return; // idempotente — evita crédito duplicado.
-
+ 
     const userRef = db.collection("users").doc(dep.userId);
     const userSnap = await tx.get(userRef);
     const balance = Number((userSnap.data() || {}).balance || 0);
-
+ 
     tx.update(userRef, {
       balance: balance + Number(dep.amount || 0),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -263,16 +314,16 @@ exports.confirmDepositPayment = onCall(async (request) => {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
-
+ 
   await writeAuditLog({
     action: "confirm_deposit",
     depositId,
     performedBy: request.auth.token.email,
   });
-
+ 
   return { ok: true };
 });
-
+ 
 // ---------------------------------------------------------
 // confirmOrderPayment / setOrderStatus — mesma lógica que já existia
 // no navegador (confirmOrderPayment/setOrderStatus em index.html),
@@ -287,7 +338,7 @@ exports.confirmOrderPayment = onCall(async (request) => {
   }
   const orderId = (request.data || {}).orderId;
   if (!orderId) throw new HttpsError("invalid-argument", "orderId é obrigatório.");
-
+ 
   await db.collection("orders").doc(orderId).set(
     {
       status: "paid",
@@ -300,7 +351,7 @@ exports.confirmOrderPayment = onCall(async (request) => {
   await writeAuditLog({ action: "confirm_order", orderId, performedBy: request.auth.token.email });
   return { ok: true };
 });
-
+ 
 const ALLOWED_MANUAL_STATUSES = ["processing", "completed"];
 exports.setOrderStatus = onCall(async (request) => {
   requireAuth(request);
@@ -318,7 +369,7 @@ exports.setOrderStatus = onCall(async (request) => {
   await writeAuditLog({ action: "set_order_status", orderId, status, performedBy: request.auth.token.email });
   return { ok: true };
 });
-
+ 
 // ---------------------------------------------------------
 // cancelOrder / cancelDeposit — versões com trilha de auditoria
 // completa (achado 2.10: hoje cancelOrder/cancelDeposit em
@@ -331,20 +382,44 @@ exports.cancelOrder = onCall(async (request) => {
   }
   const orderId = (request.data || {}).orderId;
   if (!orderId) throw new HttpsError("invalid-argument", "orderId é obrigatório.");
-
-  await db.collection("orders").doc(orderId).set(
-    {
+ 
+  let refundAmount = 0;
+  await db.runTransaction(async (tx) => {
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderSnap = await tx.get(orderRef); // leitura sempre antes de qualquer escrita
+    const order = orderSnap.data();
+    if (!order) throw new HttpsError("not-found", "Pedido não encontrado.");
+    if (order.status === "cancelled") return; // idempotente — evita estornar duas vezes.
+ 
+    // Se parte (ou tudo) desse pedido tinha sido pago com saldo do
+    // cliente (achado: pedido pago via painel "Novo Pedido"), devolve
+    // esse valor para o saldo dele ao recusar — senão o dinheiro fica
+    // "preso" descontado sem o pedido ter sido entregue.
+    refundAmount = Number(order.balanceUsed || 0);
+    if (refundAmount > 0) {
+      const userRef = db.collection("users").doc(order.userId);
+      tx.update(userRef, {
+        balance: admin.firestore.FieldValue.increment(refundAmount),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+    tx.update(orderRef, {
       status: "cancelled",
       cancelledBy: request.auth.token.email,
       cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true },
-  );
-  await writeAuditLog({ action: "cancel_order", orderId, performedBy: request.auth.token.email });
-  return { ok: true };
+      ...(refundAmount > 0 ? { balanceRefunded: true, balanceRefundedAmount: refundAmount } : {}),
+    });
+  });
+  await writeAuditLog({
+    action: "cancel_order",
+    orderId,
+    performedBy: request.auth.token.email,
+    ...(refundAmount > 0 ? { balanceRefunded: refundAmount } : {}),
+  });
+  return { ok: true, refundAmount };
 });
-
+ 
 exports.cancelDeposit = onCall(async (request) => {
   requireAuth(request);
   if (!isAdminRequest(request)) {
@@ -352,7 +427,7 @@ exports.cancelDeposit = onCall(async (request) => {
   }
   const depositId = (request.data || {}).depositId;
   if (!depositId) throw new HttpsError("invalid-argument", "depositId é obrigatório.");
-
+ 
   await db.collection("deposits").doc(depositId).set(
     {
       status: "cancelled",
@@ -365,7 +440,7 @@ exports.cancelDeposit = onCall(async (request) => {
   await writeAuditLog({ action: "cancel_deposit", depositId, performedBy: request.auth.token.email });
   return { ok: true };
 });
-
+ 
 // ---------------------------------------------------------
 // Gatilhos automáticos: avisam o proprietário quando o cliente
 // sinaliza "já paguei" — substitui as chamadas client-side a
@@ -388,7 +463,7 @@ exports.onOrderUpdated = onDocumentUpdated(
     }
   },
 );
-
+ 
 exports.onDepositUpdated = onDocumentUpdated(
   { document: "deposits/{depositId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
   async (event) => {

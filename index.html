@@ -2875,6 +2875,15 @@
               <span>Valor a Cobrar:</span>
               <strong id="total-price-display">R$ 0,00</strong>
             </div>
+            <div
+              id="balance-usage-hint"
+              style="
+                display: none;
+                margin: -10px 0 18px;
+                font-size: 0.78rem;
+                color: #38bdf8;
+              "
+            ></div>
 
             <button
               type="button"
@@ -3582,6 +3591,7 @@
       let db = null;
       let fx = null; // Cloud Functions (createOrder, createDeposit, ações do admin)
       let currentUser = null;
+      let currentUserBalance = 0; // espelha o saldo do usuário logado (users/{uid}.balance), usado para o aviso "será descontado do seu saldo" no formulário Novo Pedido.
       let currentOrderId = null;
       let currentDepositId = null;
       let unsubscribeUser = null;
@@ -4130,10 +4140,14 @@
           .onSnapshot(
             (s) => {
               const d = s.data() || {};
+              currentUserBalance = Number(d.balance || 0);
               document.getElementById("user-balance").textContent = money(
                 d.balance || 0,
               );
               renderAccount(d);
+              // Saldo mudou (ex: depósito confirmado): atualiza o aviso do
+              // formulário "Novo Pedido" se ele estiver com um pacote selecionado.
+              updateServiceDetails();
             },
             (e) => {
               console.warn("Saldo/conta:", e);
@@ -4470,7 +4484,13 @@
         if (!item || !item.pixPayload) return "";
         const decoded = decodePixAmount(item.pixPayload);
         if (decoded == null) return "";
-        const saved = Number(item.amount || 0);
+        // Quando parte do pedido foi paga com saldo, o Pix gerado é só do
+        // valor restante (remainingAmount) — não do valor cheio do pedido —
+        // então a comparação precisa usar o valor certo pra não disparar um
+        // alerta de "divergência" falso nesses casos.
+        const saved = Number(
+          item.balanceUsed > 0 ? item.remainingAmount || 0 : item.amount || 0,
+        );
         if (Math.abs(decoded - saved) < 0.01) return "";
         return `<div style="margin-top:6px;background:#450a0a;border:1px solid #7f1d1d;border-radius:8px;padding:8px;color:#fecaca;font-size:.76rem">⚠️ <strong>Valor divergente:</strong> o pedido está salvo como ${esc(money(saved))}, mas o Pix gerado foi de ${esc(money(decoded))}. Confira com atenção antes de confirmar.</div>`;
       }
@@ -4484,7 +4504,7 @@
           "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=" +
           encodeURIComponent(payload);
       }
-      function showPixForOrder(amount, payload, modalId) {
+      function showPixForOrder(amount, payload, modalId, instructionHtml) {
         document.getElementById("pix-amount").textContent = money(amount);
         document.getElementById("pix-copy-code").value = payload;
         setQrImage(document.getElementById("pix-qr-img"), payload);
@@ -4492,6 +4512,16 @@
           "AGUARDANDO PAGAMENTO";
         document.getElementById("pix-status").className =
           "status-pill status-pending";
+        // Permite personalizar o texto de instrução (usado quando parte do
+        // pedido já foi paga com saldo — ver submitOrder) e sempre volta ao
+        // texto padrão quando não é informado, para não "vazar" o aviso de
+        // saldo para outros pedidos abertos depois.
+        const instrEl = document.getElementById("pix-instruction");
+        if (instrEl) {
+          instrEl.innerHTML =
+            instructionHtml ||
+            'Faça o pagamento e depois toque em "Já fiz o pagamento".';
+        }
         showModal(modalId);
       }
       async function copyPixCode() {
@@ -4617,7 +4647,11 @@
             const canReopenPix =
               o.pixPayload &&
               ["pending_payment", "payment_reported"].includes(o.status);
-            return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>📅 ${formatDateTime(o.createdAt)} · ID: ${esc(o.id)}</small>${
+            const balanceNote =
+              o.balanceUsed > 0
+                ? `<br><small style="color:#38bdf8">💳 ${money(o.balanceUsed)} pago com saldo${o.remainingAmount > 0 ? ` · ${money(o.remainingAmount)} via Pix` : ""}</small>`
+                : "";
+            return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.service)}</strong><br><small>${esc(o.platform)} · ${esc(o.link)}</small></div><strong>${money(o.amount)}</strong></div><span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><br><small>📅 ${formatDateTime(o.createdAt)} · ID: ${esc(o.id)}</small>${balanceNote}${
               canReopenPix
                 ? `<br><button class="op-btn secondary" style="margin-top:8px" onclick="reopenOrderPix('${esc(o.id)}')"><i class="fa-brands fa-pix"></i> Ver Pix / Já fiz o pagamento</button>`
                 : ""
@@ -4636,7 +4670,16 @@
           return;
         }
         currentOrderId = order.id;
-        showPixForOrder(order.amount, order.pixPayload, "pixModal");
+        const pixAmount =
+          order.balanceUsed > 0 ? order.remainingAmount || 0 : order.amount;
+        showPixForOrder(
+          pixAmount,
+          order.pixPayload,
+          "pixModal",
+          order.balanceUsed > 0
+            ? `💳 ${money(order.balanceUsed)} já foi descontado do seu saldo. Pague só o restante abaixo via Pix.`
+            : undefined,
+        );
         if (order.status === "payment_reported") {
           const pill = document.getElementById("pix-status");
           if (pill) {
@@ -4998,7 +5041,11 @@
           o.comments && o.comments.length
             ? `<div style="margin-top:8px;background:#0b1220;border:1px dashed #334155;border-radius:8px;padding:8px;color:#94a3b8;font-size:.78rem">📝 <strong>Comentários (${o.comments.length}):</strong><br>${o.comments.map((c) => esc(c)).join("<br>")}</div>`
             : "";
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}</div></div>`;
+        const balanceBlock =
+          o.balanceUsed > 0
+            ? `<div style="margin-top:6px;color:#38bdf8;font-size:.8rem">💳 <strong>${money(o.balanceUsed)}</strong> pago com saldo do cliente${o.remainingAmount > 0 ? ` · <strong>${money(o.remainingAmount)}</strong> via Pix` : " · pedido pago integralmente com saldo (sem Pix)"}</div>`
+            : "";
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}</div></div>`;
       }
       // Baixa um <script> externo sob demanda e só resolve quando ele
       // terminar de carregar (ou rejeita se falhar) — usado pra só baixar
@@ -5352,6 +5399,27 @@
           tier.price,
         );
         if (group.commentsInput) updateCommentsCounter("order");
+        updateBalanceUsageHint(tier.price);
+      }
+      // Mostra, em tempo real, quanto do saldo do cliente será usado no
+      // pedido "Novo Pedido" e quanto (se sobrar) precisará ser pago via
+      // Pix — só um preview visual; o cálculo/débito real e definitivo
+      // acontece no servidor (Cloud Function createOrder), então não tem
+      // risco de o cliente manipular isso pelo navegador.
+      function updateBalanceUsageHint(price) {
+        const hint = document.getElementById("balance-usage-hint");
+        if (!hint) return;
+        if (!currentUser || !(currentUserBalance > 0) || !(price > 0)) {
+          hint.style.display = "none";
+          return;
+        }
+        const used = Math.min(currentUserBalance, price);
+        const rest = Math.max(0, Number((price - used).toFixed(2)));
+        hint.style.display = "block";
+        hint.textContent =
+          rest > 0
+            ? `💳 ${money(used)} será descontado do seu saldo. Restante (${money(rest)}) via Pix.`
+            : `💳 Este pedido será pago inteiramente com seu saldo (${money(used)}).`;
       }
       async function submitOrder(btn) {
         if (!requireLogin()) return;
@@ -5384,7 +5452,11 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
           async () => {
             // Preço/quantidade recalculados no servidor — mesmo motivo do
-            // createManualPixOrder acima (achado 2.2/5.1).
+            // createManualPixOrder acima (achado 2.2/5.1). "useBalance: true"
+            // é o que diz à Cloud Function para descontar automaticamente do
+            // saldo do cliente o quanto der, cobrando via Pix só a diferença
+            // (se sobrar algo) — só o formulário "Novo Pedido" faz isso; os
+            // cards "Comprar via Pix" da vitrine continuam gerando Pix normal.
             const createOrderFn = fx.httpsCallable("createOrder");
             const result = await createOrderFn({
               platform,
@@ -5392,10 +5464,36 @@
               tierIndex,
               link,
               comments,
+              useBalance: true,
             });
-            const { orderId, amount, pixPayload } = result.data;
+            const {
+              orderId,
+              amount,
+              balanceUsed,
+              remainingAmount,
+              pixPayload,
+            } = result.data;
             currentOrderId = orderId;
-            showPixForOrder(amount, pixPayload, "pixModal");
+            if (remainingAmount > 0) {
+              // Sobrou parte (ou tudo) para pagar via Pix.
+              const instructionHtml =
+                balanceUsed > 0
+                  ? `<strong>${esc(money(balanceUsed))}</strong> já foi descontado do seu saldo. Pague o restante (<strong>${esc(money(remainingAmount))}</strong>) via Pix abaixo e depois toque em "Já fiz o pagamento".`
+                  : null;
+              showPixForOrder(
+                remainingAmount,
+                pixPayload,
+                "pixModal",
+                instructionHtml,
+              );
+            } else {
+              // Saldo cobriu o pedido inteiro — nada de Pix, já está pago.
+              alert(
+                `Pedido enviado! ${money(balanceUsed)} foram descontados do seu saldo e o pedido já está pago. Acompanhe o andamento em "Pedidos".`,
+              );
+              const ordersTabBtn = document.getElementById("tab-btn-orders");
+              if (ordersTabBtn) switchPanelTab("orders", ordersTabBtn);
+            }
           },
         );
       }
