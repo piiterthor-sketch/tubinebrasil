@@ -58,7 +58,7 @@ service cloud.firestore {
         && request.resource.data.link is string
         && request.resource.data.link.size() > 0
         && request.resource.data.link.size() < 500
-        && request.resource.data.service is string
+        && request.resource.data['service'] is string
         && request.resource.data.platform is string;
 
       allow update: if isAdmin()
