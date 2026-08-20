@@ -1,5 +1,5 @@
 // =========================================================
-// TURBINE BRASIL — Cloud Functions
+// TURBINE BRASIL — Cloud Function
 // -----------------------------------------------------------
 // Resolve, no servidor, os itens do relatório de auditoria que o
 // Firestore.rules sozinho não conseguia resolver por completo:
