@@ -139,12 +139,18 @@
 
       html {
         scroll-padding-top: 100px;
+        /* Também trava o scroll horizontal no <html> (não só no <body>) —
+           ver comentário grande mais abaixo, perto de scrollToTopSafe(),
+           sobre o bug de "página desalinhada ao rolar" no mobile. */
+        overflow-x: hidden;
+        max-width: 100%;
       }
 
       body {
         background-color: var(--bg-dark);
         color: var(--text-main);
         overflow-x: hidden;
+        max-width: 100%;
         line-height: 1.6;
       }
 
@@ -2517,7 +2523,12 @@
     <!-- Header / Navbar -->
     <header>
       <div class="container nav-wrapper">
-        <a href="#" class="brand-logo" aria-label="Turbine Brasil">
+        <a
+          href="#"
+          class="brand-logo"
+          aria-label="Turbine Brasil"
+          onclick="return scrollToTopSafe(event);"
+        >
           <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img" />
         </a>
         <!-- Botão de menu mobile: fica DENTRO do header, como item do
@@ -3458,7 +3469,93 @@
           </button>
         </div>
 
+        <!-- Integração com o fornecedor (baratosociais.com) — envio automático
+             de pedidos pagos e ferramentas manuais de apoio. -->
+        <div
+          style="
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 4px 0 14px;
+            background: #0b1220;
+          "
+        >
+          <strong style="color: #e2e8f0"
+            ><i class="fa-solid fa-plug"></i> Fornecedor
+            (baratosociais.com)</strong
+          >
+          <div
+            style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px"
+          >
+            <button
+              class="op-btn secondary"
+              style="margin-top: 0"
+              onclick="checkProviderBalance(this)"
+            >
+              💰 Ver saldo no fornecedor
+            </button>
+            <button
+              class="op-btn secondary"
+              style="margin-top: 0"
+              onclick="openProviderServicesLookup()"
+            >
+              🔎 Ver serviços do fornecedor
+            </button>
+          </div>
+          <div
+            id="provider-balance-hint"
+            style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8"
+          ></div>
+        </div>
+
         <div id="admin-content"></div>
+      </div>
+    </div>
+
+    <!-- Busca de serviços do fornecedor (baratosociais.com) — só pra você
+         descobrir o ID de cada serviço deles e me passar o mapeamento. -->
+    <div class="operation-modal" id="providerServicesModal">
+      <div class="operation-box" style="width: min(640px, 100%)">
+        <button
+          class="op-close"
+          onclick="closeOperationModal('providerServicesModal')"
+        >
+          ×
+        </button>
+        <h3 style="margin-top: 0">Serviços do fornecedor</h3>
+        <p style="color: #94a3b8; font-size: 0.82rem">
+          Busque pelo nome do serviço lá na baratosociais.com pra achar o ID
+          certo de cada pacote seu. Anote os IDs e me envie que eu configuro o
+          mapeamento (externalServiceMap.js).
+        </p>
+        <input
+          type="text"
+          class="op-input"
+          id="provider-services-search"
+          placeholder="Ex: seguidores brasileiros instagram"
+          onkeydown="
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              searchProviderServices();
+            }
+          "
+        />
+        <button
+          class="op-btn"
+          style="margin-top: 8px"
+          onclick="searchProviderServices()"
+        >
+          Buscar
+        </button>
+        <div
+          id="provider-services-results"
+          style="
+            margin-top: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+            font-size: 0.78rem;
+          "
+        ></div>
       </div>
     </div>
 
@@ -3467,7 +3564,12 @@
       <div class="container">
         <div class="footer-grid">
           <div class="footer-col">
-            <a href="#" class="logo" style="margin-bottom: 15px">
+            <a
+              href="#"
+              class="logo"
+              style="margin-bottom: 15px"
+              onclick="return scrollToTopSafe(event);"
+            >
               <div class="logo-icon"><i class="fa-solid fa-rocket"></i></div>
               <div class="logo-text">TURBINE <span>BRASIL</span></div>
             </a>
@@ -3560,6 +3662,49 @@
       if (window.visualViewport) {
         window.visualViewport.addEventListener("resize", syncRealViewportWidth);
       }
+
+      /* =========================================================
+         CORREÇÃO: página "desalinhada" ao rolar no mobile
+         ---------------------------------------------------------
+         Relato do cliente (com vídeo): ao navegar pelo site no
+         celular, em algum momento a página inteira aparece deslocada
+         para o lado — o cabeçalho, o banner e o texto ficam cortados
+         à esquerda, como se tivesse rolado na horizontal, mesmo o
+         site não tendo nada pra rolar de lado.
+
+         Causa identificada no vídeo: acontece logo depois de tocar na
+         logo (canto superior esquerdo) pra voltar ao topo. A logo
+         usava href="#" puro — em alguns Android/Chrome, esse "pulo"
+         nativo pro topo da página, combinado com o cabeçalho fixo
+         (position:fixed) e a barra de endereço escondendo/aparecendo
+         durante a rolagem, pode deixar o navegador com uma posição de
+         rolagem horizontal (scrollX) diferente de zero, mesmo sem o
+         usuário ter arrastado o dedo de lado.
+
+         Duas camadas de correção:
+         1) scrollToTopSafe(): troca o "pulo" nativo por um scroll
+            controlado por JS, sempre para (top:0, left:0) — usada nos
+            links da logo (onclick="return scrollToTopSafe(event)").
+         2) Um "corretor" automático: se por qualquer outro motivo o
+            scrollX da página sair de 0, ele corrige sozinho na hora
+            (sem esperar o usuário perceber ou recarregar a página).
+         ========================================================= */
+      function scrollToTopSafe(event) {
+        if (event) event.preventDefault();
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        return false;
+      }
+      function fixHorizontalScrollDrift() {
+        if (window.scrollX !== 0) {
+          window.scrollTo(0, window.scrollY);
+        }
+      }
+      window.addEventListener("scroll", fixHorizontalScrollDrift, {
+        passive: true,
+      });
+      window.addEventListener("orientationchange", () =>
+        setTimeout(fixHorizontalScrollDrift, 300),
+      );
 
       const APP_CONFIG = {
         firebase: {
@@ -5045,7 +5190,22 @@
           o.balanceUsed > 0
             ? `<div style="margin-top:6px;color:#38bdf8;font-size:.8rem">💳 <strong>${money(o.balanceUsed)}</strong> pago com saldo do cliente${o.remainingAmount > 0 ? ` · <strong>${money(o.remainingAmount)}</strong> via Pix` : " · pedido pago integralmente com saldo (sem Pix)"}</div>`
             : "";
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}</div></div>`;
+        // Mostra o status do fornecedor (baratosociais.com) quando o pedido
+        // já foi enviado pra lá, ou botões manuais quando não foi (ou deu erro).
+        let providerBlock = "";
+        if (o.externalOrderId) {
+          providerBlock = `<div style="margin-top:6px;color:#a3e635;font-size:.78rem">🔌 Fornecedor #${esc(o.externalOrderId)} — status: ${esc(o.externalStatus || "?")}${o.externalRemains != null ? ` · faltam ${esc(o.externalRemains)}` : ""}</div>`;
+        } else if (o.providerError) {
+          providerBlock = `<div style="margin-top:6px;color:#f87171;font-size:.78rem">⚠️ Fornecedor: ${esc(o.providerError)}</div>`;
+        }
+        const providerButtons = ["paid", "processing", "completed"].includes(
+          o.status,
+        )
+          ? o.externalOrderId
+            ? `<button class="op-btn secondary" onclick="adminCheckOrderProviderStatus('${o.id}', this)">🔄 Verificar status fornecedor</button>`
+            : `<button class="op-btn secondary" onclick="adminSendOrderToProvider('${o.id}', this)">🔌 Enviar para fornecedor</button>`
+          : "";
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
       }
       // Baixa um <script> externo sob demanda e só resolve quando ele
       // terminar de carregar (ou rejeita se falhar) — usado pra só baixar
@@ -5220,6 +5380,103 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...',
           async () => {
             await fx.httpsCallable("setOrderStatus")({ orderId: id, status });
+          },
+        );
+      }
+
+      // ---- Fornecedor (baratosociais.com) ----
+      async function checkProviderBalance(btn) {
+        if (!isAdmin()) return;
+        const hint = document.getElementById("provider-balance-hint");
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Consultando...',
+          async () => {
+            try {
+              const result = await fx.httpsCallable(
+                "adminFetchExternalBalance",
+              )();
+              const d = result.data || {};
+              if (hint)
+                hint.textContent = `Saldo lá no fornecedor: ${esc(d.balance ?? "?")} ${esc(d.currency || "")}`;
+            } catch (e) {
+              if (hint)
+                hint.textContent =
+                  "Não foi possível consultar: " + friendlyError(e);
+            }
+          },
+        );
+      }
+      function openProviderServicesLookup() {
+        if (!isAdmin()) return;
+        document.getElementById("provider-services-results").innerHTML = "";
+        document.getElementById("provider-services-search").value = "";
+        showModal("providerServicesModal");
+      }
+      async function searchProviderServices() {
+        const box = document.getElementById("provider-services-results");
+        const search = document
+          .getElementById("provider-services-search")
+          .value.trim();
+        box.innerHTML = '<p class="empty-state">Buscando...</p>';
+        try {
+          const result = await fx.httpsCallable("adminFetchExternalServices")({
+            search,
+          });
+          const list = (result.data && result.data.services) || [];
+          if (!list.length) {
+            box.innerHTML =
+              '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
+            return;
+          }
+          box.innerHTML = list
+            .map(
+              (s) =>
+                `<div style="border-bottom:1px solid #1e293b;padding:6px 0"><strong>#${esc(s.service)}</strong> — ${esc(s.name)}<br><span style="color:#94a3b8">${esc(s.category || "")} · R$${esc(s.rate || "?")}/1000 · min ${esc(s.min || "?")} / max ${esc(s.max || "?")}</span></div>`,
+            )
+            .join("");
+        } catch (e) {
+          box.innerHTML = `<p class="empty-state">Erro ao buscar: ${esc(friendlyError(e))}</p>`;
+        }
+      }
+      // Envio manual pro fornecedor — usado quando o envio automático não
+      // rolou (pacote sem mapeamento na hora do pedido, erro temporário).
+      async function adminSendOrderToProvider(id, btn) {
+        if (!isAdmin()) return;
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
+          async () => {
+            try {
+              await fx.httpsCallable("adminSendOrderToProvider")({
+                orderId: id,
+              });
+              alert("Pedido enviado ao fornecedor com sucesso.");
+            } catch (e) {
+              alert(
+                "Não foi possível enviar ao fornecedor: " + friendlyError(e),
+              );
+            }
+          },
+        );
+      }
+      async function adminCheckOrderProviderStatus(id, btn) {
+        if (!isAdmin()) return;
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...',
+          async () => {
+            try {
+              const result = await fx.httpsCallable(
+                "adminCheckOrderProviderStatus",
+              )({ orderId: id });
+              const d = result.data || {};
+              alert(
+                `Status no fornecedor: ${d.provider && d.provider.status ? d.provider.status : "?"}${d.provider && d.provider.remains != null ? ` · Faltam: ${d.provider.remains}` : ""}`,
+              );
+            } catch (e) {
+              alert("Não foi possível verificar: " + friendlyError(e));
+            }
           },
         );
       }
