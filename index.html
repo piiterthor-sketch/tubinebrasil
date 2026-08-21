@@ -17,7 +17,10 @@
     </script>
 
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>
       Turbine Brasil ® | Crescimento e Engajamento para Redes Sociais
     </title>
@@ -2640,7 +2643,6 @@
       <div class="container">
         <div class="badge-hero">
           <i class="fa-solid fa-fire"></i> #1 Empresa de Marketing e Engajamento
-          111
         </div>
         <h1>
           Turbine Seu Perfil e Conquiste <br /><span class="highlight"
@@ -3705,6 +3707,48 @@
       });
       window.addEventListener("orientationchange", () =>
         setTimeout(fixHorizontalScrollDrift, 300),
+      );
+
+      /* =========================================================
+         BLOQUEIO DE ZOOM (PINCH) NO MOBILE
+         ---------------------------------------------------------
+         Pedido do cliente: no celular, o gesto de "pinça" (dois dedos
+         se aproximando) estava diminuindo o site inteiro de tamanho
+         (zoom out), bagunçando o layout. A tag <meta name="viewport">
+         no <head> já foi ajustada (maximum-scale=1.0, user-scalable=no)
+         — isso resolve na maioria dos Android. Mas o Safari do iPhone,
+         em várias versões, IGNORA essa tag por padrão de acessibilidade
+         e ainda permite pinça — por isso, como reforço, bloqueamos aqui
+         também via JavaScript:
+         1) "gesturestart"/"gesturechange": eventos específicos do
+            Safari/iOS disparados no gesto de pinça.
+         2) "touchmove" com mais de um dedo na tela: cobre Android e
+            outros navegadores que também usam multi-touch pra dar zoom.
+         Nenhum dos dois bloqueia rolagem normal (um dedo só) nem
+         toques/cliques comuns — só o gesto de pinça com 2+ dedos.
+         ========================================================= */
+      document.addEventListener(
+        "gesturestart",
+        (e) => {
+          e.preventDefault();
+        },
+        { passive: false },
+      );
+      document.addEventListener(
+        "gesturechange",
+        (e) => {
+          e.preventDefault();
+        },
+        { passive: false },
+      );
+      document.addEventListener(
+        "touchmove",
+        (e) => {
+          if (e.touches && e.touches.length > 1) {
+            e.preventDefault();
+          }
+        },
+        { passive: false },
       );
 
       const APP_CONFIG = {
