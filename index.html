@@ -2530,7 +2530,7 @@
           href="#"
           class="brand-logo"
           aria-label="Turbine Brasil"
-          onclick="return scrollToTopSafe(event)"
+          onclick="return scrollToTopSafe(event);"
         >
           <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img" />
         </a>
@@ -3478,37 +3478,41 @@
           </button>
         </div>
 
-        <!-- Integração com o fornecedor (baratosociais.com) — envio automático
-             de pedidos pagos e ferramentas manuais de apoio. -->
+        <!-- Saldo no fornecedor (baratosociais.com) — pedido do cliente
+             (22/08/2026): como o proprietário não compra pedidos pra ele
+             mesmo, o "saldo" que importa aqui não é o saldo de cliente do
+             site (esse fica sempre R$0,00 pra conta do dono) e sim o saldo
+             pré-pago lá no fornecedor. Carrega sozinho toda vez que o painel
+             abre — não precisa mais clicar em nada pra ver o valor. -->
         <div
-          style="
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 12px;
-            margin: 4px 0 14px;
-            background: #0b1220;
-          "
+          class="balance-banner"
+          style="background: linear-gradient(135deg, #0f766e, #134e4a)"
         >
-          <strong style="color: #e2e8f0"
-            ><i class="fa-solid fa-plug"></i> Fornecedor (baratosociais.com)</strong
-          >
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px">
-            <button
-              class="op-btn secondary"
-              style="margin-top: 0"
-              onclick="checkProviderBalance(this)"
-            >
-              💰 Ver saldo no fornecedor
-            </button>
-            <button
-              class="op-btn secondary"
-              style="margin-top: 0"
-              onclick="openProviderServicesLookup()"
-            >
-              🔎 Ver serviços do fornecedor
-            </button>
+          <div class="balance-info">
+            <h4>
+              <i class="fa-solid fa-plug"></i> Saldo no fornecedor
+              (baratosociais.com)
+            </h4>
+            <div class="amount" id="admin-supplier-balance">Carregando...</div>
           </div>
-          <div id="provider-balance-hint" style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8"></div>
+          <a
+            href="javascript:void(0)"
+            onclick="checkProviderBalance(this)"
+            class="btn-add-funds-head"
+          >
+            <i class="fa-solid fa-arrows-rotate"></i> Atualizar
+          </a>
+        </div>
+        <div
+          style="display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 14px"
+        >
+          <button
+            class="op-btn secondary"
+            style="margin-top: 0"
+            onclick="openProviderServicesLookup()"
+          >
+            🔎 Ver serviços do fornecedor
+          </button>
         </div>
 
         <div id="admin-content"></div>
@@ -3528,15 +3532,20 @@
         <h3 style="margin-top: 0">Serviços do fornecedor</h3>
         <p style="color: #94a3b8; font-size: 0.82rem">
           Busque pelo nome do serviço lá na baratosociais.com pra achar o ID
-          certo de cada pacote seu. Anote os IDs e me envie que eu configuro
-          o mapeamento (externalServiceMap.js).
+          certo de cada pacote seu. Anote os IDs e me envie que eu configuro o
+          mapeamento (externalServiceMap.js).
         </p>
         <input
           type="text"
           class="op-input"
           id="provider-services-search"
           placeholder="Ex: seguidores brasileiros instagram"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();searchProviderServices();}"
+          onkeydown="
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              searchProviderServices();
+            }
+          "
         />
         <button
           class="op-btn"
@@ -3566,7 +3575,7 @@
               href="#"
               class="logo"
               style="margin-bottom: 15px"
-              onclick="return scrollToTopSafe(event)"
+              onclick="return scrollToTopSafe(event);"
             >
               <div class="logo-icon"><i class="fa-solid fa-rocket"></i></div>
               <div class="logo-text">TURBINE <span>BRASIL</span></div>
@@ -3697,8 +3706,12 @@
           window.scrollTo(0, window.scrollY);
         }
       }
-      window.addEventListener("scroll", fixHorizontalScrollDrift, { passive: true });
-      window.addEventListener("orientationchange", () => setTimeout(fixHorizontalScrollDrift, 300));
+      window.addEventListener("scroll", fixHorizontalScrollDrift, {
+        passive: true,
+      });
+      window.addEventListener("orientationchange", () =>
+        setTimeout(fixHorizontalScrollDrift, 300),
+      );
 
       /* =========================================================
          BLOQUEIO DE ZOOM (PINCH) NO MOBILE
@@ -4298,6 +4311,13 @@
               friendlyError(e),
           );
         }
+        // Pedido do cliente (22/08/2026): o proprietário não compra pedidos
+        // pra ele mesmo (só faz injeção de Pix), então não faz sentido ele
+        // cair no painel de cliente comum. Toda vez que a conta admin loga
+        // (ou a página recarrega já logado), abre direto o painel completo
+        // de administração. Pra ver o painel de cliente por trás (ex: testar
+        // como um cliente veria), é só fechar o painel admin com o X.
+        if (isAdmin()) openAdmin();
       }
 
       async function ensureUserDocument(user) {
@@ -4785,7 +4805,11 @@
             // servidor — o campo acima é só conveniência de interface.
             const createDepositFn = fx.httpsCallable("createDeposit");
             const result = await createDepositFn({ amount });
-            const { depositId, amount: confirmedAmount, pixPayload } = result.data;
+            const {
+              depositId,
+              amount: confirmedAmount,
+              pixPayload,
+            } = result.data;
             currentDepositId = depositId;
             document.getElementById("deposit-pix-area").innerHTML =
               `<div class="pix-card"><strong>${money(confirmedAmount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(pixPayload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
@@ -4862,9 +4886,7 @@
         }
         currentOrderId = order.id;
         const pixAmount =
-          order.balanceUsed > 0
-            ? order.remainingAmount || 0
-            : order.amount;
+          order.balanceUsed > 0 ? order.remainingAmount || 0 : order.amount;
         showPixForOrder(
           pixAmount,
           order.pixPayload,
@@ -4922,6 +4944,7 @@
         }
         showModal("adminModal");
         renderAdminLoading();
+        checkProviderBalance(null);
         if (unsubscribeAdminOrders) unsubscribeAdminOrders();
         if (unsubscribeAdminDeposits) unsubscribeAdminDeposits();
         // Limite maior que antes (era 50) porque agora esses mesmos dados também
@@ -5246,7 +5269,9 @@
         } else if (o.providerError) {
           providerBlock = `<div style="margin-top:6px;color:#f87171;font-size:.78rem">⚠️ Fornecedor: ${esc(o.providerError)}</div>`;
         }
-        const providerButtons = ["paid", "processing", "completed"].includes(o.status)
+        const providerButtons = ["paid", "processing", "completed"].includes(
+          o.status,
+        )
           ? o.externalOrderId
             ? `<button class="op-btn secondary" onclick="adminCheckOrderProviderStatus('${o.id}', this)">🔄 Verificar status fornecedor</button>`
             : `<button class="op-btn secondary" onclick="adminSendOrderToProvider('${o.id}', this)">🔌 Enviar para fornecedor</button>`
@@ -5431,24 +5456,34 @@
       }
 
       // ---- Fornecedor (baratosociais.com) ----
+      // btn é opcional: chamado sem botão (null) quando o painel admin abre
+      // sozinho, pra carregar o saldo automaticamente sem exigir clique.
       async function checkProviderBalance(btn) {
         if (!isAdmin()) return;
-        const hint = document.getElementById("provider-balance-hint");
-        await withBusyButton(
-          btn,
-          '<i class="fa-solid fa-spinner fa-spin"></i> Consultando...',
-          async () => {
-            try {
-              const result = await fx.httpsCallable("adminFetchExternalBalance")();
-              const d = result.data || {};
-              if (hint)
-                hint.textContent = `Saldo lá no fornecedor: ${esc(d.balance ?? "?")} ${esc(d.currency || "")}`;
-            } catch (e) {
-              if (hint)
-                hint.textContent = "Não foi possível consultar: " + friendlyError(e);
-            }
-          },
-        );
+        const el = document.getElementById("admin-supplier-balance");
+        const run = async () => {
+          try {
+            const result = await fx.httpsCallable(
+              "adminFetchExternalBalance",
+            )();
+            const d = result.data || {};
+            if (el)
+              el.textContent =
+                `${esc(d.currency || "")} ${esc(d.balance ?? "?")}`.trim();
+          } catch (e) {
+            if (el) el.textContent = "Erro: " + friendlyError(e);
+          }
+        };
+        if (btn) {
+          await withBusyButton(
+            btn,
+            '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...',
+            run,
+          );
+        } else {
+          if (el) el.textContent = "Carregando...";
+          await run();
+        }
       }
       function openProviderServicesLookup() {
         if (!isAdmin()) return;
@@ -5458,13 +5493,18 @@
       }
       async function searchProviderServices() {
         const box = document.getElementById("provider-services-results");
-        const search = document.getElementById("provider-services-search").value.trim();
+        const search = document
+          .getElementById("provider-services-search")
+          .value.trim();
         box.innerHTML = '<p class="empty-state">Buscando...</p>';
         try {
-          const result = await fx.httpsCallable("adminFetchExternalServices")({ search });
+          const result = await fx.httpsCallable("adminFetchExternalServices")({
+            search,
+          });
           const list = (result.data && result.data.services) || [];
           if (!list.length) {
-            box.innerHTML = '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
+            box.innerHTML =
+              '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
             return;
           }
           box.innerHTML = list
@@ -5486,10 +5526,14 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
           async () => {
             try {
-              await fx.httpsCallable("adminSendOrderToProvider")({ orderId: id });
+              await fx.httpsCallable("adminSendOrderToProvider")({
+                orderId: id,
+              });
               alert("Pedido enviado ao fornecedor com sucesso.");
             } catch (e) {
-              alert("Não foi possível enviar ao fornecedor: " + friendlyError(e));
+              alert(
+                "Não foi possível enviar ao fornecedor: " + friendlyError(e),
+              );
             }
           },
         );
@@ -5501,7 +5545,9 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...',
           async () => {
             try {
-              const result = await fx.httpsCallable("adminCheckOrderProviderStatus")({ orderId: id });
+              const result = await fx.httpsCallable(
+                "adminCheckOrderProviderStatus",
+              )({ orderId: id });
               const d = result.data || {};
               alert(
                 `Status no fornecedor: ${d.provider && d.provider.status ? d.provider.status : "?"}${d.provider && d.provider.remains != null ? ` · Faltam: ${d.provider.remains}` : ""}`,
@@ -5755,8 +5801,13 @@
               comments,
               useBalance: true,
             });
-            const { orderId, amount, balanceUsed, remainingAmount, pixPayload } =
-              result.data;
+            const {
+              orderId,
+              amount,
+              balanceUsed,
+              remainingAmount,
+              pixPayload,
+            } = result.data;
             currentOrderId = orderId;
             const amt = Number(amount || 0);
             const balUsed = Number(balanceUsed || 0);
@@ -5777,7 +5828,12 @@
                 balUsed > 0
                   ? `<strong>${esc(money(balUsed))}</strong> já foi descontado do seu saldo. Pague o restante (<strong>${esc(money(remaining))}</strong>) via Pix abaixo e depois toque em "Já fiz o pagamento".`
                   : null;
-              showPixForOrder(remaining, pixPayload, "pixModal", instructionHtml);
+              showPixForOrder(
+                remaining,
+                pixPayload,
+                "pixModal",
+                instructionHtml,
+              );
             } else {
               // Saldo cobriu o pedido inteiro — nada de Pix, já está pago.
               alert(
