@@ -1,4 +1,5 @@
-/ =========================================================
+
+// =========================================================
 // TURBINE BRASIL — Cloud Functions
 // -----------------------------------------------------------
 // Resolve, no servidor, os itens do relatório de auditoria que o
@@ -444,6 +445,36 @@ exports.confirmDepositPayment = onCall(async (request) => {
 // já protegia essas escritas com isAdmin(), então isto é sobretudo
 // para ganhar o registro de "quem fez o quê e quando").
 // ---------------------------------------------------------
+// Antes de confirmar, checa se o saldo lá na baratosociais.com cobre o
+// valor do pedido — pedido do cliente (22/08/2026): "caso eu não tenha
+// saldo, favor não deixar confirmar". Compara contra o VALOR COBRADO DO
+// CLIENTE (não o preço de custo, que é menor) — ou seja, é uma checagem
+// conservadora: se passar nela, sobra margem de sobra pra comprar de
+// verdade lá no fornecedor. Só bloqueia quando dá pra consultar o saldo
+// (API key configurada e fornecedor respondendo); se a key não estiver
+// configurada ainda, ou a consulta falhar, deixa confirmar mesmo assim
+// (pra não travar o negócio todo por causa de uma integração externa
+// instável) — só registra um aviso no log.
+async function checkSupplierBalanceCovers(amount) {
+  const apiKey = BARATOSOCIAIS_API_KEY.value();
+  if (!apiKey) return; // integração ainda não configurada — não bloqueia.
+  let result;
+  try {
+    result = await baratoApi.balance(apiKey);
+  } catch (e) {
+    logger.warn("Não foi possível consultar saldo do fornecedor antes de confirmar:", e.message || e);
+    return; // fornecedor fora do ar / erro de rede — não bloqueia o admin.
+  }
+  const supplierBalance = Number(result && result.balance);
+  if (!Number.isFinite(supplierBalance)) return; // resposta inesperada — não bloqueia.
+  if (supplierBalance < amount) {
+    throw new HttpsError(
+      "failed-precondition",
+      `Saldo insuficiente no fornecedor (baratosociais.com) para cobrir este pedido: você tem ${money(supplierBalance)}, o pedido é de ${money(amount)}. Adicione saldo lá antes de confirmar.`,
+    );
+  }
+}
+ 
 exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async (request) => {
   requireAuth(request);
   if (!isAdminRequest(request)) {
@@ -451,6 +482,11 @@ exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async
   }
   const orderId = (request.data || {}).orderId;
   if (!orderId) throw new HttpsError("invalid-argument", "orderId é obrigatório.");
+ 
+  const orderBeforeSnap = await db.collection("orders").doc(orderId).get();
+  const orderBefore = orderBeforeSnap.data();
+  if (!orderBefore) throw new HttpsError("not-found", "Pedido não encontrado.");
+  await checkSupplierBalanceCovers(Number(orderBefore.amount || 0));
  
   await db.collection("orders").doc(orderId).set(
     {
