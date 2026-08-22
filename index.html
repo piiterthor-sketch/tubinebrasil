@@ -3792,6 +3792,7 @@
       let unsubscribeOrders = null;
       let unsubscribeAdminOrders = null;
       let unsubscribeAdminDeposits = null;
+      let unsubscribeAdminUsers = null;
 
       /* =========================================================
          CATÁLOGO DE SERVIÇOS — Instagram e TikTok
@@ -4974,6 +4975,22 @@
         checkProviderBalance(null);
         if (unsubscribeAdminOrders) unsubscribeAdminOrders();
         if (unsubscribeAdminDeposits) unsubscribeAdminDeposits();
+        if (unsubscribeAdminUsers) unsubscribeAdminUsers();
+        // Saldo de cada cliente, pra mostrar direto no card do pedido/depósito
+        // no painel admin (pedido do cliente 22/08/2026: "não quero ter que
+        // entrar como se fosse o cliente só pra conferir se o saldo entrou").
+        unsubscribeAdminUsers = db
+          .collection("users")
+          .limit(1000)
+          .onSnapshot(
+            (s) => {
+              const map = {};
+              s.docs.forEach((x) => (map[x.id] = x.data()));
+              adminUsersCache = map;
+              renderAdminDashboard();
+            },
+            (e) => console.warn("Painel admin (saldos de clientes):", e),
+          );
         // Limite maior que antes (era 50) porque agora esses mesmos dados também
         // alimentam o relatório de faturamento por dia/mês logo abaixo.
         unsubscribeAdminOrders = db
@@ -5014,6 +5031,10 @@
           unsubscribeAdminDeposits();
           unsubscribeAdminDeposits = null;
         }
+        if (unsubscribeAdminUsers) {
+          unsubscribeAdminUsers();
+          unsubscribeAdminUsers = null;
+        }
       }
       function renderAdminLoading() {
         document.getElementById("admin-content").innerHTML =
@@ -5021,6 +5042,7 @@
       }
       let adminOrdersCache = [];
       let adminDepositsCache = [];
+      let adminUsersCache = {};
       function renderAdminOrders(orders) {
         const had = adminOrdersCache.length;
         adminOrdersCache = orders;
@@ -5276,8 +5298,18 @@
         );
         el.innerHTML = `${head}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
       }
+      // Mostra o saldo ATUAL do cliente (users/{uid}.balance) direto no
+      // card — assim dá pra conferir se o crédito realmente entrou sem
+      // precisar sair do painel admin e logar como o cliente pra ver
+      // (pedido do cliente 22/08/2026).
+      function customerBalanceLine(userId) {
+        if (!userId) return "";
+        const u = adminUsersCache[userId];
+        if (!u) return "";
+        return `<div style="margin-top:6px;color:#facc15;font-size:.8rem">💼 Saldo atual do cliente: <strong>${money(u.balance || 0)}</strong></div>`;
+      }
       function adminDepositCard(d) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${customerBalanceLine(d.userId)}${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
       }
       function adminOrderCard(o) {
         const commentsBlock =
@@ -5303,7 +5335,7 @@
             ? `<button class="op-btn secondary" onclick="adminCheckOrderProviderStatus('${o.id}', this)">🔄 Verificar status fornecedor</button>`
             : `<button class="op-btn secondary" onclick="adminSendOrderToProvider('${o.id}', this)">🔌 Enviar para fornecedor</button>`
           : "";
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${customerBalanceLine(o.userId)}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
       }
       // Baixa um <script> externo sob demanda e só resolve quando ele
       // terminar de carregar (ou rejeita se falhar) — usado pra só baixar
@@ -5600,6 +5632,11 @@
             // duas vezes) agora roda no servidor, com auditoria em
             // audit_logs — ver functions/index.js.
             await fx.httpsCallable("confirmDepositPayment")({ depositId: id });
+            // Antes não avisava nada aqui — dava pra achar que não tinha
+            // funcionado. Agora confirma explicitamente (achado 22/08/2026).
+            alert(
+              "Saldo creditado com sucesso. O cliente já vê o novo saldo na conta dele.",
+            );
           },
         );
       }
