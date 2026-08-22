@@ -1,4 +1,4 @@
-// =========================================================
+/ =========================================================
 // TURBINE BRASIL — Cloud Functions
 // -----------------------------------------------------------
 // Resolve, no servidor, os itens do relatório de auditoria que o
@@ -278,8 +278,12 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       }
       tx.set(orderRef, orderData);
       if (balanceUsed > 0) {
+        // Arredondado pra 2 casas (mesmo motivo do comentário em
+        // confirmDepositPayment) — evita "sujeira" de ponto flutuante se
+        // acumular no saldo a cada pedido pago com saldo.
+        const newBalance = Number(Math.max(0, balance - balanceUsed).toFixed(2));
         tx.update(userRef, {
-          balance: admin.firestore.FieldValue.increment(-balanceUsed),
+          balance: newBalance,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       }
@@ -397,18 +401,21 @@ exports.confirmDepositPayment = onCall(async (request) => {
     if (dep.status === "paid") return; // idempotente — evita crédito duplicado.
  
     const userRef = db.collection("users").doc(dep.userId);
-    // Antes lia o saldo atual e gravava balance = lido + valor — se por
-    // qualquer motivo o documento users/{uid} ainda não existisse (ex:
-    // ensureUserDocument não rodou a tempo), tx.update() falhava com
-    // "not found" e o crédito era perdido em silêncio (mesmo o depósito
-    // aparentando ter sido confirmado). increment()+merge:true resolve
-    // os dois problemas: cria o documento se faltar E soma de forma
-    // atômica, sem precisar ler o saldo antes (mesmo padrão já usado em
-    // cancelOrder acima) — achado do dia 22/08/2026.
+    const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+    const currentBalance = Number((userSnap.data() || {}).balance || 0);
+    // Arredonda pra 2 casas a cada crédito — sem isso, somas repetidas de
+    // valores como 12,99/0,10 acumulam "sujeira" de ponto flutuante (ex.:
+    // 0.00000000000002 em vez de 0 exato) que, embora não apareça na tela
+    // (a formatação de moeda já arredonda), fica gravada suja no banco.
+    // set(...,{merge:true}) em vez de update() também cria o documento
+    // sozinho se por acaso ele ainda não existisse (ex: ensureUserDocument
+    // não rodou a tempo) — antes isso fazia tx.update() falhar e o
+    // crédito se perder em silêncio (achado do dia 22/08/2026).
+    const newBalance = Number((currentBalance + Number(dep.amount || 0)).toFixed(2));
     tx.set(
       userRef,
       {
-        balance: admin.firestore.FieldValue.increment(Number(dep.amount || 0)),
+        balance: newBalance,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       },
       { merge: true },
@@ -513,10 +520,19 @@ exports.cancelOrder = onCall(async (request) => {
     refundAmount = Number(order.balanceUsed || 0);
     if (refundAmount > 0) {
       const userRef = db.collection("users").doc(order.userId);
-      tx.update(userRef, {
-        balance: admin.firestore.FieldValue.increment(refundAmount),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
+      const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+      const currentBalance = Number((userSnap.data() || {}).balance || 0);
+      // Arredondado pra 2 casas — mesmo motivo do comentário em
+      // confirmDepositPayment (evita sujeira de ponto flutuante no saldo).
+      const newBalance = Number((currentBalance + refundAmount).toFixed(2));
+      tx.set(
+        userRef,
+        {
+          balance: newBalance,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
     }
     tx.update(orderRef, {
       status: "cancelled",
