@@ -179,6 +179,15 @@ const catalog = {
       },
     },
   },
+  /* =========================================================
+     TIKTOK — DESATIVADO A PEDIDO DO CLIENTE (21/08/2026)
+     ---------------------------------------------------------
+     "Favor remover tudo sobre serviços do TikTok... por enquanto
+     não vou comercializar, deixar escondido dentro do código."
+     Comentado (não apagado) de propósito: para reativar no futuro,
+     é só descomentar este bloco inteiro E o mesmo bloco em
+     index.html (procure por "TIKTOK — DESATIVADO"), depois
+     `firebase deploy --only functions`.
   tiktok: {
     label: "TikTok",
     groups: {
@@ -241,6 +250,7 @@ const catalog = {
       },
     },
   },
+  ========================================================= */
 };
 
 module.exports = { catalog };
