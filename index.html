@@ -2530,7 +2530,7 @@
           href="#"
           class="brand-logo"
           aria-label="Turbine Brasil"
-          onclick="return scrollToTopSafe(event);"
+          onclick="return scrollToTopSafe(event)"
         >
           <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img" />
         </a>
@@ -3489,10 +3489,7 @@
           style="background: linear-gradient(135deg, #0f766e, #134e4a)"
         >
           <div class="balance-info">
-            <h4>
-              <i class="fa-solid fa-plug"></i> Saldo no fornecedor
-              (baratosociais.com)
-            </h4>
+            <h4><i class="fa-solid fa-plug"></i> Saldo no fornecedor (baratosociais.com)</h4>
             <div class="amount" id="admin-supplier-balance">Carregando...</div>
           </div>
           <a
@@ -3503,9 +3500,7 @@
             <i class="fa-solid fa-arrows-rotate"></i> Atualizar
           </a>
         </div>
-        <div
-          style="display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 14px"
-        >
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 14px">
           <button
             class="op-btn secondary"
             style="margin-top: 0"
@@ -3532,20 +3527,15 @@
         <h3 style="margin-top: 0">Serviços do fornecedor</h3>
         <p style="color: #94a3b8; font-size: 0.82rem">
           Busque pelo nome do serviço lá na baratosociais.com pra achar o ID
-          certo de cada pacote seu. Anote os IDs e me envie que eu configuro o
-          mapeamento (externalServiceMap.js).
+          certo de cada pacote seu. Anote os IDs e me envie que eu configuro
+          o mapeamento (externalServiceMap.js).
         </p>
         <input
           type="text"
           class="op-input"
           id="provider-services-search"
           placeholder="Ex: seguidores brasileiros instagram"
-          onkeydown="
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              searchProviderServices();
-            }
-          "
+          onkeydown="if(event.key==='Enter'){event.preventDefault();searchProviderServices();}"
         />
         <button
           class="op-btn"
@@ -3575,7 +3565,7 @@
               href="#"
               class="logo"
               style="margin-bottom: 15px"
-              onclick="return scrollToTopSafe(event);"
+              onclick="return scrollToTopSafe(event)"
             >
               <div class="logo-icon"><i class="fa-solid fa-rocket"></i></div>
               <div class="logo-text">TURBINE <span>BRASIL</span></div>
@@ -3706,12 +3696,8 @@
           window.scrollTo(0, window.scrollY);
         }
       }
-      window.addEventListener("scroll", fixHorizontalScrollDrift, {
-        passive: true,
-      });
-      window.addEventListener("orientationchange", () =>
-        setTimeout(fixHorizontalScrollDrift, 300),
-      );
+      window.addEventListener("scroll", fixHorizontalScrollDrift, { passive: true });
+      window.addEventListener("orientationchange", () => setTimeout(fixHorizontalScrollDrift, 300));
 
       /* =========================================================
          BLOQUEIO DE ZOOM (PINCH) NO MOBILE
@@ -4816,11 +4802,7 @@
             // servidor — o campo acima é só conveniência de interface.
             const createDepositFn = fx.httpsCallable("createDeposit");
             const result = await createDepositFn({ amount });
-            const {
-              depositId,
-              amount: confirmedAmount,
-              pixPayload,
-            } = result.data;
+            const { depositId, amount: confirmedAmount, pixPayload } = result.data;
             currentDepositId = depositId;
             document.getElementById("deposit-pix-area").innerHTML =
               `<div class="pix-card"><strong>${money(confirmedAmount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(pixPayload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid(this)">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
@@ -4903,7 +4885,9 @@
         }
         currentOrderId = order.id;
         const pixAmount =
-          order.balanceUsed > 0 ? order.remainingAmount || 0 : order.amount;
+          order.balanceUsed > 0
+            ? order.remainingAmount || 0
+            : order.amount;
         showPixForOrder(
           pixAmount,
           order.pixPayload,
@@ -5286,9 +5270,7 @@
         } else if (o.providerError) {
           providerBlock = `<div style="margin-top:6px;color:#f87171;font-size:.78rem">⚠️ Fornecedor: ${esc(o.providerError)}</div>`;
         }
-        const providerButtons = ["paid", "processing", "completed"].includes(
-          o.status,
-        )
+        const providerButtons = ["paid", "processing", "completed"].includes(o.status)
           ? o.externalOrderId
             ? `<button class="op-btn secondary" onclick="adminCheckOrderProviderStatus('${o.id}', this)">🔄 Verificar status fornecedor</button>`
             : `<button class="op-btn secondary" onclick="adminSendOrderToProvider('${o.id}', this)">🔌 Enviar para fornecedor</button>`
@@ -5480,13 +5462,9 @@
         const el = document.getElementById("admin-supplier-balance");
         const run = async () => {
           try {
-            const result = await fx.httpsCallable(
-              "adminFetchExternalBalance",
-            )();
+            const result = await fx.httpsCallable("adminFetchExternalBalance")();
             const d = result.data || {};
-            if (el)
-              el.textContent =
-                `${esc(d.currency || "")} ${esc(d.balance ?? "?")}`.trim();
+            if (el) el.textContent = `${esc(d.currency || "")} ${esc(d.balance ?? "?")}`.trim();
           } catch (e) {
             if (el) el.textContent = "Erro: " + friendlyError(e);
           }
@@ -5510,18 +5488,13 @@
       }
       async function searchProviderServices() {
         const box = document.getElementById("provider-services-results");
-        const search = document
-          .getElementById("provider-services-search")
-          .value.trim();
+        const search = document.getElementById("provider-services-search").value.trim();
         box.innerHTML = '<p class="empty-state">Buscando...</p>';
         try {
-          const result = await fx.httpsCallable("adminFetchExternalServices")({
-            search,
-          });
+          const result = await fx.httpsCallable("adminFetchExternalServices")({ search });
           const list = (result.data && result.data.services) || [];
           if (!list.length) {
-            box.innerHTML =
-              '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
+            box.innerHTML = '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
             return;
           }
           box.innerHTML = list
@@ -5543,14 +5516,10 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
           async () => {
             try {
-              await fx.httpsCallable("adminSendOrderToProvider")({
-                orderId: id,
-              });
+              await fx.httpsCallable("adminSendOrderToProvider")({ orderId: id });
               alert("Pedido enviado ao fornecedor com sucesso.");
             } catch (e) {
-              alert(
-                "Não foi possível enviar ao fornecedor: " + friendlyError(e),
-              );
+              alert("Não foi possível enviar ao fornecedor: " + friendlyError(e));
             }
           },
         );
@@ -5562,9 +5531,7 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...',
           async () => {
             try {
-              const result = await fx.httpsCallable(
-                "adminCheckOrderProviderStatus",
-              )({ orderId: id });
+              const result = await fx.httpsCallable("adminCheckOrderProviderStatus")({ orderId: id });
               const d = result.data || {};
               alert(
                 `Status no fornecedor: ${d.provider && d.provider.status ? d.provider.status : "?"}${d.provider && d.provider.remains != null ? ` · Faltam: ${d.provider.remains}` : ""}`,
@@ -5818,13 +5785,8 @@
               comments,
               useBalance: true,
             });
-            const {
-              orderId,
-              amount,
-              balanceUsed,
-              remainingAmount,
-              pixPayload,
-            } = result.data;
+            const { orderId, amount, balanceUsed, remainingAmount, pixPayload } =
+              result.data;
             currentOrderId = orderId;
             const amt = Number(amount || 0);
             const balUsed = Number(balanceUsed || 0);
@@ -5845,12 +5807,7 @@
                 balUsed > 0
                   ? `<strong>${esc(money(balUsed))}</strong> já foi descontado do seu saldo. Pague o restante (<strong>${esc(money(remaining))}</strong>) via Pix abaixo e depois toque em "Já fiz o pagamento".`
                   : null;
-              showPixForOrder(
-                remaining,
-                pixPayload,
-                "pixModal",
-                instructionHtml,
-              );
+              showPixForOrder(remaining, pixPayload, "pixModal", instructionHtml);
             } else {
               // Saldo cobriu o pedido inteiro — nada de Pix, já está pago.
               alert(
