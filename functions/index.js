@@ -22,7 +22,6 @@ const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/
 const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
-const nodemailer = require("nodemailer");
 
 const { catalog } = require("./catalog");
 const { buildPixPayload } = require("./pix");
@@ -54,11 +53,12 @@ const PIX_CONFIG = {
 const DEPOSIT_MIN = 1;
 const DEPOSIT_MAX = 5000;
 
-// Secrets do CallMeBot — NUNCA ficam no código nem no HTML. Configure com:
-//   firebase functions:secrets:set CALLMEBOT_PHONE
-//   firebase functions:secrets:set CALLMEBOT_APIKEY
-const CALLMEBOT_PHONE = defineSecret("CALLMEBOT_PHONE");
-const CALLMEBOT_APIKEY = defineSecret("CALLMEBOT_APIKEY");
+// Secret do tópico de notificação push (ntfy.sh) — NUNCA fica no código
+// nem no HTML. É só um "nome de canal" (não é senha), mas quem souber o
+// nome consegue ler/mandar nesse canal, então tratamos como segredo pra
+// não vazar em texto público. Configure com:
+//   firebase functions:secrets:set NTFY_TOPIC
+const NTFY_TOPIC = defineSecret("NTFY_TOPIC");
 
 // Secret da baratosociais.com (fornecedor de SMM) — NUNCA fica no código
 // nem no HTML. Configure com:
@@ -66,43 +66,24 @@ const CALLMEBOT_APIKEY = defineSecret("CALLMEBOT_APIKEY");
 const BARATOSOCIAIS_API_KEY = defineSecret("BARATOSOCIAIS_API_KEY");
 
 // ---------------------------------------------------------
-// Notificação por e-mail (pedido de 25/08/2026: "cada pedido que chegar
-// pra nós no site, chegar no email também"). Usa a própria conta Gmail
-// como remetente, via "senha de app" (NUNCA a senha normal da conta —
-// isso é uma senha de 16 dígitos gerada só pra isso, revogável a
-// qualquer momento sem afetar o login normal). Configure com:
-//   firebase functions:secrets:set GMAIL_APP_PASSWORD
-// Só o proprietário (piiterthor@gmail.com) recebe esses e-mails por
-// enquanto — se quiser incluir mais gente, é só adicionar o e-mail em
-// NOTIFY_EMAIL_TO abaixo (separado por vírgula) e reimplantar.
-const GMAIL_APP_PASSWORD = defineSecret("GMAIL_APP_PASSWORD");
-const GMAIL_SENDER = "piiterthor@gmail.com";
-const NOTIFY_EMAIL_TO = "piiterthor@gmail.com";
-
+// Notificação de novo pedido/depósito (pedido de 25/08/2026: "cada
+// pedido que chegar pra nós no site, chegar uma notificação também").
+// Histórico de decisões (25/08/2026):
+//  1) E-mail via Gmail pessoal foi tentado, mas o Google bloqueia login
+//     automático de servidor (Cloud Functions não tem IP fixo, então o
+//     Gmail trata quase toda tentativa como "login suspeito de local
+//     novo" — resolver de verdade exigiria IP fixo, com custo mensal —
+//     descartado a pedido do dono).
+//  2) WhatsApp (CallMeBot) foi tentado em seguida, mas o número
+//     configurado é do sócio (que recebe os pagamentos dos clientes),
+//     não do dono — então não serve pra notificação pessoal dele.
+// Solução adotada: notificação push grátis via ntfy.sh (sem custo, sem
+// precisar de número de telefone nem de conta de e-mail — só o app
+// ntfy instalado no celular do dono, inscrito no tópico NTFY_TOPIC) +
+// o Log de auditoria no painel admin (audit_logs) como registro
+// permanente de quem aprovou/recusou cada pedido/depósito.
 function nowBR() {
   return new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
-}
-
-async function sendEmail(subject, text, secret) {
-  try {
-    const pass = secret.value();
-    if (!pass) {
-      logger.warn("Gmail não configurado (secret GMAIL_APP_PASSWORD ausente) — e-mail pulado.");
-      return;
-    }
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: GMAIL_SENDER, pass },
-    });
-    await transporter.sendMail({
-      from: `"Turbine Brasil" <${GMAIL_SENDER}>`,
-      to: NOTIFY_EMAIL_TO,
-      subject,
-      text,
-    });
-  } catch (e) {
-    logger.warn("Erro ao enviar e-mail de notificação:", e);
-  }
 }
 
 function money(v) {
@@ -158,31 +139,27 @@ async function checkRateLimit(uid, kind) {
   });
 }
 
-async function sendWhatsapp(message, secrets) {
+async function sendPush(title, message, secret) {
   try {
-    const phone = secrets.phone.value();
-    const apikey = secrets.apikey.value();
-    if (!phone || !apikey) {
-      logger.warn("CallMeBot não configurado (secrets ausentes) — notificação ignorada.");
+    const topic = secret.value();
+    if (!topic) {
+      logger.warn("ntfy não configurado (secret NTFY_TOPIC ausente) — notificação push ignorada.");
       return;
     }
-    const url =
-      "https://api.callmebot.com/whatsapp.php?phone=" +
-      encodeURIComponent(phone) +
-      "&text=" +
-      encodeURIComponent(message) +
-      "&apikey=" +
-      encodeURIComponent(apikey);
-    const res = await fetch(url);
+    const res = await fetch("https://ntfy.sh/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ topic, title, message, priority: 4 }),
+    });
     if (!res.ok) {
-      logger.warn("Falha ao notificar WhatsApp:", res.status, await res.text());
+      logger.warn("Falha ao notificar push (ntfy):", res.status, await res.text());
     }
   } catch (e) {
-    logger.warn("Erro ao notificar WhatsApp:", e);
+    logger.warn("Erro ao notificar push (ntfy):", e);
   }
 }
 
-function commentsForWhatsapp(comments) {
+function commentsBlock(comments) {
   if (!comments || !comments.length) return "";
   return "\n📝 Comentários para postar:\n" + comments.map((c, i) => `${i + 1}. ${c}`).join("\n");
 }
@@ -275,7 +252,7 @@ async function writeAuditLog(entry) {
 // só platform/groupKey/tierIndex/link/comments; o preço vem
 // exclusivamente de catalog.js.
 // ---------------------------------------------------------
-exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARATOSOCIAIS_API_KEY, GMAIL_APP_PASSWORD] }, async (request) => {
+exports.createOrder = onCall({ secrets: [NTFY_TOPIC, BARATOSOCIAIS_API_KEY] }, async (request) => {
   requireAuth(request);
   await checkRateLimit(request.auth.uid, "createOrder");
   const { platform, groupKey, tierIndex, link, comments, useBalance } = request.data || {};
@@ -295,8 +272,8 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
     // .slice(0, 500) em cada comentário individual: antes só limitava a
     // QUANTIDADE de comentários (200), não o tamanho de cada um — um
     // comentário gigante (ex.: milhares de caracteres colados) inflava o
-    // documento no Firestore e a mensagem do WhatsApp à toa (auditoria de
-    // segurança item 14 — validação de inputs).
+    // documento no Firestore e a mensagem de notificação à toa (auditoria
+    // de segurança item 14 — validação de inputs).
     cleanComments = Array.isArray(comments)
       ? comments.map((c) => String(c).trim().slice(0, 500)).filter(Boolean).slice(0, 200)
       : [];
@@ -410,30 +387,16 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
         ? `Status: aguardando pagamento do restante (${money(balanceUsed)} já descontado do saldo)`
         : "Status: aguardando pagamento";
 
-  await sendWhatsapp(
-    "🛒 Novo pedido — Turbine Brasil\n" +
-      `Cliente: ${baseOrder.userName} (${baseOrder.userEmail})\n` +
+  await sendPush(
+    "🛒 Novo pedido — Turbine Brasil",
+    `Cliente: ${baseOrder.userName} (${baseOrder.userEmail})\n` +
       `Serviço: ${baseOrder.service} — ${baseOrder.platform}\n` +
       `Valor total: ${money(amount)}\n` +
       `Link: ${baseOrder.link}\n` +
-      statusLine +
-      commentsForWhatsapp(cleanComments),
-    { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
-  );
-  await sendEmail(
-    `🛒 Novo pedido — ${baseOrder.userName || baseOrder.userEmail}`,
-    "Novo pedido recebido no Turbine Brasil\n\n" +
-      `Cliente: ${baseOrder.userName}\n` +
-      `E-mail do cliente: ${baseOrder.userEmail}\n` +
-      `Tipo de pedido: ${baseOrder.service}\n` +
-      `Plataforma: ${baseOrder.platform}\n` +
-      `Valor total: ${money(amount)}\n` +
-      `Link/perfil: ${baseOrder.link}\n` +
       `Data: ${nowBR()}\n` +
       statusLine +
-      commentsForWhatsapp(cleanComments) +
-      `\n\nID do pedido: ${orderId}`,
-    GMAIL_APP_PASSWORD,
+      commentsBlock(cleanComments),
+    NTFY_TOPIC,
   );
 
   return { orderId, amount, balanceUsed, remainingAmount: remaining, pixPayload: payload, status };
@@ -444,7 +407,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
 // valor de propósito), mas ainda assim valida faixa no servidor
 // em vez de confiar só no atributo min/max do <input> HTML.
 // ---------------------------------------------------------
-exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GMAIL_APP_PASSWORD] }, async (request) => {
+exports.createDeposit = onCall({ secrets: [NTFY_TOPIC] }, async (request) => {
   requireAuth(request);
   await checkRateLimit(request.auth.uid, "createDeposit");
   const amount = Number((request.data || {}).amount);
@@ -472,23 +435,13 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GM
   );
   await ref.update({ pixPayload: payload, pixKey: PIX_CONFIG.key });
 
-  await sendWhatsapp(
-    "💵 Novo depósito — Turbine Brasil\n" +
-      `Cliente: ${deposit.userName} (${deposit.userEmail})\n` +
-      `Valor: ${money(deposit.amount)}\n` +
-      "Status: aguardando pagamento",
-    { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
-  );
-  await sendEmail(
-    `💵 Novo depósito — ${deposit.userName || deposit.userEmail}`,
-    "Novo depósito recebido no Turbine Brasil\n\n" +
-      `Cliente: ${deposit.userName}\n` +
-      `E-mail do cliente: ${deposit.userEmail}\n` +
+  await sendPush(
+    "💵 Novo depósito — Turbine Brasil",
+    `Cliente: ${deposit.userName} (${deposit.userEmail})\n` +
       `Valor: ${money(deposit.amount)}\n` +
       `Data: ${nowBR()}\n` +
-      "Status: aguardando pagamento\n" +
-      `\nID do depósito: ${ref.id}`,
-    GMAIL_APP_PASSWORD,
+      "Status: aguardando pagamento",
+    NTFY_TOPIC,
   );
 
   return { depositId: ref.id, amount: roundedAmount, pixPayload: payload };
@@ -855,55 +808,39 @@ exports.adminCheckOrderProviderStatus = onCall({ secrets: [BARATOSOCIAIS_API_KEY
 // exposta no HTML).
 // ---------------------------------------------------------
 exports.onOrderUpdated = onDocumentUpdated(
-  { document: "orders/{orderId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GMAIL_APP_PASSWORD] },
+  { document: "orders/{orderId}", secrets: [NTFY_TOPIC] },
   async (event) => {
     const before = event.data.before.data();
     const after = event.data.after.data();
     if (before.status !== "payment_reported" && after.status === "payment_reported") {
-      await sendWhatsapp(
-        "💰 Cliente informou pagamento — Turbine Brasil\n" +
-          `Pedido #${event.params.orderId}\n` +
-          "Confira o Pix recebido e confirme no Painel do proprietário.",
-        { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
-      );
-      await sendEmail(
-        `💰 Cliente informou pagamento — ${after.userName || after.userEmail || ""}`,
-        "Cliente informou que já pagou um pedido no Turbine Brasil\n\n" +
-          `Cliente: ${after.userName || ""}\n` +
-          `E-mail do cliente: ${after.userEmail || ""}\n` +
+      await sendPush(
+        "💰 Cliente informou pagamento — Turbine Brasil",
+        `Cliente: ${after.userName || ""} (${after.userEmail || ""})\n` +
           `Tipo de pedido: ${after.service || ""}\n` +
           `Valor: ${money(after.amount)}\n` +
           `Data: ${nowBR()}\n` +
-          "Confira o Pix recebido e confirme no Painel do proprietário.\n" +
-          `\nID do pedido: ${event.params.orderId}`,
-        GMAIL_APP_PASSWORD,
+          `Pedido #${event.params.orderId}\n` +
+          "Confira o Pix recebido e confirme no Painel do proprietário.",
+        NTFY_TOPIC,
       );
     }
   },
 );
 
 exports.onDepositUpdated = onDocumentUpdated(
-  { document: "deposits/{depositId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GMAIL_APP_PASSWORD] },
+  { document: "deposits/{depositId}", secrets: [NTFY_TOPIC] },
   async (event) => {
     const before = event.data.before.data();
     const after = event.data.after.data();
     if (before.status !== "payment_reported" && after.status === "payment_reported") {
-      await sendWhatsapp(
-        "💰 Cliente informou pagamento de depósito — Turbine Brasil\n" +
-          `Depósito #${event.params.depositId}\n` +
-          "Confira o Pix recebido e confirme no Painel do proprietário.",
-        { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
-      );
-      await sendEmail(
-        `💰 Cliente informou pagamento de depósito — ${after.userName || after.userEmail || ""}`,
-        "Cliente informou que já pagou um depósito no Turbine Brasil\n\n" +
-          `Cliente: ${after.userName || ""}\n` +
-          `E-mail do cliente: ${after.userEmail || ""}\n` +
+      await sendPush(
+        "💰 Cliente informou pagamento de depósito — Turbine Brasil",
+        `Cliente: ${after.userName || ""} (${after.userEmail || ""})\n` +
           `Valor: ${money(after.amount)}\n` +
           `Data: ${nowBR()}\n` +
-          "Confira o Pix recebido e confirme no Painel do proprietário.\n" +
-          `\nID do depósito: ${event.params.depositId}`,
-        GMAIL_APP_PASSWORD,
+          `Depósito #${event.params.depositId}\n` +
+          "Confira o Pix recebido e confirme no Painel do proprietário.",
+        NTFY_TOPIC,
       );
     }
   },
