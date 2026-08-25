@@ -3513,9 +3513,45 @@
           >
             🔎 Ver serviços do fornecedor
           </button>
+          <button
+            class="op-btn secondary"
+            style="margin-top: 0"
+            onclick="openAuditLog()"
+          >
+            🕵️ Log de auditoria
+          </button>
         </div>
 
         <div id="admin-content"></div>
+      </div>
+    </div>
+
+    <!-- Log de auditoria — pedido do cliente (25/08/2026): agora que tem
+         mais de um administrador (piiterthor@gmail.com +
+         marketing.turbinebrasil@gmail.com), mostra quem fez cada ação
+         administrativa (confirmar/recusar pedido ou depósito, mudar
+         status, enviar ao fornecedor). Os dados já eram gravados desde
+         antes na coleção audit_logs (ver functions/index.js) — isto só
+         deixa visível na tela. -->
+    <div class="operation-modal" id="auditLogModal">
+      <div class="operation-box" style="width: min(640px, 100%)">
+        <button class="op-close" onclick="closeOperationModal('auditLogModal')">
+          ×
+        </button>
+        <h3 style="margin-top: 0">🕵️ Log de auditoria</h3>
+        <p style="color: #94a3b8; font-size: 0.82rem">
+          Últimas 100 ações administrativas — mostra qual administrador
+          confirmou, recusou ou mudou o status de cada pedido/depósito.
+        </p>
+        <div
+          id="audit-log-results"
+          style="
+            margin-top: 12px;
+            max-height: 420px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+          "
+        ></div>
       </div>
     </div>
 
@@ -3629,7 +3665,8 @@
          ---------------------------------------------------------
          1) Configure Firebase abaixo (veja o GUIA-PASSO-A-PASSO.md).
          2) Configure PIX_KEY com sua chave Pix PJ/PF.
-         3) Configure ADMIN_EMAIL com o e-mail Google do proprietário.
+         3) Configure adminEmails com a lista de e-mails Google que podem
+            administrar o painel (dono + sócios/funcionários de confiança).
          4) Publique também as regras Firestore do arquivo firestore.rules
             junto deste HTML no Console do Firebase.
          ========================================================= */
@@ -3769,7 +3806,21 @@
           merchantName: "TURBINE BRASIL",
           merchantCity: "BELO HORIZONTE",
         },
-        adminEmail: "piiterthor@gmail.com",
+        // Lista de e-mails Google com acesso ao Painel do proprietário —
+        // qualquer um destes, ao entrar com "Continuar com Google", enxerga
+        // o botão do painel. Isso é só pra MOSTRAR/ESCONDER o botão na
+        // tela (conveniência visual); a segurança de verdade está nas
+        // regras do Firestore e nas Cloud Functions (isAdminRequest em
+        // functions/index.js), que fazem a MESMA checagem no servidor —
+        // então mesmo que alguém tentasse burlar isso no navegador, o
+        // Firestore/Cloud Functions recusariam a ação de qualquer jeito.
+        // Pra adicionar/remover alguém, edite esta lista aqui E o array
+        // ADMIN_EMAILS em functions/index.js E em firestore.rules (os
+        // três precisam ficar iguais) e publique de novo.
+        adminEmails: [
+          "piiterthor@gmail.com",
+          "marketing.turbinebrasil@gmail.com",
+        ],
         whatsappNumber: "5511997694937",
         // A notificação automática por WhatsApp (CallMeBot) NÃO mora mais
         // aqui — o telefone/apikey saíram do HTML público (achado 2.3 do
@@ -4190,6 +4241,7 @@
           fx = firebase.functions();
           firebaseReady = true;
           auth.onAuthStateChanged(handleAuthState);
+          handleRedirectResult();
         } catch (e) {
           console.error(e);
           alert(
@@ -4213,6 +4265,27 @@
         closeOperationModal("loginModal");
       }
 
+      // Achado 25/08/2026: login com Google via signInWithPopup falha no
+      // Safari do iPhone (e em outros navegadores móveis) com o erro
+      // genérico "Firebase: Error (auth/internal-error)" — é um problema
+      // conhecido do Firebase Auth: o popup precisa de um "iframe helper"
+      // que o Safari mobile bloqueia por causa da proteção contra
+      // rastreamento entre sites (Intelligent Tracking Prevention), sem
+      // relação nenhuma com qual conta Google está tentando entrar. No
+      // computador (onde o popup normal funciona) isso não acontece — por
+      // isso funcionava para o dono e falhava só no celular do sócio.
+      // Correção: se o popup falhar com um desses erros típicos de
+      // popup/mobile, cai automaticamente para signInWithRedirect (que
+      // funciona em qualquer navegador, inclusive Safari mobile). O
+      // resultado do redirect é tratado em handleRedirectResult(), chamado
+      // durante initFirebase().
+      const POPUP_FALLBACK_ERROR_CODES = [
+        "auth/internal-error",
+        "auth/popup-blocked",
+        "auth/cancelled-popup-request",
+        "auth/operation-not-supported-in-this-environment",
+        "auth/web-storage-unsupported",
+      ];
       async function loginGoogle() {
         if (!firebaseReady) {
           alert(
@@ -4220,12 +4293,46 @@
           );
           return;
         }
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
         try {
-          const provider = new firebase.auth.GoogleAuthProvider();
-          provider.setCustomParameters({ prompt: "select_account" });
           await auth.signInWithPopup(provider);
         } catch (e) {
+          if (POPUP_FALLBACK_ERROR_CODES.includes(e.code)) {
+            console.warn(
+              "Popup de login falhou (" +
+                e.code +
+                "), tentando via redirecionamento...",
+              e,
+            );
+            try {
+              await auth.signInWithRedirect(provider);
+              // A página navega pro Google e volta sozinha; o resultado é
+              // processado em handleRedirectResult() no próximo carregamento.
+              return;
+            } catch (e2) {
+              console.error(e2);
+              alert(
+                "Não foi possível entrar com Google: " + (e2.message || "erro"),
+              );
+              return;
+            }
+          }
           console.error(e);
+          alert("Não foi possível entrar com Google: " + (e.message || "erro"));
+        }
+      }
+      async function handleRedirectResult() {
+        try {
+          const result = await auth.getRedirectResult();
+          if (result && result.user) {
+            console.log(
+              "Login via redirecionamento concluído:",
+              result.user.email,
+            );
+          }
+        } catch (e) {
+          console.error("Erro ao concluir login via redirecionamento:", e);
           alert("Não foi possível entrar com Google: " + (e.message || "erro"));
         }
       }
@@ -4944,11 +5051,12 @@
       }
 
       function isAdmin() {
-        return (
+        return !!(
           currentUser &&
           currentUser.email &&
-          currentUser.email.toLowerCase() ===
-            APP_CONFIG.adminEmail.toLowerCase()
+          APP_CONFIG.adminEmails
+            .map((e) => String(e).toLowerCase())
+            .includes(currentUser.email.toLowerCase())
         );
       }
       async function openAdmin() {
@@ -5295,8 +5403,25 @@
         if (!u) return "";
         return `<div style="margin-top:6px;color:#facc15;font-size:.8rem">💼 Saldo atual do cliente: <strong>${money(u.balance || 0)}</strong></div>`;
       }
+      // Mostra QUAL administrador confirmou/recusou este depósito — ganhou
+      // importância a partir de 25/08/2026, quando passou a existir mais de
+      // um admin (piiterthor@gmail.com + marketing.turbinebrasil@gmail.com):
+      // esses dados (confirmedBy/cancelledBy) já eram gravados desde antes
+      // pela Cloud Function, só não apareciam na tela até agora.
+      function adminWhoActedLine(x) {
+        if (x.status === "cancelled" && x.cancelledBy) {
+          return `<div style="margin-top:6px;color:#f87171;font-size:.78rem">👤 Recusado por: <strong>${esc(x.cancelledBy)}</strong>${x.cancelledAt ? ` em ${formatDateTime(x.cancelledAt)}` : ""}</div>`;
+        }
+        if (
+          ["paid", "processing", "completed"].includes(x.status) &&
+          x.confirmedBy
+        ) {
+          return `<div style="margin-top:6px;color:#4ade80;font-size:.78rem">👤 Confirmado por: <strong>${esc(x.confirmedBy)}</strong>${x.paymentConfirmedAt ? ` em ${formatDateTime(x.paymentConfirmedAt)}` : ""}</div>`;
+        }
+        return "";
+      }
       function adminDepositCard(d) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${customerBalanceLine(d.userId)}${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${customerBalanceLine(d.userId)}${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span>${adminWhoActedLine(d)}<div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
       }
       function adminOrderCard(o) {
         const commentsBlock =
@@ -5322,7 +5447,7 @@
             ? `<button class="op-btn secondary" onclick="adminCheckOrderProviderStatus('${o.id}', this)">🔄 Verificar status fornecedor</button>`
             : `<button class="op-btn secondary" onclick="adminSendOrderToProvider('${o.id}', this)">🔌 Enviar para fornecedor</button>`
           : "";
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${customerBalanceLine(o.userId)}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${customerBalanceLine(o.userId)}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span>${adminWhoActedLine(o)}<div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
       }
       // Baixa um <script> externo sob demanda e só resolve quando ele
       // terminar de carregar (ou rejeita se falhar) — usado pra só baixar
@@ -5561,6 +5686,47 @@
             .join("");
         } catch (e) {
           box.innerHTML = `<p class="empty-state">Erro ao buscar: ${esc(friendlyError(e))}</p>`;
+        }
+      }
+      // Traduz o "action" salvo em audit_logs (ver writeAuditLog em
+      // functions/index.js) pra um rótulo legível na tela.
+      function auditActionLabel(action) {
+        return (
+          {
+            confirm_order: "✅ Confirmou pagamento de pedido",
+            confirm_deposit: "✅ Confirmou pagamento de depósito",
+            cancel_order: "❌ Recusou/cancelou pedido",
+            cancel_deposit: "❌ Recusou/cancelou depósito",
+            set_order_status: "▶ Mudou status do pedido",
+            send_order_to_provider: "🔌 Enviou pedido ao fornecedor",
+          }[action] || esc(action || "?")
+        );
+      }
+      function auditLogRow(l) {
+        const target = l.orderId || l.depositId || "";
+        const extra = l.status ? ` → ${esc(statusLabel(l.status))}` : "";
+        return `<div style="border-bottom:1px solid #1e293b;padding:8px 0"><small style="color:#94a3b8">📅 ${formatDateTime(l.createdAt)}</small><br>${auditActionLabel(l.action)}${extra}<br><small>👤 ${esc(l.performedBy || "?")} · #${esc(target)}</small></div>`;
+      }
+      // Lê direto do Firestore (sem passar por Cloud Function) — as regras
+      // (firestore.rules) já liberam leitura de audit_logs só pra quem
+      // está na lista de administradores, então isso é seguro.
+      async function openAuditLog() {
+        if (!isAdmin()) return;
+        const box = document.getElementById("audit-log-results");
+        box.innerHTML = '<p class="empty-state">Carregando...</p>';
+        showModal("auditLogModal");
+        try {
+          const snap = await db
+            .collection("audit_logs")
+            .orderBy("createdAt", "desc")
+            .limit(100)
+            .get();
+          const logs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          box.innerHTML =
+            logs.map(auditLogRow).join("") ||
+            '<p class="empty-state">Nenhum registro de auditoria ainda.</p>';
+        } catch (e) {
+          box.innerHTML = `<p class="empty-state">Erro ao carregar: ${esc(friendlyError(e))}</p>`;
         }
       }
       // Envio manual pro fornecedor — usado quando o envio automático não
