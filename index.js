@@ -1,3 +1,4 @@
+
 // =========================================================
 // TURBINE BRASIL — Cloud Functions
 // -----------------------------------------------------------
@@ -22,15 +23,15 @@ const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/
 const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
-
+ 
 const { catalog } = require("./catalog");
 const { buildPixPayload } = require("./pix");
 const baratoApi = require("./baratoApi");
 const { getExternalServiceId } = require("./externalServiceMap");
-
+ 
 admin.initializeApp();
 const db = admin.firestore();
-
+ 
 // ---------------------------------------------------------
 // CONFIGURAÇÃO
 // ---------------------------------------------------------
@@ -39,42 +40,42 @@ const db = admin.firestore();
 // scripts/setAdminClaim.js) e troque este e-mail fixo por
 // `request.auth.token.admin === true`.
 const ADMIN_EMAIL = "piiterthor@gmail.com";
-
+ 
 const PIX_CONFIG = {
   key: "+5511997694937", // mesma chave Pix do APP_CONFIG.pix.key em index.html
   merchantName: "TURBINE BRASIL",
   merchantCity: "BELO HORIZONTE",
 };
-
+ 
 const DEPOSIT_MIN = 1;
 const DEPOSIT_MAX = 5000;
-
+ 
 // Secrets do CallMeBot — NUNCA ficam no código nem no HTML. Configure com:
 //   firebase functions:secrets:set CALLMEBOT_PHONE
 //   firebase functions:secrets:set CALLMEBOT_APIKEY
 const CALLMEBOT_PHONE = defineSecret("CALLMEBOT_PHONE");
 const CALLMEBOT_APIKEY = defineSecret("CALLMEBOT_APIKEY");
-
+ 
 // Secret da baratosociais.com (fornecedor de SMM) — NUNCA fica no código
 // nem no HTML. Configure com:
 //   firebase functions:secrets:set BARATOSOCIAIS_API_KEY
 const BARATOSOCIAIS_API_KEY = defineSecret("BARATOSOCIAIS_API_KEY");
-
+ 
 function money(v) {
   return Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
-
+ 
 function isAdminRequest(request) {
   const email = request.auth && request.auth.token && request.auth.token.email;
   return !!email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 }
-
+ 
 function requireAuth(request) {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Você precisa estar logado.");
   }
 }
-
+ 
 async function sendWhatsapp(message, secrets) {
   try {
     const phone = secrets.phone.value();
@@ -98,12 +99,12 @@ async function sendWhatsapp(message, secrets) {
     logger.warn("Erro ao notificar WhatsApp:", e);
   }
 }
-
+ 
 function commentsForWhatsapp(comments) {
   if (!comments || !comments.length) return "";
   return "\n📝 Comentários para postar:\n" + comments.map((c, i) => `${i + 1}. ${c}`).join("\n");
 }
-
+ 
 // ---------------------------------------------------------
 // sendOrderToProvider — envia um pedido já PAGO pro fornecedor
 // (baratosociais.com), que é quem de fato entrega seguidores/curtidas/
@@ -174,7 +175,7 @@ async function sendOrderToProvider(orderId, order, apiKeySecret) {
     return { sent: false, reason: "erro", error: String((e && e.message) || e) };
   }
 }
-
+ 
 async function writeAuditLog(entry) {
   try {
     await db.collection("audit_logs").add({
@@ -185,7 +186,7 @@ async function writeAuditLog(entry) {
     logger.warn("Não foi possível gravar audit_log:", e);
   }
 }
-
+ 
 // ---------------------------------------------------------
 // createOrder — substitui o db.collection('orders').add(...) que
 // hoje é feito DIRETO pelo navegador em index.html. O cliente manda
@@ -195,7 +196,7 @@ async function writeAuditLog(entry) {
 exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARATOSOCIAIS_API_KEY] }, async (request) => {
   requireAuth(request);
   const { platform, groupKey, tierIndex, link, comments, useBalance } = request.data || {};
-
+ 
   if (typeof link !== "string" || !link.trim()) {
     throw new HttpsError("invalid-argument", "Informe o link ou @ do perfil.");
   }
@@ -205,7 +206,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
   if (!data || !group || !tier) {
     throw new HttpsError("invalid-argument", "Pacote inválido ou desatualizado. Atualize a página e tente de novo.");
   }
-
+ 
   let cleanComments = [];
   if (group.commentsInput) {
     cleanComments = Array.isArray(comments)
@@ -215,13 +216,13 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       throw new HttpsError("invalid-argument", "Informe os comentários que devem ser postados.");
     }
   }
-
+ 
   const amount = Number(tier.price.toFixed(2)); // <-- único lugar que decide o preço
   const quantityLabel = tier.bonusQty
     ? `${tier.qty} (+300% bônus = ${tier.bonusQty} entregues)`
     : String(tier.qty);
   const serviceLabel = `${quantityLabel} ${group.label}`;
-
+ 
   const baseOrder = {
     userId: request.auth.uid,
     userName: request.auth.token.name || "",
@@ -246,12 +247,12 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
     deliverQty: tier.bonusQty || tier.qty,
   };
   if (cleanComments.length) baseOrder.comments = cleanComments;
-
+ 
   let orderId;
   let balanceUsed = 0;
   let remaining = amount;
   let status = "pending_payment";
-
+ 
   if (useBalance) {
     // Usado só pelo painel "Novo Pedido" (submitOrder em index.html):
     // desconta do saldo do cliente o quanto der e só cobra a diferença
@@ -265,7 +266,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       balanceUsed = Number(Math.min(Math.max(balance, 0), amount).toFixed(2));
       remaining = Number(Math.max(0, amount - balanceUsed).toFixed(2));
       status = remaining > 0 ? "pending_payment" : "paid";
-
+ 
       const orderData = {
         ...baseOrder,
         balanceUsed,
@@ -278,8 +279,12 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       }
       tx.set(orderRef, orderData);
       if (balanceUsed > 0) {
+        // Arredondado pra 2 casas (mesmo motivo do comentário em
+        // confirmDepositPayment) — evita "sujeira" de ponto flutuante se
+        // acumular no saldo a cada pedido pago com saldo.
+        const newBalance = Number(Math.max(0, balance - balanceUsed).toFixed(2));
         tx.update(userRef, {
-          balance: admin.firestore.FieldValue.increment(-balanceUsed),
+          balance: newBalance,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       }
@@ -297,7 +302,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
     const ref = await db.collection("orders").add({ ...baseOrder, status: "pending_payment" });
     orderId = ref.id;
   }
-
+ 
   let payload = null;
   if (remaining > 0) {
     payload = buildPixPayload(
@@ -309,14 +314,14 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
     );
     await db.collection("orders").doc(orderId).update({ pixPayload: payload, pixKey: PIX_CONFIG.key });
   }
-
+ 
   const statusLine =
     remaining === 0
       ? `Status: PAGO com saldo (${money(balanceUsed)})`
       : balanceUsed > 0
         ? `Status: aguardando pagamento do restante (${money(balanceUsed)} já descontado do saldo)`
         : "Status: aguardando pagamento";
-
+ 
   await sendWhatsapp(
     "🛒 Novo pedido — Turbine Brasil\n" +
       `Cliente: ${baseOrder.userName} (${baseOrder.userEmail})\n` +
@@ -327,10 +332,10 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       commentsForWhatsapp(cleanComments),
     { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
   );
-
+ 
   return { orderId, amount, balanceUsed, remainingAmount: remaining, pixPayload: payload, status };
 });
-
+ 
 // ---------------------------------------------------------
 // createDeposit — não depende de catálogo (o cliente escolhe o
 // valor de propósito), mas ainda assim valida faixa no servidor
@@ -343,7 +348,7 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
     throw new HttpsError("invalid-argument", `Informe um valor entre ${money(DEPOSIT_MIN)} e ${money(DEPOSIT_MAX)}.`);
   }
   const roundedAmount = Number(amount.toFixed(2));
-
+ 
   const deposit = {
     userId: request.auth.uid,
     userName: request.auth.token.name || "",
@@ -362,7 +367,7 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
     "DEP" + ref.id.slice(0, 20),
   );
   await ref.update({ pixPayload: payload, pixKey: PIX_CONFIG.key });
-
+ 
   await sendWhatsapp(
     "💵 Novo depósito — Turbine Brasil\n" +
       `Cliente: ${deposit.userName} (${deposit.userEmail})\n` +
@@ -370,10 +375,10 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
       "Status: aguardando pagamento",
     { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
   );
-
+ 
   return { depositId: ref.id, amount: roundedAmount, pixPayload: payload };
 });
-
+ 
 // ---------------------------------------------------------
 // confirmDepositPayment — move a transação de crédito de saldo
 // (que hoje o admin dispara pelo navegador) para o servidor.
@@ -388,22 +393,34 @@ exports.confirmDepositPayment = onCall(async (request) => {
   }
   const depositId = (request.data || {}).depositId;
   if (!depositId) throw new HttpsError("invalid-argument", "depositId é obrigatório.");
-
+ 
   await db.runTransaction(async (tx) => {
     const depRef = db.collection("deposits").doc(depositId);
     const depSnap = await tx.get(depRef);
     const dep = depSnap.data();
     if (!dep) throw new HttpsError("not-found", "Depósito não encontrado.");
     if (dep.status === "paid") return; // idempotente — evita crédito duplicado.
-
+ 
     const userRef = db.collection("users").doc(dep.userId);
-    const userSnap = await tx.get(userRef);
-    const balance = Number((userSnap.data() || {}).balance || 0);
-
-    tx.update(userRef, {
-      balance: balance + Number(dep.amount || 0),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+    const currentBalance = Number((userSnap.data() || {}).balance || 0);
+    // Arredonda pra 2 casas a cada crédito — sem isso, somas repetidas de
+    // valores como 12,99/0,10 acumulam "sujeira" de ponto flutuante (ex.:
+    // 0.00000000000002 em vez de 0 exato) que, embora não apareça na tela
+    // (a formatação de moeda já arredonda), fica gravada suja no banco.
+    // set(...,{merge:true}) em vez de update() também cria o documento
+    // sozinho se por acaso ele ainda não existisse (ex: ensureUserDocument
+    // não rodou a tempo) — antes isso fazia tx.update() falhar e o
+    // crédito se perder em silêncio (achado do dia 22/08/2026).
+    const newBalance = Number((currentBalance + Number(dep.amount || 0)).toFixed(2));
+    tx.set(
+      userRef,
+      {
+        balance: newBalance,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
     tx.update(depRef, {
       status: "paid",
       paymentConfirmedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -411,16 +428,16 @@ exports.confirmDepositPayment = onCall(async (request) => {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
-
+ 
   await writeAuditLog({
     action: "confirm_deposit",
     depositId,
     performedBy: request.auth.token.email,
   });
-
+ 
   return { ok: true };
 });
-
+ 
 // ---------------------------------------------------------
 // confirmOrderPayment / setOrderStatus — mesma lógica que já existia
 // no navegador (confirmOrderPayment/setOrderStatus em index.html),
@@ -428,6 +445,36 @@ exports.confirmDepositPayment = onCall(async (request) => {
 // já protegia essas escritas com isAdmin(), então isto é sobretudo
 // para ganhar o registro de "quem fez o quê e quando").
 // ---------------------------------------------------------
+// Antes de confirmar, checa se o saldo lá na baratosociais.com cobre o
+// valor do pedido — pedido do cliente (22/08/2026): "caso eu não tenha
+// saldo, favor não deixar confirmar". Compara contra o VALOR COBRADO DO
+// CLIENTE (não o preço de custo, que é menor) — ou seja, é uma checagem
+// conservadora: se passar nela, sobra margem de sobra pra comprar de
+// verdade lá no fornecedor. Só bloqueia quando dá pra consultar o saldo
+// (API key configurada e fornecedor respondendo); se a key não estiver
+// configurada ainda, ou a consulta falhar, deixa confirmar mesmo assim
+// (pra não travar o negócio todo por causa de uma integração externa
+// instável) — só registra um aviso no log.
+async function checkSupplierBalanceCovers(amount) {
+  const apiKey = BARATOSOCIAIS_API_KEY.value();
+  if (!apiKey) return; // integração ainda não configurada — não bloqueia.
+  let result;
+  try {
+    result = await baratoApi.balance(apiKey);
+  } catch (e) {
+    logger.warn("Não foi possível consultar saldo do fornecedor antes de confirmar:", e.message || e);
+    return; // fornecedor fora do ar / erro de rede — não bloqueia o admin.
+  }
+  const supplierBalance = Number(result && result.balance);
+  if (!Number.isFinite(supplierBalance)) return; // resposta inesperada — não bloqueia.
+  if (supplierBalance < amount) {
+    throw new HttpsError(
+      "failed-precondition",
+      `Saldo insuficiente no fornecedor (baratosociais.com) para cobrir este pedido: você tem ${money(supplierBalance)}, o pedido é de ${money(amount)}. Adicione saldo lá antes de confirmar.`,
+    );
+  }
+}
+ 
 exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async (request) => {
   requireAuth(request);
   if (!isAdminRequest(request)) {
@@ -435,7 +482,12 @@ exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async
   }
   const orderId = (request.data || {}).orderId;
   if (!orderId) throw new HttpsError("invalid-argument", "orderId é obrigatório.");
-
+ 
+  const orderBeforeSnap = await db.collection("orders").doc(orderId).get();
+  const orderBefore = orderBeforeSnap.data();
+  if (!orderBefore) throw new HttpsError("not-found", "Pedido não encontrado.");
+  await checkSupplierBalanceCovers(Number(orderBefore.amount || 0));
+ 
   await db.collection("orders").doc(orderId).set(
     {
       status: "paid",
@@ -446,7 +498,7 @@ exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async
     { merge: true },
   );
   await writeAuditLog({ action: "confirm_order", orderId, performedBy: request.auth.token.email });
-
+ 
   // Pagamento confirmado -> já manda pro fornecedor (baratosociais.com)
   // automaticamente, se o pacote já tiver mapeamento configurado.
   const orderSnap = await db.collection("orders").doc(orderId).get();
@@ -457,7 +509,7 @@ exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async
   }
   return { ok: true, providerResult };
 });
-
+ 
 const ALLOWED_MANUAL_STATUSES = ["processing", "completed"];
 exports.setOrderStatus = onCall(async (request) => {
   requireAuth(request);
@@ -475,7 +527,7 @@ exports.setOrderStatus = onCall(async (request) => {
   await writeAuditLog({ action: "set_order_status", orderId, status, performedBy: request.auth.token.email });
   return { ok: true };
 });
-
+ 
 // ---------------------------------------------------------
 // cancelOrder / cancelDeposit — versões com trilha de auditoria
 // completa (achado 2.10: hoje cancelOrder/cancelDeposit em
@@ -488,7 +540,7 @@ exports.cancelOrder = onCall(async (request) => {
   }
   const orderId = (request.data || {}).orderId;
   if (!orderId) throw new HttpsError("invalid-argument", "orderId é obrigatório.");
-
+ 
   let refundAmount = 0;
   await db.runTransaction(async (tx) => {
     const orderRef = db.collection("orders").doc(orderId);
@@ -496,7 +548,7 @@ exports.cancelOrder = onCall(async (request) => {
     const order = orderSnap.data();
     if (!order) throw new HttpsError("not-found", "Pedido não encontrado.");
     if (order.status === "cancelled") return; // idempotente — evita estornar duas vezes.
-
+ 
     // Se parte (ou tudo) desse pedido tinha sido pago com saldo do
     // cliente (achado: pedido pago via painel "Novo Pedido"), devolve
     // esse valor para o saldo dele ao recusar — senão o dinheiro fica
@@ -504,10 +556,19 @@ exports.cancelOrder = onCall(async (request) => {
     refundAmount = Number(order.balanceUsed || 0);
     if (refundAmount > 0) {
       const userRef = db.collection("users").doc(order.userId);
-      tx.update(userRef, {
-        balance: admin.firestore.FieldValue.increment(refundAmount),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
+      const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+      const currentBalance = Number((userSnap.data() || {}).balance || 0);
+      // Arredondado pra 2 casas — mesmo motivo do comentário em
+      // confirmDepositPayment (evita sujeira de ponto flutuante no saldo).
+      const newBalance = Number((currentBalance + refundAmount).toFixed(2));
+      tx.set(
+        userRef,
+        {
+          balance: newBalance,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
     }
     tx.update(orderRef, {
       status: "cancelled",
@@ -525,7 +586,7 @@ exports.cancelOrder = onCall(async (request) => {
   });
   return { ok: true, refundAmount };
 });
-
+ 
 exports.cancelDeposit = onCall(async (request) => {
   requireAuth(request);
   if (!isAdminRequest(request)) {
@@ -533,7 +594,7 @@ exports.cancelDeposit = onCall(async (request) => {
   }
   const depositId = (request.data || {}).depositId;
   if (!depositId) throw new HttpsError("invalid-argument", "depositId é obrigatório.");
-
+ 
   await db.collection("deposits").doc(depositId).set(
     {
       status: "cancelled",
@@ -546,7 +607,7 @@ exports.cancelDeposit = onCall(async (request) => {
   await writeAuditLog({ action: "cancel_deposit", depositId, performedBy: request.auth.token.email });
   return { ok: true };
 });
-
+ 
 // ---------------------------------------------------------
 // Integração com o fornecedor (baratosociais.com) — todas as funções
 // abaixo são exclusivas do proprietário (isAdminRequest). O envio
@@ -557,7 +618,7 @@ exports.cancelDeposit = onCall(async (request) => {
 // automático não rolar (ex.: pacote ainda sem mapeamento, ou erro
 // temporário do fornecedor).
 // ---------------------------------------------------------
-
+ 
 // Lista os serviços/preços da baratosociais.com — usado só pra você
 // descobrir o ID de cada serviço deles e preencher externalServiceMap.js.
 // Aceita um "search" opcional (nome do serviço) pra não precisar rolar
@@ -588,7 +649,7 @@ exports.adminFetchExternalServices = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }
   // refine a busca com "search" se precisar de mais.
   return { services: list.slice(0, 300), total: list.length };
 });
-
+ 
 // Saldo disponível na sua conta lá na baratosociais.com (pra saber se
 // dá pra continuar mandando pedido sem recarregar lá).
 exports.adminFetchExternalBalance = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async (request) => {
@@ -603,7 +664,7 @@ exports.adminFetchExternalBalance = onCall({ secrets: [BARATOSOCIAIS_API_KEY] },
   const result = await baratoApi.balance(apiKey);
   return result;
 });
-
+ 
 // Envio manual (ou reenvio) de um pedido específico pro fornecedor —
 // usado quando o envio automático não aconteceu (pacote ainda sem
 // mapeamento na hora, erro temporário do fornecedor, etc.).
@@ -630,7 +691,7 @@ exports.adminSendOrderToProvider = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, 
   }
   return result;
 });
-
+ 
 // Consulta o status atual de um pedido já enviado ao fornecedor e
 // atualiza o pedido local com o que ele responder. Só espelha o status
 // pro cliente ver (externalStatus) — o status "processing"/"completed"
@@ -651,7 +712,7 @@ exports.adminCheckOrderProviderStatus = onCall({ secrets: [BARATOSOCIAIS_API_KEY
   }
   const apiKey = BARATOSOCIAIS_API_KEY.value();
   const result = await baratoApi.status(apiKey, order.externalOrderId);
-
+ 
   const rawStatus = String((result && result.status) || "").toLowerCase();
   const update = {
     externalStatus: (result && result.status) || null,
@@ -670,7 +731,7 @@ exports.adminCheckOrderProviderStatus = onCall({ secrets: [BARATOSOCIAIS_API_KEY
   await db.collection("orders").doc(orderId).set(update, { merge: true });
   return { ok: true, provider: result, localStatus: update.status || order.status };
 });
-
+ 
 // ---------------------------------------------------------
 // Gatilhos automáticos: avisam o proprietário quando o cliente
 // sinaliza "já paguei" — substitui as chamadas client-side a
@@ -693,7 +754,7 @@ exports.onOrderUpdated = onDocumentUpdated(
     }
   },
 );
-
+ 
 exports.onDepositUpdated = onDocumentUpdated(
   { document: "deposits/{depositId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
   async (event) => {

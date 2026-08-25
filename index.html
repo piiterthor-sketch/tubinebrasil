@@ -2530,7 +2530,7 @@
           href="#"
           class="brand-logo"
           aria-label="Turbine Brasil"
-          onclick="return scrollToTopSafe(event)"
+          onclick="return scrollToTopSafe(event);"
         >
           <img src="./images/logo.png" alt="Turbine Brasil" class="logo-img" />
         </a>
@@ -2781,7 +2781,7 @@
               id="tab-btn-add"
               onclick="switchPanelTab('add', this)"
             >
-              Adicionar Saldo
+              Novo Pedido
             </button>
             <button
               class="panel-tab-btn"
@@ -3340,7 +3340,7 @@
           </button>
           <button
             class="op-btn success"
-            onclick="markCurrentOrderPaidByCustomer()"
+            onclick="markCurrentOrderPaidByCustomer(this)"
           >
             <i class="fa-solid fa-check"></i> Já fiz o pagamento
           </button>
@@ -3478,37 +3478,41 @@
           </button>
         </div>
 
-        <!-- Integração com o fornecedor (baratosociais.com) — envio automático
-             de pedidos pagos e ferramentas manuais de apoio. -->
+        <!-- Saldo no fornecedor (baratosociais.com) — pedido do cliente
+             (22/08/2026): como o proprietário não compra pedidos pra ele
+             mesmo, o "saldo" que importa aqui não é o saldo de cliente do
+             site (esse fica sempre R$0,00 pra conta do dono) e sim o saldo
+             pré-pago lá no fornecedor. Carrega sozinho toda vez que o painel
+             abre — não precisa mais clicar em nada pra ver o valor. -->
         <div
-          style="
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 12px;
-            margin: 4px 0 14px;
-            background: #0b1220;
-          "
+          class="balance-banner"
+          style="background: linear-gradient(135deg, #0f766e, #134e4a)"
         >
-          <strong style="color: #e2e8f0"
-            ><i class="fa-solid fa-plug"></i> Fornecedor (baratosociais.com)</strong
-          >
-          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px">
-            <button
-              class="op-btn secondary"
-              style="margin-top: 0"
-              onclick="checkProviderBalance(this)"
-            >
-              💰 Ver saldo no fornecedor
-            </button>
-            <button
-              class="op-btn secondary"
-              style="margin-top: 0"
-              onclick="openProviderServicesLookup()"
-            >
-              🔎 Ver serviços do fornecedor
-            </button>
+          <div class="balance-info">
+            <h4>
+              <i class="fa-solid fa-plug"></i> Saldo no fornecedor
+              (baratosociais.com)
+            </h4>
+            <div class="amount" id="admin-supplier-balance">Carregando...</div>
           </div>
-          <div id="provider-balance-hint" style="margin-top: 8px; font-size: 0.8rem; color: #94a3b8"></div>
+          <a
+            href="javascript:void(0)"
+            onclick="checkProviderBalance(this)"
+            class="btn-add-funds-head"
+          >
+            <i class="fa-solid fa-arrows-rotate"></i> Atualizar
+          </a>
+        </div>
+        <div
+          style="display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 14px"
+        >
+          <button
+            class="op-btn secondary"
+            style="margin-top: 0"
+            onclick="openProviderServicesLookup()"
+          >
+            🔎 Ver serviços do fornecedor
+          </button>
         </div>
 
         <div id="admin-content"></div>
@@ -3528,15 +3532,20 @@
         <h3 style="margin-top: 0">Serviços do fornecedor</h3>
         <p style="color: #94a3b8; font-size: 0.82rem">
           Busque pelo nome do serviço lá na baratosociais.com pra achar o ID
-          certo de cada pacote seu. Anote os IDs e me envie que eu configuro
-          o mapeamento (externalServiceMap.js).
+          certo de cada pacote seu. Anote os IDs e me envie que eu configuro o
+          mapeamento (externalServiceMap.js).
         </p>
         <input
           type="text"
           class="op-input"
           id="provider-services-search"
           placeholder="Ex: seguidores brasileiros instagram"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();searchProviderServices();}"
+          onkeydown="
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              searchProviderServices();
+            }
+          "
         />
         <button
           class="op-btn"
@@ -3566,7 +3575,7 @@
               href="#"
               class="logo"
               style="margin-bottom: 15px"
-              onclick="return scrollToTopSafe(event)"
+              onclick="return scrollToTopSafe(event);"
             >
               <div class="logo-icon"><i class="fa-solid fa-rocket"></i></div>
               <div class="logo-text">TURBINE <span>BRASIL</span></div>
@@ -3697,8 +3706,12 @@
           window.scrollTo(0, window.scrollY);
         }
       }
-      window.addEventListener("scroll", fixHorizontalScrollDrift, { passive: true });
-      window.addEventListener("orientationchange", () => setTimeout(fixHorizontalScrollDrift, 300));
+      window.addEventListener("scroll", fixHorizontalScrollDrift, {
+        passive: true,
+      });
+      window.addEventListener("orientationchange", () =>
+        setTimeout(fixHorizontalScrollDrift, 300),
+      );
 
       /* =========================================================
          BLOQUEIO DE ZOOM (PINCH) NO MOBILE
@@ -3779,6 +3792,7 @@
       let unsubscribeOrders = null;
       let unsubscribeAdminOrders = null;
       let unsubscribeAdminDeposits = null;
+      let unsubscribeAdminUsers = null;
 
       /* =========================================================
          CATÁLOGO DE SERVIÇOS — Instagram e TikTok
@@ -3815,19 +3829,6 @@
                 { qty: 300, price: 2.99 },
                 { qty: 500, price: 4.99 },
                 { qty: 1000, price: 9.99 },
-              ],
-            },
-            seguidores_mundiais: {
-              label: "Seguidores Mundiais",
-              tiers: [
-                { qty: 100, price: 0.99 },
-                { qty: 200, price: 1.99 },
-                { qty: 300, price: 2.99 },
-                { qty: 500, price: 4.99 },
-                { qty: 1000, price: 9.99 },
-                { qty: 2000, price: 19.99 },
-                { qty: 5000, price: 49.99 },
-                { qty: 10000, price: 99.99 },
               ],
             },
             curtidas_br_baixa: {
@@ -4268,6 +4269,16 @@
           updateAuthButtonsVisibility(false);
           if (unsubscribeUser) unsubscribeUser();
           if (unsubscribeOrders) unsubscribeOrders();
+          // Limpa o pedido/depósito "atual" guardado em memória. Sem isso,
+          // ao trocar de conta na mesma aba (ex: testando como clientes
+          // diferentes), um clique em "Já fiz o pagamento" podia tentar
+          // gravar num pedido/depósito que pertence à conta ANTERIOR — o
+          // firestore.rules corretamente bloqueia isso (o dono é outro),
+          // mas aparecia como um "Sem permissão para gravar" confuso, sem
+          // relação nenhuma com o pagamento que a pessoa acabou de fazer
+          // (achado do dia 22/08/2026).
+          currentOrderId = null;
+          currentDepositId = null;
           return;
         }
         closeLoginModal();
@@ -4298,6 +4309,13 @@
               friendlyError(e),
           );
         }
+        // Pedido do cliente (22/08/2026): o proprietário não compra pedidos
+        // pra ele mesmo (só faz injeção de Pix), então não faz sentido ele
+        // cair no painel de cliente comum. Toda vez que a conta admin loga
+        // (ou a página recarrega já logado), abre direto o painel completo
+        // de administração. Pra ver o painel de cliente por trás (ex: testar
+        // como um cliente veria), é só fechar o painel admin com o X.
+        if (isAdmin()) openAdmin();
       }
 
       async function ensureUserDocument(user) {
@@ -4731,36 +4749,47 @@
         }
       }
 
-      async function markCurrentOrderPaidByCustomer() {
+      // "btn" (opcional) é o próprio botão "Já fiz o pagamento" — recebido
+      // via onclick="markCurrentOrderPaidByCustomer(this)". Ele é desabilitado
+      // ENQUANTO a gravação está em andamento (via withBusyButton) pra evitar
+      // duplo clique/duplo toque disparando duas gravações ao mesmo tempo:
+      // a 1ª muda o status pra "payment_reported" com sucesso, e a 2ª é
+      // recusada pelo firestore.rules (que só permite o cliente atualizar
+      // enquanto o status ainda é "pending_payment") — isso fazia aparecer
+      // um alerta de "Sem permissão para gravar" mesmo com o pagamento já
+      // salvo corretamente no banco (achado do dia 22/08/2026).
+      async function markCurrentOrderPaidByCustomer(btn) {
         if (!currentOrderId || !firebaseReady) {
           alert("Pedido não localizado.");
           return;
         }
-        try {
-          await db.collection("orders").doc(currentOrderId).set(
-            {
-              status: "payment_reported",
-              paymentReportedAt:
-                firebase.firestore.FieldValue.serverTimestamp(),
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            },
-            { merge: true },
-          );
-          document.getElementById("pix-status").textContent =
-            "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
-          document.getElementById("pix-status").className =
-            "status-pill status-pending";
-          // A notificação ao proprietário agora dispara sozinha no servidor
-          // (gatilho onOrderUpdated em functions/index.js) assim que o
-          // status muda para "payment_reported" — não precisa mais chamar
-          // nada daqui.
-          alert(
-            "Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.",
-          );
-        } catch (e) {
-          console.error(e);
-          alert("Não foi possível informar o pagamento: " + friendlyError(e));
-        }
+        if (btn && btn.disabled) return;
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Informando...',
+          async () => {
+            await db.collection("orders").doc(currentOrderId).set(
+              {
+                status: "payment_reported",
+                paymentReportedAt:
+                  firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            );
+            document.getElementById("pix-status").textContent =
+              "PAGAMENTO INFORMADO — AGUARDANDO CONFERÊNCIA";
+            document.getElementById("pix-status").className =
+              "status-pill status-pending";
+            // A notificação ao proprietário agora dispara sozinha no servidor
+            // (gatilho onOrderUpdated em functions/index.js) assim que o
+            // status muda para "payment_reported" — não precisa mais chamar
+            // nada daqui.
+            alert(
+              "Pagamento informado. Agora o proprietário irá conferir o Pix e confirmar seu pedido.",
+            );
+          },
+        );
       }
 
       function openBalanceModal() {
@@ -4785,10 +4814,14 @@
             // servidor — o campo acima é só conveniência de interface.
             const createDepositFn = fx.httpsCallable("createDeposit");
             const result = await createDepositFn({ amount });
-            const { depositId, amount: confirmedAmount, pixPayload } = result.data;
+            const {
+              depositId,
+              amount: confirmedAmount,
+              pixPayload,
+            } = result.data;
             currentDepositId = depositId;
             document.getElementById("deposit-pix-area").innerHTML =
-              `<div class="pix-card"><strong>${money(confirmedAmount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(pixPayload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid()">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
+              `<div class="pix-card"><strong>${money(confirmedAmount)}</strong><div class="pix-qr"><img id="deposit-qr-img" alt="QR Code Pix"></div><textarea class="pix-code" id="deposit-copy-code" readonly>${esc(pixPayload)}</textarea><button class="op-btn secondary" onclick="copyDepositCode()">Copiar Pix</button><button class="op-btn success" onclick="reportDepositPaid(this)">Já fiz o pagamento</button><span class="status-pill status-pending">AGUARDANDO CONFIRMAÇÃO</span></div>`;
             setQrImage(document.getElementById("deposit-qr-img"), pixPayload);
           },
         );
@@ -4798,25 +4831,31 @@
         await navigator.clipboard.writeText(el.value);
         alert("Pix Copia e Cola copiado.");
       }
-      async function reportDepositPaid() {
+      // Mesma proteção contra duplo clique/duplo toque explicada em
+      // markCurrentOrderPaidByCustomer() acima, aplicada ao depósito.
+      async function reportDepositPaid(btn) {
         if (!currentDepositId) return;
-        try {
-          await db.collection("deposits").doc(currentDepositId).set(
-            {
-              status: "payment_reported",
-              paymentReportedAt:
-                firebase.firestore.FieldValue.serverTimestamp(),
-              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            },
-            { merge: true },
-          );
-          // Gatilho onDepositUpdated (functions/index.js) notifica o
-          // proprietário automaticamente — nada a fazer aqui.
-          alert("Pagamento informado. Aguarde a confirmação do proprietário.");
-        } catch (e) {
-          console.error(e);
-          alert("Não foi possível informar o pagamento: " + friendlyError(e));
-        }
+        if (btn && btn.disabled) return;
+        await withBusyButton(
+          btn,
+          '<i class="fa-solid fa-spinner fa-spin"></i> Informando...',
+          async () => {
+            await db.collection("deposits").doc(currentDepositId).set(
+              {
+                status: "payment_reported",
+                paymentReportedAt:
+                  firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              },
+              { merge: true },
+            );
+            // Gatilho onDepositUpdated (functions/index.js) notifica o
+            // proprietário automaticamente — nada a fazer aqui.
+            alert(
+              "Pagamento informado. Aguarde a confirmação do proprietário.",
+            );
+          },
+        );
       }
 
       let myOrdersCache = [];
@@ -4862,9 +4901,7 @@
         }
         currentOrderId = order.id;
         const pixAmount =
-          order.balanceUsed > 0
-            ? order.remainingAmount || 0
-            : order.amount;
+          order.balanceUsed > 0 ? order.remainingAmount || 0 : order.amount;
         showPixForOrder(
           pixAmount,
           order.pixPayload,
@@ -4922,8 +4959,25 @@
         }
         showModal("adminModal");
         renderAdminLoading();
+        checkProviderBalance(null);
         if (unsubscribeAdminOrders) unsubscribeAdminOrders();
         if (unsubscribeAdminDeposits) unsubscribeAdminDeposits();
+        if (unsubscribeAdminUsers) unsubscribeAdminUsers();
+        // Saldo de cada cliente, pra mostrar direto no card do pedido/depósito
+        // no painel admin (pedido do cliente 22/08/2026: "não quero ter que
+        // entrar como se fosse o cliente só pra conferir se o saldo entrou").
+        unsubscribeAdminUsers = db
+          .collection("users")
+          .limit(1000)
+          .onSnapshot(
+            (s) => {
+              const map = {};
+              s.docs.forEach((x) => (map[x.id] = x.data()));
+              adminUsersCache = map;
+              renderAdminDashboard();
+            },
+            (e) => console.warn("Painel admin (saldos de clientes):", e),
+          );
         // Limite maior que antes (era 50) porque agora esses mesmos dados também
         // alimentam o relatório de faturamento por dia/mês logo abaixo.
         unsubscribeAdminOrders = db
@@ -4964,6 +5018,10 @@
           unsubscribeAdminDeposits();
           unsubscribeAdminDeposits = null;
         }
+        if (unsubscribeAdminUsers) {
+          unsubscribeAdminUsers();
+          unsubscribeAdminUsers = null;
+        }
       }
       function renderAdminLoading() {
         document.getElementById("admin-content").innerHTML =
@@ -4971,6 +5029,7 @@
       }
       let adminOrdersCache = [];
       let adminDepositsCache = [];
+      let adminUsersCache = {};
       function renderAdminOrders(orders) {
         const had = adminOrdersCache.length;
         adminOrdersCache = orders;
@@ -5226,8 +5285,18 @@
         );
         el.innerHTML = `${head}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="op-summary" style="margin:0;display:block"><small>Pedidos pendentes</small><br><strong style="font-size:1.5rem">${pendingOrders.length}</strong></div><div class="op-summary" style="margin:0;display:block"><small>Depósitos pendentes</small><br><strong style="font-size:1.5rem">${pendingDeposits.length}</strong></div></div><h4 style="margin:10px 0;color:#fff">🔔 Pedidos aguardando pagamento</h4>${pendingOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">💰 Depósitos para adicionar saldo</h4>${pendingDeposits.map(adminDepositCard).join("") || '<div class="empty-state">Nenhum depósito pendente.</div>'}<h4 style="margin:20px 0 10px;color:#fff">Últimos pedidos</h4>${allOrders.map(adminOrderCard).join("") || '<div class="empty-state">Nenhum pedido.</div>'}`;
       }
+      // Mostra o saldo ATUAL do cliente (users/{uid}.balance) direto no
+      // card — assim dá pra conferir se o crédito realmente entrou sem
+      // precisar sair do painel admin e logar como o cliente pra ver
+      // (pedido do cliente 22/08/2026).
+      function customerBalanceLine(userId) {
+        if (!userId) return "";
+        const u = adminUsersCache[userId];
+        if (!u) return "";
+        return `<div style="margin-top:6px;color:#facc15;font-size:.8rem">💼 Saldo atual do cliente: <strong>${money(u.balance || 0)}</strong></div>`;
+      }
       function adminDepositCard(d) {
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(d.userName || "Cliente")}</strong><br><small>${esc(d.userEmail || "")} · #${esc(d.id)}</small><br><small>📅 ${formatDateTime(d.createdAt)}</small></div><strong>${money(d.amount)}</strong></div>${customerBalanceLine(d.userId)}${pixAmountMismatchWarning(d)}<span class="status-pill ${statusClass(d.status)}">${statusLabel(d.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(d.status) ? `<button class="op-btn success" onclick="confirmDepositPayment('${d.id}', this)">✅ Confirmar Pix e adicionar saldo</button><button class="op-btn danger" onclick="cancelDeposit('${d.id}', this)">❌ Recusar</button>` : ""}</div></div>`;
       }
       function adminOrderCard(o) {
         const commentsBlock =
@@ -5246,12 +5315,14 @@
         } else if (o.providerError) {
           providerBlock = `<div style="margin-top:6px;color:#f87171;font-size:.78rem">⚠️ Fornecedor: ${esc(o.providerError)}</div>`;
         }
-        const providerButtons = ["paid", "processing", "completed"].includes(o.status)
+        const providerButtons = ["paid", "processing", "completed"].includes(
+          o.status,
+        )
           ? o.externalOrderId
             ? `<button class="op-btn secondary" onclick="adminCheckOrderProviderStatus('${o.id}', this)">🔄 Verificar status fornecedor</button>`
             : `<button class="op-btn secondary" onclick="adminSendOrderToProvider('${o.id}', this)">🔌 Enviar para fornecedor</button>`
           : "";
-        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
+        return `<div class="order-row"><div class="order-row-top"><div><strong>${esc(o.userName || "Cliente")}</strong><br><small>${esc(o.userEmail || "")} · #${esc(o.id)}</small><br><small>📅 ${formatDateTime(o.createdAt)}</small></div><strong>${money(o.amount)}</strong></div><div style="margin-top:8px;color:#cbd5e1;font-size:.84rem"><strong>${esc(o.service)}</strong><br>${esc(o.platform)} · ${esc(o.link)}</div>${commentsBlock}${balanceBlock}${customerBalanceLine(o.userId)}${providerBlock}${pixAmountMismatchWarning(o)}<span class="status-pill ${statusClass(o.status)}">${statusLabel(o.status)}</span><div class="admin-tools">${["pending_payment", "payment_reported"].includes(o.status) ? `<button class="op-btn success" onclick="confirmOrderPayment('${o.id}', this)">✅ Confirmar pagamento</button><button class="op-btn danger" onclick="cancelOrder('${o.id}', this)">❌ Recusar</button>` : ""}${o.status === "paid" ? `<button class="op-btn" onclick="setOrderStatus('${o.id}','processing', this)">▶ Marcar em processamento</button>` : ""}${o.status === "processing" ? `<button class="op-btn success" onclick="setOrderStatus('${o.id}','completed', this)">✅ Concluir pedido</button>` : ""}${providerButtons}</div></div>`;
       }
       // Baixa um <script> externo sob demanda e só resolve quando ele
       // terminar de carregar (ou rejeita se falhar) — usado pra só baixar
@@ -5431,24 +5502,34 @@
       }
 
       // ---- Fornecedor (baratosociais.com) ----
+      // btn é opcional: chamado sem botão (null) quando o painel admin abre
+      // sozinho, pra carregar o saldo automaticamente sem exigir clique.
       async function checkProviderBalance(btn) {
         if (!isAdmin()) return;
-        const hint = document.getElementById("provider-balance-hint");
-        await withBusyButton(
-          btn,
-          '<i class="fa-solid fa-spinner fa-spin"></i> Consultando...',
-          async () => {
-            try {
-              const result = await fx.httpsCallable("adminFetchExternalBalance")();
-              const d = result.data || {};
-              if (hint)
-                hint.textContent = `Saldo lá no fornecedor: ${esc(d.balance ?? "?")} ${esc(d.currency || "")}`;
-            } catch (e) {
-              if (hint)
-                hint.textContent = "Não foi possível consultar: " + friendlyError(e);
-            }
-          },
-        );
+        const el = document.getElementById("admin-supplier-balance");
+        const run = async () => {
+          try {
+            const result = await fx.httpsCallable(
+              "adminFetchExternalBalance",
+            )();
+            const d = result.data || {};
+            if (el)
+              el.textContent =
+                `${esc(d.currency || "")} ${esc(d.balance ?? "?")}`.trim();
+          } catch (e) {
+            if (el) el.textContent = "Erro: " + friendlyError(e);
+          }
+        };
+        if (btn) {
+          await withBusyButton(
+            btn,
+            '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...',
+            run,
+          );
+        } else {
+          if (el) el.textContent = "Carregando...";
+          await run();
+        }
       }
       function openProviderServicesLookup() {
         if (!isAdmin()) return;
@@ -5458,13 +5539,18 @@
       }
       async function searchProviderServices() {
         const box = document.getElementById("provider-services-results");
-        const search = document.getElementById("provider-services-search").value.trim();
+        const search = document
+          .getElementById("provider-services-search")
+          .value.trim();
         box.innerHTML = '<p class="empty-state">Buscando...</p>';
         try {
-          const result = await fx.httpsCallable("adminFetchExternalServices")({ search });
+          const result = await fx.httpsCallable("adminFetchExternalServices")({
+            search,
+          });
           const list = (result.data && result.data.services) || [];
           if (!list.length) {
-            box.innerHTML = '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
+            box.innerHTML =
+              '<p class="empty-state">Nenhum serviço encontrado com esse termo.</p>';
             return;
           }
           box.innerHTML = list
@@ -5486,10 +5572,14 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...',
           async () => {
             try {
-              await fx.httpsCallable("adminSendOrderToProvider")({ orderId: id });
+              await fx.httpsCallable("adminSendOrderToProvider")({
+                orderId: id,
+              });
               alert("Pedido enviado ao fornecedor com sucesso.");
             } catch (e) {
-              alert("Não foi possível enviar ao fornecedor: " + friendlyError(e));
+              alert(
+                "Não foi possível enviar ao fornecedor: " + friendlyError(e),
+              );
             }
           },
         );
@@ -5501,7 +5591,9 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...',
           async () => {
             try {
-              const result = await fx.httpsCallable("adminCheckOrderProviderStatus")({ orderId: id });
+              const result = await fx.httpsCallable(
+                "adminCheckOrderProviderStatus",
+              )({ orderId: id });
               const d = result.data || {};
               alert(
                 `Status no fornecedor: ${d.provider && d.provider.status ? d.provider.status : "?"}${d.provider && d.provider.remains != null ? ` · Faltam: ${d.provider.remains}` : ""}`,
@@ -5527,6 +5619,11 @@
             // duas vezes) agora roda no servidor, com auditoria em
             // audit_logs — ver functions/index.js.
             await fx.httpsCallable("confirmDepositPayment")({ depositId: id });
+            // Antes não avisava nada aqui — dava pra achar que não tinha
+            // funcionado. Agora confirma explicitamente (achado 22/08/2026).
+            alert(
+              "Saldo creditado com sucesso. O cliente já vê o novo saldo na conta dele.",
+            );
           },
         );
       }
@@ -5755,8 +5852,13 @@
               comments,
               useBalance: true,
             });
-            const { orderId, amount, balanceUsed, remainingAmount, pixPayload } =
-              result.data;
+            const {
+              orderId,
+              amount,
+              balanceUsed,
+              remainingAmount,
+              pixPayload,
+            } = result.data;
             currentOrderId = orderId;
             const amt = Number(amount || 0);
             const balUsed = Number(balanceUsed || 0);
@@ -5777,7 +5879,12 @@
                 balUsed > 0
                   ? `<strong>${esc(money(balUsed))}</strong> já foi descontado do seu saldo. Pague o restante (<strong>${esc(money(remaining))}</strong>) via Pix abaixo e depois toque em "Já fiz o pagamento".`
                   : null;
-              showPixForOrder(remaining, pixPayload, "pixModal", instructionHtml);
+              showPixForOrder(
+                remaining,
+                pixPayload,
+                "pixModal",
+                instructionHtml,
+              );
             } else {
               // Saldo cobriu o pedido inteiro — nada de Pix, já está pago.
               alert(
