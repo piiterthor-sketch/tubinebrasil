@@ -75,6 +75,44 @@ function requireAuth(request) {
   }
 }
 
+// ---------------------------------------------------------
+// checkRateLimit — trava simples de "não mais que N chamadas por
+// minuto, por usuário, por função" (auditoria de segurança item 11).
+// Guarda o contador dentro do Firestore, na coleção rate_limits/{uid}
+// (invisível pro cliente: não existe regra liberando leitura/escrita
+// nela em firestore.rules, então só a própria Cloud Function, que usa
+// o Admin SDK e ignora as regras, consegue tocar nesse documento).
+// Roda em transação pra não deixar passar 2 chamadas simultâneas
+// "furando" o limite (ex.: duplo clique disparando 2 requisições ao
+// mesmo tempo antes da 1ª contagem ser salva).
+// ---------------------------------------------------------
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // janela de 1 minuto
+const RATE_LIMIT_MAX = { createOrder: 6, createDeposit: 6 }; // no máx. 6 pedidos/depósitos por minuto por usuário
+
+async function checkRateLimit(uid, kind) {
+  const max = RATE_LIMIT_MAX[kind] || 10;
+  const ref = db.collection("rate_limits").doc(uid);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref); // leitura sempre antes de qualquer escrita
+    const data = snap.data() || {};
+    const entry = data[kind] || { count: 0, windowStart: 0 };
+    const now = Date.now();
+    let { count, windowStart } = entry;
+    if (!windowStart || now - windowStart > RATE_LIMIT_WINDOW_MS) {
+      count = 0;
+      windowStart = now;
+    }
+    count += 1;
+    if (count > max) {
+      throw new HttpsError(
+        "resource-exhausted",
+        "Muitas tentativas em pouco tempo. Aguarde um minuto e tente de novo.",
+      );
+    }
+    tx.set(ref, { [kind]: { count, windowStart } }, { merge: true });
+  });
+}
+
 async function sendWhatsapp(message, secrets) {
   try {
     const phone = secrets.phone.value();
@@ -194,6 +232,7 @@ async function writeAuditLog(entry) {
 // ---------------------------------------------------------
 exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARATOSOCIAIS_API_KEY] }, async (request) => {
   requireAuth(request);
+  await checkRateLimit(request.auth.uid, "createOrder");
   const { platform, groupKey, tierIndex, link, comments, useBalance } = request.data || {};
 
   if (typeof link !== "string" || !link.trim()) {
@@ -208,8 +247,13 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
 
   let cleanComments = [];
   if (group.commentsInput) {
+    // .slice(0, 500) em cada comentário individual: antes só limitava a
+    // QUANTIDADE de comentários (200), não o tamanho de cada um — um
+    // comentário gigante (ex.: milhares de caracteres colados) inflava o
+    // documento no Firestore e a mensagem do WhatsApp à toa (auditoria de
+    // segurança item 14 — validação de inputs).
     cleanComments = Array.isArray(comments)
-      ? comments.map((c) => String(c).trim()).filter(Boolean).slice(0, 200)
+      ? comments.map((c) => String(c).trim().slice(0, 500)).filter(Boolean).slice(0, 200)
       : [];
     if (!cleanComments.length) {
       throw new HttpsError("invalid-argument", "Informe os comentários que devem ser postados.");
@@ -278,8 +322,12 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       }
       tx.set(orderRef, orderData);
       if (balanceUsed > 0) {
+        // Arredondado pra 2 casas (mesmo motivo do comentário em
+        // confirmDepositPayment) — evita "sujeira" de ponto flutuante se
+        // acumular no saldo a cada pedido pago com saldo.
+        const newBalance = Number(Math.max(0, balance - balanceUsed).toFixed(2));
         tx.update(userRef, {
-          balance: admin.firestore.FieldValue.increment(-balanceUsed),
+          balance: newBalance,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       }
@@ -338,6 +386,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
 // ---------------------------------------------------------
 exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] }, async (request) => {
   requireAuth(request);
+  await checkRateLimit(request.auth.uid, "createDeposit");
   const amount = Number((request.data || {}).amount);
   if (!Number.isFinite(amount) || amount < DEPOSIT_MIN || amount > DEPOSIT_MAX) {
     throw new HttpsError("invalid-argument", `Informe um valor entre ${money(DEPOSIT_MIN)} e ${money(DEPOSIT_MAX)}.`);
@@ -397,13 +446,25 @@ exports.confirmDepositPayment = onCall(async (request) => {
     if (dep.status === "paid") return; // idempotente — evita crédito duplicado.
 
     const userRef = db.collection("users").doc(dep.userId);
-    const userSnap = await tx.get(userRef);
-    const balance = Number((userSnap.data() || {}).balance || 0);
-
-    tx.update(userRef, {
-      balance: balance + Number(dep.amount || 0),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+    const currentBalance = Number((userSnap.data() || {}).balance || 0);
+    // Arredonda pra 2 casas a cada crédito — sem isso, somas repetidas de
+    // valores como 12,99/0,10 acumulam "sujeira" de ponto flutuante (ex.:
+    // 0.00000000000002 em vez de 0 exato) que, embora não apareça na tela
+    // (a formatação de moeda já arredonda), fica gravada suja no banco.
+    // set(...,{merge:true}) em vez de update() também cria o documento
+    // sozinho se por acaso ele ainda não existisse (ex: ensureUserDocument
+    // não rodou a tempo) — antes isso fazia tx.update() falhar e o
+    // crédito se perder em silêncio (achado do dia 22/08/2026).
+    const newBalance = Number((currentBalance + Number(dep.amount || 0)).toFixed(2));
+    tx.set(
+      userRef,
+      {
+        balance: newBalance,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
     tx.update(depRef, {
       status: "paid",
       paymentConfirmedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -428,6 +489,36 @@ exports.confirmDepositPayment = onCall(async (request) => {
 // já protegia essas escritas com isAdmin(), então isto é sobretudo
 // para ganhar o registro de "quem fez o quê e quando").
 // ---------------------------------------------------------
+// Antes de confirmar, checa se o saldo lá na baratosociais.com cobre o
+// valor do pedido — pedido do cliente (22/08/2026): "caso eu não tenha
+// saldo, favor não deixar confirmar". Compara contra o VALOR COBRADO DO
+// CLIENTE (não o preço de custo, que é menor) — ou seja, é uma checagem
+// conservadora: se passar nela, sobra margem de sobra pra comprar de
+// verdade lá no fornecedor. Só bloqueia quando dá pra consultar o saldo
+// (API key configurada e fornecedor respondendo); se a key não estiver
+// configurada ainda, ou a consulta falhar, deixa confirmar mesmo assim
+// (pra não travar o negócio todo por causa de uma integração externa
+// instável) — só registra um aviso no log.
+async function checkSupplierBalanceCovers(amount) {
+  const apiKey = BARATOSOCIAIS_API_KEY.value();
+  if (!apiKey) return; // integração ainda não configurada — não bloqueia.
+  let result;
+  try {
+    result = await baratoApi.balance(apiKey);
+  } catch (e) {
+    logger.warn("Não foi possível consultar saldo do fornecedor antes de confirmar:", e.message || e);
+    return; // fornecedor fora do ar / erro de rede — não bloqueia o admin.
+  }
+  const supplierBalance = Number(result && result.balance);
+  if (!Number.isFinite(supplierBalance)) return; // resposta inesperada — não bloqueia.
+  if (supplierBalance < amount) {
+    throw new HttpsError(
+      "failed-precondition",
+      `Saldo insuficiente no fornecedor (baratosociais.com) para cobrir este pedido: você tem ${money(supplierBalance)}, o pedido é de ${money(amount)}. Adicione saldo lá antes de confirmar.`,
+    );
+  }
+}
+
 exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async (request) => {
   requireAuth(request);
   if (!isAdminRequest(request)) {
@@ -435,6 +526,11 @@ exports.confirmOrderPayment = onCall({ secrets: [BARATOSOCIAIS_API_KEY] }, async
   }
   const orderId = (request.data || {}).orderId;
   if (!orderId) throw new HttpsError("invalid-argument", "orderId é obrigatório.");
+
+  const orderBeforeSnap = await db.collection("orders").doc(orderId).get();
+  const orderBefore = orderBeforeSnap.data();
+  if (!orderBefore) throw new HttpsError("not-found", "Pedido não encontrado.");
+  await checkSupplierBalanceCovers(Number(orderBefore.amount || 0));
 
   await db.collection("orders").doc(orderId).set(
     {
@@ -504,10 +600,19 @@ exports.cancelOrder = onCall(async (request) => {
     refundAmount = Number(order.balanceUsed || 0);
     if (refundAmount > 0) {
       const userRef = db.collection("users").doc(order.userId);
-      tx.update(userRef, {
-        balance: admin.firestore.FieldValue.increment(refundAmount),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
+      const userSnap = await tx.get(userRef); // leitura sempre antes de qualquer escrita
+      const currentBalance = Number((userSnap.data() || {}).balance || 0);
+      // Arredondado pra 2 casas — mesmo motivo do comentário em
+      // confirmDepositPayment (evita sujeira de ponto flutuante no saldo).
+      const newBalance = Number((currentBalance + refundAmount).toFixed(2));
+      tx.set(
+        userRef,
+        {
+          balance: newBalance,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
     }
     tx.update(orderRef, {
       status: "cancelled",
