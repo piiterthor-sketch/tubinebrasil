@@ -31,13 +31,19 @@ service cloud.firestore {
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
-    // ADMIN_EMAIL_AQUI -> troque pelo mesmo e-mail de APP_CONFIG.adminEmail.
+    // Lista de e-mails Google com acesso de administrador — precisa ficar
+    // IDÊNTICA à lista adminEmails em APP_CONFIG (index.html) e à lista
+    // ADMIN_EMAILS em functions/index.js. Pra adicionar/remover alguém,
+    // edite os três lugares e publique de novo.
     // Recomendação de médio prazo: migrar para custom claim
     // (request.auth.token.admin == true) — ver scripts/setAdminClaim.js.
     function isAdmin() {
       return isSignedIn()
         && request.auth.token.email != null
-        && request.auth.token.email == "piiterthor@gmail.com";
+        && (
+          request.auth.token.email == "piiterthor@gmail.com"
+          || request.auth.token.email == "marketing.turbinebrasil@gmail.com"
+        );
     }
 
     // ---- users/{uid} ----
@@ -80,7 +86,7 @@ service cloud.firestore {
         && request.resource.data.link is string
         && request.resource.data.link.size() > 0
         && request.resource.data.link.size() < 500
-        && request.resource.data.service is string
+        && request.resource.data['service'] is string
         && request.resource.data.platform is string;
 
       allow update: if isAdmin()

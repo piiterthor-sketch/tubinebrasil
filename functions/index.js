@@ -22,6 +22,7 @@ const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/
 const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
+const nodemailer = require("nodemailer");
 
 const { catalog } = require("./catalog");
 const { buildPixPayload } = require("./pix");
@@ -34,11 +35,15 @@ const db = admin.firestore();
 // ---------------------------------------------------------
 // CONFIGURAÇÃO
 // ---------------------------------------------------------
-// Troque pelo mesmo e-mail usado em APP_CONFIG.adminEmail (index.html)
-// e em firestore.rules. Idealmente, migre para custom claim (ver
-// scripts/setAdminClaim.js) e troque este e-mail fixo por
-// `request.auth.token.admin === true`.
-const ADMIN_EMAIL = "piiterthor@gmail.com";
+// Lista de e-mails Google com acesso de administrador (dono + sócios de
+// confiança). Precisa ficar IDÊNTICA à lista adminEmails em
+// APP_CONFIG (index.html) e à lista dentro de isAdmin() em
+// firestore.rules — os três lugares fazem a mesma checagem,
+// independentemente uns dos outros. Pra adicionar/remover alguém, edite
+// os três e publique de novo (functions + firestore:rules + index.html).
+// Idealmente, migre para custom claim (ver scripts/setAdminClaim.js) e
+// troque essa lista fixa por `request.auth.token.admin === true`.
+const ADMIN_EMAILS = ["piiterthor@gmail.com", "marketing.turbinebrasil@gmail.com"];
 
 const PIX_CONFIG = {
   key: "+5511997694937", // mesma chave Pix do APP_CONFIG.pix.key em index.html
@@ -60,13 +65,53 @@ const CALLMEBOT_APIKEY = defineSecret("CALLMEBOT_APIKEY");
 //   firebase functions:secrets:set BARATOSOCIAIS_API_KEY
 const BARATOSOCIAIS_API_KEY = defineSecret("BARATOSOCIAIS_API_KEY");
 
+// ---------------------------------------------------------
+// Notificação por e-mail (pedido de 25/08/2026: "cada pedido que chegar
+// pra nós no site, chegar no email também"). Usa a própria conta Gmail
+// como remetente, via "senha de app" (NUNCA a senha normal da conta —
+// isso é uma senha de 16 dígitos gerada só pra isso, revogável a
+// qualquer momento sem afetar o login normal). Configure com:
+//   firebase functions:secrets:set GMAIL_APP_PASSWORD
+// Só o proprietário (piiterthor@gmail.com) recebe esses e-mails por
+// enquanto — se quiser incluir mais gente, é só adicionar o e-mail em
+// NOTIFY_EMAIL_TO abaixo (separado por vírgula) e reimplantar.
+const GMAIL_APP_PASSWORD = defineSecret("GMAIL_APP_PASSWORD");
+const GMAIL_SENDER = "piiterthor@gmail.com";
+const NOTIFY_EMAIL_TO = "piiterthor@gmail.com";
+
+function nowBR() {
+  return new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+}
+
+async function sendEmail(subject, text, secret) {
+  try {
+    const pass = secret.value();
+    if (!pass) {
+      logger.warn("Gmail não configurado (secret GMAIL_APP_PASSWORD ausente) — e-mail pulado.");
+      return;
+    }
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: GMAIL_SENDER, pass },
+    });
+    await transporter.sendMail({
+      from: `"Turbine Brasil" <${GMAIL_SENDER}>`,
+      to: NOTIFY_EMAIL_TO,
+      subject,
+      text,
+    });
+  } catch (e) {
+    logger.warn("Erro ao enviar e-mail de notificação:", e);
+  }
+}
+
 function money(v) {
   return Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function isAdminRequest(request) {
   const email = request.auth && request.auth.token && request.auth.token.email;
-  return !!email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  return !!email && ADMIN_EMAILS.map((e) => e.toLowerCase()).includes(email.toLowerCase());
 }
 
 function requireAuth(request) {
@@ -230,7 +275,7 @@ async function writeAuditLog(entry) {
 // só platform/groupKey/tierIndex/link/comments; o preço vem
 // exclusivamente de catalog.js.
 // ---------------------------------------------------------
-exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARATOSOCIAIS_API_KEY] }, async (request) => {
+exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARATOSOCIAIS_API_KEY, GMAIL_APP_PASSWORD] }, async (request) => {
   requireAuth(request);
   await checkRateLimit(request.auth.uid, "createOrder");
   const { platform, groupKey, tierIndex, link, comments, useBalance } = request.data || {};
@@ -375,6 +420,21 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
       commentsForWhatsapp(cleanComments),
     { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
   );
+  await sendEmail(
+    `🛒 Novo pedido — ${baseOrder.userName || baseOrder.userEmail}`,
+    "Novo pedido recebido no Turbine Brasil\n\n" +
+      `Cliente: ${baseOrder.userName}\n` +
+      `E-mail do cliente: ${baseOrder.userEmail}\n` +
+      `Tipo de pedido: ${baseOrder.service}\n` +
+      `Plataforma: ${baseOrder.platform}\n` +
+      `Valor total: ${money(amount)}\n` +
+      `Link/perfil: ${baseOrder.link}\n` +
+      `Data: ${nowBR()}\n` +
+      statusLine +
+      commentsForWhatsapp(cleanComments) +
+      `\n\nID do pedido: ${orderId}`,
+    GMAIL_APP_PASSWORD,
+  );
 
   return { orderId, amount, balanceUsed, remainingAmount: remaining, pixPayload: payload, status };
 });
@@ -384,7 +444,7 @@ exports.createOrder = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, BARA
 // valor de propósito), mas ainda assim valida faixa no servidor
 // em vez de confiar só no atributo min/max do <input> HTML.
 // ---------------------------------------------------------
-exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] }, async (request) => {
+exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GMAIL_APP_PASSWORD] }, async (request) => {
   requireAuth(request);
   await checkRateLimit(request.auth.uid, "createDeposit");
   const amount = Number((request.data || {}).amount);
@@ -418,6 +478,17 @@ exports.createDeposit = onCall({ secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
       `Valor: ${money(deposit.amount)}\n` +
       "Status: aguardando pagamento",
     { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
+  );
+  await sendEmail(
+    `💵 Novo depósito — ${deposit.userName || deposit.userEmail}`,
+    "Novo depósito recebido no Turbine Brasil\n\n" +
+      `Cliente: ${deposit.userName}\n` +
+      `E-mail do cliente: ${deposit.userEmail}\n` +
+      `Valor: ${money(deposit.amount)}\n` +
+      `Data: ${nowBR()}\n` +
+      "Status: aguardando pagamento\n" +
+      `\nID do depósito: ${ref.id}`,
+    GMAIL_APP_PASSWORD,
   );
 
   return { depositId: ref.id, amount: roundedAmount, pixPayload: payload };
@@ -784,7 +855,7 @@ exports.adminCheckOrderProviderStatus = onCall({ secrets: [BARATOSOCIAIS_API_KEY
 // exposta no HTML).
 // ---------------------------------------------------------
 exports.onOrderUpdated = onDocumentUpdated(
-  { document: "orders/{orderId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
+  { document: "orders/{orderId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GMAIL_APP_PASSWORD] },
   async (event) => {
     const before = event.data.before.data();
     const after = event.data.after.data();
@@ -795,12 +866,24 @@ exports.onOrderUpdated = onDocumentUpdated(
           "Confira o Pix recebido e confirme no Painel do proprietário.",
         { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
       );
+      await sendEmail(
+        `💰 Cliente informou pagamento — ${after.userName || after.userEmail || ""}`,
+        "Cliente informou que já pagou um pedido no Turbine Brasil\n\n" +
+          `Cliente: ${after.userName || ""}\n` +
+          `E-mail do cliente: ${after.userEmail || ""}\n` +
+          `Tipo de pedido: ${after.service || ""}\n` +
+          `Valor: ${money(after.amount)}\n` +
+          `Data: ${nowBR()}\n` +
+          "Confira o Pix recebido e confirme no Painel do proprietário.\n" +
+          `\nID do pedido: ${event.params.orderId}`,
+        GMAIL_APP_PASSWORD,
+      );
     }
   },
 );
 
 exports.onDepositUpdated = onDocumentUpdated(
-  { document: "deposits/{depositId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY] },
+  { document: "deposits/{depositId}", secrets: [CALLMEBOT_PHONE, CALLMEBOT_APIKEY, GMAIL_APP_PASSWORD] },
   async (event) => {
     const before = event.data.before.data();
     const after = event.data.after.data();
@@ -810,6 +893,17 @@ exports.onDepositUpdated = onDocumentUpdated(
           `Depósito #${event.params.depositId}\n` +
           "Confira o Pix recebido e confirme no Painel do proprietário.",
         { phone: CALLMEBOT_PHONE, apikey: CALLMEBOT_APIKEY },
+      );
+      await sendEmail(
+        `💰 Cliente informou pagamento de depósito — ${after.userName || after.userEmail || ""}`,
+        "Cliente informou que já pagou um depósito no Turbine Brasil\n\n" +
+          `Cliente: ${after.userName || ""}\n` +
+          `E-mail do cliente: ${after.userEmail || ""}\n` +
+          `Valor: ${money(after.amount)}\n` +
+          `Data: ${nowBR()}\n` +
+          "Confira o Pix recebido e confirme no Painel do proprietário.\n" +
+          `\nID do depósito: ${event.params.depositId}`,
+        GMAIL_APP_PASSWORD,
       );
     }
   },
